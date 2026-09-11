@@ -38,15 +38,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "KRTB Care — Perlindungan Dengan Ketenangan",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://krtb.mysakinah.com"
+  ),
+  title: "KRTB Care — Skim Pengurusan Jenazah & Khairat Kematian 24 Jam",
   description:
-    "Skim bantuan pengurusan jenazah 24 jam dan manfaat khairat yang Patuh Syariah untuk anda dan keluarga. Mulai dari RM10 sebulan sahaja melalui potongan gaji.",
+    "Skim bantuan pengurusan jenazah 24 jam & manfaat khairat kematian Patuh Syariah khas untuk anggota KRTB dan keluarga. Pendaftaran pantas melalui potongan gaji (RM10/sebulan).",
   keywords: [
     "krtb care",
     "skim jenazah",
     "bantuan pengurusan jenazah",
     "khairat kematian",
-    "krtb care pro",
     "perlindungan keluarga",
     "patuh syariah",
     "takaful jenazah",
@@ -57,10 +59,26 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "ms_MY",
-    title: "KRTB Care — Perlindungan Dengan Ketenangan",
-    description:
-      "Skim bantuan pengurusan jenazah 24 jam dan manfaat khairat yang Patuh Syariah untuk anda dan keluarga.",
+    url: "/",
     siteName: "KRTB Care",
+    title: "KRTB Care — Perlindungan Ketenangan Sekeluarga",
+    description:
+      "Skim bantuan pengurusan jenazah 24 jam & manfaat khairat kematian Patuh Syariah khas untuk anggota KRTB dan keluarga.",
+    images: [
+      {
+        url: "/images/opening_background_desktop.png",
+        width: 1200,
+        height: 630,
+        alt: "KRTB Care — Skim Pengurusan Jenazah 24 Jam",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "KRTB Care — Skim Pengurusan Jenazah & Khairat Kematian",
+    description:
+      "Perlindungan pengurusan jenazah 24 jam Patuh Syariah khas untuk warga KRTB dan keluarga.",
+    images: ["/images/opening_background_desktop.png"],
   },
 };
 
