@@ -1,0 +1,27 @@
+{
+  "name": "my-sakinah-pro",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:kohasil": "turbo run dev --filter=@sakinah/kohasil",
+    "dev:krtb": "turbo run dev --filter=@sakinah/krtb",
+    "dev:kotamas": "turbo run dev --filter=@sakinah/kotamas",
+    "dev:kopetro": "turbo run dev --filter=@sakinah/kopetro",
+    "dev:albarzah": "turbo run dev --filter=@sakinah/albarzah",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0"
+  },
+  "packageManager": "npm@10.9.2",
+  "engines": {
+    "node": ">=20"
+  }
+}

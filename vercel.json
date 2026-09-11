@@ -1,0 +1,24 @@
+{
+  "rewrites": [
+    {
+      "source": "/kohasil/:path*",
+      "destination": "https://sakinah-kohasil.vercel.app/:path*"
+    },
+    {
+      "source": "/krtb/:path*",
+      "destination": "https://sakinah-krtb.vercel.app/:path*"
+    },
+    {
+      "source": "/kotamas/:path*",
+      "destination": "https://sakinah-kotamas.vercel.app/:path*"
+    },
+    {
+      "source": "/kopetro/:path*",
+      "destination": "https://sakinah-kopetro.vercel.app/:path*"
+    },
+    {
+      "source": "/albarzah/:path*",
+      "destination": "https://sakinah-albarzah.vercel.app/:path*"
+    }
+  ]
+}
