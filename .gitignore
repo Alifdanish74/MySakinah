@@ -1,6 +1,32 @@
+# Dependencies
 node_modules/
+
+# Next.js build output
 .next/
+
+# Environment files (never commit real secrets)
 .env*.local
+
+# Turborepo
 .turbo/
+
+# Build output
 dist/
 *.tsbuildinfo
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Vercel
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
