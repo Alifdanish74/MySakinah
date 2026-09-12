@@ -110,24 +110,19 @@ const carouselItems = [
   },
   {
     id: "anak-universiti",
-    tabLabel: "3. Anak >18 Tahun (IPT)",
+    tabLabel: "3. Anak 18 Tahun Keatas",
     badge: "Peserta Tambahan",
     title: "Keistimewaan Untuk Anak Lebih 18 Tahun di Universiti",
-    image: "/images/graduate_carousel.jpeg",
+    image: "/images/graduate_carousel.png",
     imageSubtitle: "Masa Depan & Pengajian",
     imageTitle: "Perlindungan Berterusan Anak Di IPT",
     price: "Hanya RM10.00 Sebulan Seorang",
     priceDaily: "0.33 Sen Sehari",
     description: (
       <>
-        Perlindungan terus disambung bagi anak-anak yang menyambung pelajaran di Institut Pengajian Tinggi (IPT) walaupun telah melebihi umur 18 tahun sehingga tamat pengajian.
+        Perlindungan terus disambung bagi anak-anak berumur 18 tahun keatas
       </>
-    ),
-    note: (
-      <>
-        <strong>Syarat Kelayakan:</strong> Tertakluk kepada pengesahan pendaftaran pengajian di IPT yang diiktiraf.
-      </>
-    ),
+    )
   },
 ];
 
@@ -312,19 +307,18 @@ export function BenefitsSection() {
                       style={
                         isActive
                           ? {
-                              background: "var(--color-brand-green)",
-                              color: "#ffffff",
-                              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                            }
+                            background: "var(--color-brand-green)",
+                            color: "#ffffff",
+                            boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                          }
                           : {
-                              color: "#475569",
-                            }
+                            color: "#475569",
+                          }
                       }
                     >
                       <span
-                        className={`h-2 w-2 rounded-full transition-all ${
-                          isActive ? "bg-amber-400 scale-125" : "bg-slate-400"
-                        }`}
+                        className={`h-2 w-2 rounded-full transition-all ${isActive ? "bg-amber-400 scale-125" : "bg-slate-400"
+                          }`}
                       />
                       {item.tabLabel}
                     </button>

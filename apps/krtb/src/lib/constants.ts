@@ -21,6 +21,7 @@ export const SECTION_IDS = {
   syarat: "syarat",
   langgan: "langgan",
   impak: "impak",
+  testimoni: "testimoni",
   soalan: "soalan",
   hubungi: "hubungi",
 } as const;

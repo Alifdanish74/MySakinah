@@ -6,6 +6,7 @@ import { IntroductionSection } from "@/components/sections/introduction-section"
 import { BenefitsSection } from "@/components/sections/benefits-section";
 import { PackageSection } from "@/components/sections/package-section";
 import { ShariahSection } from "@/components/sections/shariah-section";
+import { TestimonialSection } from "@/components/sections/testimonial-section";
 import { FaqSection } from "@/components/sections/faq-section";
 import { ContactSection } from "@/components/sections/contact-section";
 
@@ -33,10 +34,13 @@ export default function Home() {
       {/* ── Section 5: Shariah Principles ────────────────────────── */}
       <ShariahSection />
 
-      {/* ── Section 6: FAQ ──────────────────────────────────────── */}
+      {/* ── Section 6: Testimonials ──────────────────────────────── */}
+      <TestimonialSection />
+
+      {/* ── Section 7: FAQ ──────────────────────────────────────── */}
       <FaqSection />
 
-      {/* ── Section 7: Contact / Enquiry Form ───────────────────── */}
+      {/* ── Section 8: Contact / Enquiry Form ───────────────────── */}
       <ContactSection preselectedPackage={selectedPackage} />
     </>
   );

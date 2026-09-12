@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Star, X, Info, Phone, Send, Loader2, Sparkles, UserCheck, ArrowLeft } from "lucide-react";
 import { BiMaleFemale } from "react-icons/bi";
@@ -50,7 +51,7 @@ const individuPackages: PackageDetail[] = [
     dailyRate: "0.33 Sen Sehari",
     coverage: "Ahli Sahaja",
     summaryBenefits: [
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam): RM1,500",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,500",
       "Wang Khairat Kepada Waris: RM2,880",
       "Dana Kemalangan Diri: RM5,000",
       "Jumlah Manfaat Kematian Biasa: RM5,000",
@@ -90,7 +91,7 @@ const individuPackages: PackageDetail[] = [
     coverage: "Ahli Sahaja",
     recommended: true,
     summaryBenefits: [
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam): RM1,5000",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,5000",
       "Wang Khairat Kepada Waris: RM4,820",
       "Dana Kemalangan Diri: RM10,000",
       "Jumlah Manfaat Kematian Biasa: RM7,000",
@@ -130,7 +131,7 @@ const individuPackages: PackageDetail[] = [
     coverage: "Ahli Sahaja",
     ageRestriction: "Bawah 60 Tahun Sahaja",
     summaryBenefits: [
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam): RM1,500",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,500",
       "Wang Khairat Kepada Waris: RM6,760",
       "Dana Kemalangan Diri: RM15,000",
       "Jumlah Manfaat Kematian Biasa: RM9,000",
@@ -173,7 +174,7 @@ const keluargaPackages: PackageDetail[] = [
     coverage: "Ahli & Pasangan + 2 Anak (1-17 thn)",
     summaryBenefits: [
       "Caruman: Nilai Pakej 10 (Ahli) + Nilai Pakej 10 (Pasangan)",
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam): Ahli RM1,500 & Pasangan RM1,500",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",
       "Wang Khairat Kepada Waris: Ahli RM2,880 & Pasangan RM2,880",
       "Dana Kemalangan Diri: Ahli RM5,000 & Pasangan RM5,000",
       "Manfaat Untuk 2 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 Jam)"
@@ -217,7 +218,7 @@ const keluargaPackages: PackageDetail[] = [
     recommended: true,
     summaryBenefits: [
       "Caruman: Nilai Pakej 15 (Ahli) + Nilai Pakej 15 (Pasangan)",
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam): Ahli RM1,500 & Pasangan RM1,500",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",
       "Wang Khairat Kepada Waris: Ahli RM4,820 & Pasangan RM4,820",
       "Dana Kemalangan Diri: Ahli RM10,000 & Pasangan RM10,000",
       "Manfaat Untuk 2 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 Jam)"
@@ -261,7 +262,7 @@ const keluargaPackages: PackageDetail[] = [
     ageRestriction: "Bawah 60 Tahun Sahaja",
     summaryBenefits: [
       "Caruman: Nilai Pakej 20 (Ahli) + Nilai Pakej 20 (Pasangan)",
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam): Ahli RM1,500 & Pasangan RM1,500",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",
       "Wang Khairat Kepada Waris: Ahli RM6,760 & Pasangan RM6,760",
       "Dana Kemalangan Diri: Ahli RM15,000 & Pasangan RM15,000",
       "Manfaat Untuk 5 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 Jam)"
@@ -414,6 +415,48 @@ function getAgeFromIC(icString: string): number | null {
   return currentYear - birthYear;
 }
 
+export function formatMalaysianIC(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 12);
+  if (digits.length <= 6) return digits;
+  if (digits.length <= 8) return `${digits.slice(0, 6)}-${digits.slice(6)}`;
+  return `${digits.slice(0, 6)}-${digits.slice(6, 8)}-${digits.slice(8)}`;
+}
+
+export function validateMalaysianIC(icString: string, isRequired: boolean = true): string | null {
+  const cleanIC = icString.replace(/\D/g, "");
+  if (!cleanIC) {
+    return isRequired ? "Sila masukkan No. Kad Pengenalan" : null;
+  }
+  if (cleanIC.length !== 12) {
+    return "No. Kad Pengenalan mestilah 12 digit (cth: 001210-10-0267)";
+  }
+
+  const yy = parseInt(cleanIC.substring(0, 2), 10);
+  const mm = parseInt(cleanIC.substring(2, 4), 10);
+  const dd = parseInt(cleanIC.substring(4, 6), 10);
+  const pb = parseInt(cleanIC.substring(6, 8), 10);
+
+  if (mm < 1 || mm > 12) {
+    return "Tarikh lahir No. KP tidak sah (bulan 01-12)";
+  }
+
+  const currentYear = new Date().getFullYear();
+  const currentYY = currentYear % 100;
+  const fullYear = yy <= currentYY ? 2000 + yy : 1900 + yy;
+  const daysInMonth = new Date(fullYear, mm, 0).getDate();
+
+  if (dd < 1 || dd > daysInMonth) {
+    return "Tarikh lahir No. KP tidak sah (hari tidak wujud)";
+  }
+
+  if (pb < 1 || pb > 99) {
+    return "Kod negeri No. KP tidak sah";
+  }
+
+  return null;
+}
+
+
 
 export interface MemberTab {
   id: string;
@@ -457,6 +500,19 @@ export function getMemberTabsForPackage(pkgId?: string): MemberTab[] {
   return [{ id: "ahli", label: "Ahli", role: "ahli", description: "Maklumat Pemohon Utama (Ahli)" }];
 }
 
+export const JENIS_TANGGUNGAN_OPTIONS = [
+  "Ibu",
+  "Bapa",
+  "Ibu mertua",
+  "Bapa mertua",
+  "Anak (pakej sendiri)",
+  "Adik",
+  "Kakak",
+  "Abang",
+  "Bapa saudara",
+  "Ibu saudara",
+];
+
 export interface MemberFormData {
   nama: string;
   telefon: string;
@@ -466,6 +522,7 @@ export interface MemberFormData {
   alamat3: string;
   negeri: string;
   sameAddressAsAhli?: boolean;
+  jenisTanggungan?: string;
 }
 
 export function PackageSection({ onPackageSelect }: PackageSectionProps) {
@@ -482,7 +539,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
   // Multi-tab member form states
   const [activeMemberTab, setActiveMemberTab] = useState<string>("ahli");
-  const [individuDependents, setIndividuDependents] = useState<string[]>([]);
+  const [additionalDependents, setAdditionalDependents] = useState<string[]>([]);
   const [membersData, setMembersData] = useState<Record<string, MemberFormData>>({
     ahli: {
       nama: "",
@@ -505,39 +562,44 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
+  useEffect(() => {
+    if (formStatus === "success") {
+      const timer = setTimeout(() => {
+        setSelectedFormPackage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [formStatus]);
+
   const getTabsForCurrentPackage = (): MemberTab[] => {
     if (!selectedFormPackage) return [{ id: "ahli", label: "Ahli", role: "ahli", description: "Maklumat Pemohon Utama (Ahli)" }];
 
-    if (selectedFormPackage.category === "individu") {
-      const baseTab: MemberTab = { id: "ahli", label: "Ahli", role: "ahli", description: "Maklumat Pemohon Utama (Ahli)" };
-      const depTabs: MemberTab[] = individuDependents.map((depId, idx) => ({
-        id: depId,
-        label: `Tanggungan ${idx + 1}`,
-        role: "anak",
-        description: `Maklumat Tanggungan ${idx + 1} (+RM10/sebulan)`,
-      }));
-      return [baseTab, ...depTabs];
-    }
+    const baseTabs: MemberTab[] = selectedFormPackage.category === "individu"
+      ? [{ id: "ahli", label: "Ahli", role: "ahli", description: "Maklumat Pemohon Utama (Ahli)" }]
+      : getMemberTabsForPackage(selectedFormPackage.id);
 
-    return getMemberTabsForPackage(selectedFormPackage.id);
+    const depTabs: MemberTab[] = additionalDependents.map((depId, idx) => ({
+      id: depId,
+      label: `Tanggungan ${idx + 1}`,
+      role: "anak",
+      description: `Maklumat Tanggungan ${idx + 1} (+RM10/sebulan)`,
+    }));
+
+    return [...baseTabs, ...depTabs];
   };
 
   const getCalculatedMonthlyFee = (): number => {
     if (!selectedFormPackage) return 0;
-    let fee = selectedFormPackage.monthlyFee;
-    if (selectedFormPackage.category === "individu") {
-      fee += individuDependents.length * 10;
-    }
-    return fee;
+    return selectedFormPackage.monthlyFee + additionalDependents.length * 10;
   };
 
-  const handleAddIndividuDependent = () => {
-    if (individuDependents.length >= 5) {
-      setErrorMessage("Maksimum 5 orang tanggungan sahaja dibenarkan.");
+  const handleAddDependent = () => {
+    if (additionalDependents.length >= 5) {
+      setErrorMessage("Maksimum 5 orang tanggungan tambahan sahaja dibenarkan.");
       return;
     }
 
-    const nextCount = individuDependents.length + 1;
+    const nextCount = additionalDependents.length + 1;
     const newDepId = `tanggungan_${nextCount}`;
 
     const ahliData = membersData["ahli"] || {
@@ -550,7 +612,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       negeri: "",
     };
 
-    setIndividuDependents((prev) => [...prev, newDepId]);
+    setAdditionalDependents((prev) => [...prev, newDepId]);
     setMembersData((prev) => ({
       ...prev,
       [newDepId]: {
@@ -562,14 +624,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         alamat3: ahliData.alamat3,
         negeri: ahliData.negeri,
         sameAddressAsAhli: true,
+        jenisTanggungan: "",
       },
     }));
     setActiveMemberTab(newDepId);
     setErrorMessage("");
   };
 
-  const handleRemoveIndividuDependent = (depId: string) => {
-    setIndividuDependents((prev) => prev.filter((id) => id !== depId));
+  const handleRemoveDependent = (depId: string) => {
+    setAdditionalDependents((prev) => prev.filter((id) => id !== depId));
     setMembersData((prev) => {
       const next = { ...prev };
       delete next[depId];
@@ -610,7 +673,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     setFormStatus("idle");
     setErrorMessage("");
     setActiveMemberTab("ahli");
-    setIndividuDependents([]);
+    setAdditionalDependents([]);
     setMembersData(createInitialMembersData(pkg.id));
     setWarisData({
       namaWaris: "",
@@ -632,6 +695,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   };
 
   const handleMemberFieldChange = (tabId: string, field: keyof MemberFormData, value: any) => {
+    const finalValue = field === "ic" ? formatMalaysianIC(value) : value;
+
     setMembersData((prev) => {
       const currentTab = prev[tabId] || {
         nama: "",
@@ -642,7 +707,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         alamat3: "",
         negeri: "",
       };
-      const updatedTab = { ...currentTab, [field]: value };
+      const updatedTab = { ...currentTab, [field]: finalValue };
       const nextMembers = { ...prev, [tabId]: updatedTab };
 
       // If updating Ahli's address, propagate to all tabs that have sameAddressAsAhli enabled
@@ -651,7 +716,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
           if (k !== "ahli" && nextMembers[k]?.sameAddressAsAhli) {
             nextMembers[k] = {
               ...nextMembers[k],
-              [field]: value,
+              [field]: finalValue,
             };
           }
         });
@@ -661,10 +726,23 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     });
 
     if (field === "ic") {
-      const ageError = validateAgeForPackage(value, selectedFormPackage?.id);
+      const isRequired = tabId === "ahli";
+      const cleanDigits = finalValue.replace(/\D/g, "");
+
+      if (cleanDigits.length === 12) {
+        const icError = validateMalaysianIC(finalValue, isRequired);
+        if (icError) {
+          const tabLabel = tabId === "ahli" ? "Ahli" : tabId;
+          setErrorMessage(`${tabLabel}: ${icError}`);
+          return;
+        }
+      }
+
+      const ageError = validateAgeForPackage(finalValue, selectedFormPackage?.id);
       if (ageError) {
-        setErrorMessage(`${tabId === "ahli" ? "Ahli" : tabId}: ${ageError}`);
-      } else if (errorMessage.includes("Melebihi had umur")) {
+        const tabLabel = tabId === "ahli" ? "Ahli" : tabId;
+        setErrorMessage(`${tabLabel}: ${ageError}`);
+      } else {
         setErrorMessage("");
       }
     }
@@ -720,11 +798,31 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       return;
     }
 
+    const ahliICError = validateMalaysianIC(ahli.ic, true);
+    if (ahliICError) {
+      setActiveMemberTab("ahli");
+      setErrorMessage(`Ahli: ${ahliICError}`);
+      return;
+    }
+
     const ageError = validateAgeForPackage(ahli.ic, selectedFormPackage?.id);
     if (ageError) {
       setActiveMemberTab("ahli");
-      setErrorMessage(ageError);
+      setErrorMessage(`Ahli: ${ageError}`);
       return;
+    }
+
+    for (const tab of getTabsForCurrentPackage()) {
+      if (tab.id === "ahli") continue;
+      const member = membersData[tab.id];
+      if (member && member.ic.trim()) {
+        const depICError = validateMalaysianIC(member.ic, false);
+        if (depICError) {
+          setActiveMemberTab(tab.id);
+          setErrorMessage(`${tab.label}: ${depICError}`);
+          return;
+        }
+      }
     }
 
     setErrorMessage("");
@@ -801,7 +899,17 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
         {/* ── SECTION: 3 PAKEJ INDIVIDU ── */}
         <div className="mb-16">
+
           <div className="flex flex-col items-center justify-center text-center mb-6">
+            <div className="relative h-25 w-50 flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-amber-200/50">
+              <Image
+                src="/images/pakejindividu.jpeg"
+                alt="Kemudahan Tanpa Bebanan Kos"
+                fill
+                sizes="(max-width: 768px) 200px, 200px"
+                className="object-cover"
+              />
+            </div>
             <h3
               className="text-xl sm:text-2xl font-bold flex justify-center items-center gap-2"
               style={{ fontFamily: "var(--font-body)", color: "var(--color-brand-green)" }}
@@ -850,7 +958,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     )}
 
                     <div className="mt-3">
-                      <span className="text-3xl font-extrabold text-[#1c1c5a]">
+                      <span className="text-3xl font-extrabold text-green-900">
                         RM{pkg.monthlyFee}
                       </span>
                       <span className="text-xs font-semibold text-slate-500"> / sebulan</span>
@@ -906,6 +1014,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         {/* ── SECTION: 3 PAKEJ KELUARGA ── */}
         <div>
           <div className="flex flex-col items-center justify-center text-center mb-6">
+            <div className="relative h-25 w-50 flex-shrink-0 rounded-2xl overflow-hidden shadow-md border border-amber-200/50">
+              <Image
+                src="/images/pakejkeluarga.jpeg"
+                alt="Kemudahan Tanpa Bebanan Kos"
+                fill
+                sizes="(max-width: 768px) 200px, 200px"
+                className="object-cover"
+              />
+            </div>
             <h3
               className="text-xl sm:text-2xl font-bold flex items-center gap-2"
               style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green)" }}
@@ -954,7 +1071,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     )}
 
                     <div className="mt-3">
-                      <span className="text-3xl font-extrabold text-[#1c1c5a]">
+                      <span className="text-3xl font-extrabold text-green-900">
                         RM{pkg.monthlyFee}
                       </span>
                       <span className="text-xs font-semibold text-slate-500"> / sebulan</span>
@@ -1011,23 +1128,27 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       {/* ── MODAL 1: DETAILED BREAKDOWN TABLE ── */}
       <AnimatePresence>
         {activeModalPackage && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm cursor-pointer"
+            onClick={() => setActiveModalPackage(null)}
+          >
             <motion.div
+              onClick={(e) => e.stopPropagation()}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border"
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border cursor-default"
               style={{ borderColor: "var(--color-brand-gold)" }}
             >
               {/* Close Button */}
               <button
                 onClick={() => setActiveModalPackage(null)}
-                className="absolute top-5 right-5 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                className="absolute top-4 right-4 sm:top-5 sm:right-5 p-2.5 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                 type="button"
                 aria-label="Tutup modal"
               >
-                <X className="h-5 w-5" />
+                <X className="h-8 w-8 stroke-[2.5] text-red-600" />
               </button>
 
               {/* Modal Header */}
@@ -1062,8 +1183,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                   type="button"
                   onClick={() => setActiveModalTab("nonmuslim")}
                   className={`flex-1 py-2.5 px-4 text-center text-xs sm:text-sm font-bold rounded-xl transition-all duration-200 ${activeModalTab === "nonmuslim"
-                    ? "bg-white text-emerald-950 shadow-sm border border-slate-200/80"
-                    : "text-slate-500 hover:text-slate-800"
+                    ? "bg-white text-purple-950 shadow-sm border border-slate-200/80"
+                    : "text-purple-900 hover:text-purple-950 "
                     }`}
                 >
                   Manfaat Non-Muslim
@@ -1082,13 +1203,13 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     <div className="overflow-x-auto rounded-xl border border-slate-400 shadow-sm">
                       <table className="w-full table-fixed text-left text-xs sm:text-sm border-collapse border border-slate-400">
                         <thead>
-                          <tr className="bg-[#D5E8F7] text-slate-900 font-bold border-b border-slate-400">
+                          <tr className={`${activeModalTab === "nonmuslim" ? "bg-purple-100 text-purple-950" : "bg-[#D5E8F7] text-slate-900"} font-bold border-b border-slate-400`}>
                             <th className="p-2.5 sm:p-3 w-10 sm:w-12 text-center border-r border-slate-400"></th>
                             <th className={`p-2.5 sm:p-3 border-r border-slate-400 ${currentModalData.items[0]?.pasangan ? "w-1/2" : "w-2/3"}`}>
-                              <div className="font-extrabold text-sm sm:text-base text-slate-900 uppercase tracking-wide">
+                              <div className={`font-extrabold text-sm sm:text-base ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase tracking-wide`}>
                                 PAKEJ {activeModalPackage.name}
                               </div>
-                              <div className="font-bold text-xs text-slate-800 uppercase mt-0.5">
+                              <div className={`font-bold text-xs ${activeModalTab === "nonmuslim" ? "text-purple-800" : "text-slate-800"} uppercase mt-0.5`}>
                                 {currentModalData.items[0]?.pasangan
                                   ? "MANFAAT AHLI & PASANGAN"
                                   : "MANFAAT AHLI"}
@@ -1096,15 +1217,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             </th>
                             {currentModalData.items[0]?.pasangan ? (
                               <>
-                                <th className="p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-r border-slate-400 w-1/4 text-slate-900 uppercase">
+                                <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-r border-slate-400 w-1/4 ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
                                   Ahli (RM)
                                 </th>
-                                <th className="p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 w-1/4 text-slate-900 uppercase">
+                                <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 w-1/4 ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
                                   Pasangan (RM)
                                 </th>
                               </>
                             ) : (
-                              <th className="p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 w-1/3 text-slate-900 uppercase">
+                              <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 w-1/3 ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
                                 NILAI MANFAAT PAKEJ (RM)
                               </th>
                             )}
@@ -1241,23 +1362,27 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       <AnimatePresence>
         {
           selectedFormPackage && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-md overflow-y-auto">
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-md overflow-y-auto cursor-pointer"
+              onClick={() => setSelectedFormPackage(null)}
+            >
               <motion.div
+                onClick={(e) => e.stopPropagation()}
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.9, y: 20 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
-                className="relative w-full max-w-lg max-h-[90vh] my-auto rounded-3xl bg-white shadow-2xl overflow-hidden border flex flex-col"
+                className="relative w-full max-w-lg max-h-[90vh] my-auto rounded-3xl bg-white shadow-2xl overflow-hidden border flex flex-col cursor-default"
                 style={{ borderColor: "var(--color-brand-gold)" }}
               >
                 {/* Close Button */}
                 <button
                   onClick={() => setSelectedFormPackage(null)}
-                  className="absolute top-4 right-4 z-10 p-2 rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+                  className="absolute top-3.5 right-3.5 z-10 p-2 rounded-full text-white/80 hover:text-white hover:bg-white/20 transition-colors cursor-pointer"
                   type="button"
                   aria-label="Tutup borang"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-8 w-8 stroke-[2.5] text-red-600" />
                 </button>
 
                 {/* Modal Top Banner Header */}
@@ -1284,9 +1409,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-amber-200 border border-white/20">
                       RM{getCalculatedMonthlyFee()} / sebulan
                     </span>
-                    {selectedFormPackage.category === "individu" && individuDependents.length > 0 && (
+                    {additionalDependents.length > 0 && (
                       <span className="text-[11px] text-amber-300 font-semibold bg-black/20 px-2.5 py-0.5 rounded-full border border-amber-300/30">
-                        (RM{selectedFormPackage.monthlyFee} + {individuDependents.length} Tanggungan x RM10)
+                        (RM{selectedFormPackage.monthlyFee} + {additionalDependents.length} Tanggungan x RM10)
                       </span>
                     )}
                     <span className="text-xs text-white/80 font-medium">
@@ -1318,11 +1443,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             <UserCheck className="h-8 w-8" />
                           </div>
                           <div>
-                            <h4 className="text-2xl font-bold text-[#1c1c5a] mb-2">
+                            <h4 className="text-2xl font-bold text-green-900 mb-2">
                               Permohonan Berjaya!
                             </h4>
                             <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
                               Maklumat bagi <strong>{selectedFormPackage.name}</strong> telah berjaya disimpan ke dalam sistem. Pegawai kami akan menghubungi anda.
+                            </p>
+                            <p className="text-[11px] text-slate-400 italic mt-1">
+                              (Borang ini akan ditutup secara automatik dalam masa 5 saat)
                             </p>
                           </div>
 
@@ -1364,17 +1492,18 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           {/* Family Members Summary Card */}
                           <div className="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs space-y-2">
-                            <p className="text-xs font-extrabold uppercase tracking-wider text-[#1c1c5a] border-b pb-1.5 flex items-center justify-between">
+                            <p className="text-xs font-extrabold uppercase tracking-wider text-green-900 border-b pb-1.5 flex items-center justify-between">
                               <span>Senarai Ahli Berdaftar ({memberTabs.length}):</span>
                             </p>
                             <div className="space-y-1.5 max-h-36 overflow-y-auto text-xs text-slate-700">
                               {memberTabs.map((t) => {
                                 const m = membersData[t.id];
                                 const hasData = m && (m.nama.trim() || m.ic.trim());
+                                const displayRole = m?.jenisTanggungan ? `${t.label} (${m.jenisTanggungan})` : t.label;
                                 return (
                                   <div key={t.id} className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
                                     <span className="font-semibold text-slate-900">
-                                      {t.label}: {hasData ? m.nama : <span className="text-slate-400 font-normal italic">(Belum diisi)</span>}
+                                      {displayRole}: {hasData ? m.nama : <span className="text-slate-400 font-normal italic">(Belum diisi)</span>}
                                     </span>
                                     <span className="text-[11px] text-slate-500 font-mono">
                                       {hasData ? m.ic : "-"}
@@ -1387,19 +1516,19 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2">
                             <p>
-                              Saya (dan keluarga saya jika pakej keluarga / jika ada tambahan) dengan ini mengemukakan permohonan untuk mendaftar sebagai ahli Skim Khairat KRTB Care. Saya juga memperakui semua maklumat yang diberikan adalah benar dan saya juga telah membaca dan memahami serta bersetuju untuk mematuhi semua terma dan syarat Skim Khairat ini. Saya dengan fikiran waras dan tanpa paksaan mana – mana pihak dengan ini bersetuju untuk menyertai Skim Khairat ini dengan jumlah potongan gaji bulanan sebanyak <strong className="text-green-950 font-extrabold text-sm sm:text-base border-b-2 border-[#2c2c84]">RM{getCalculatedMonthlyFee() + (warisData.statusKeahlian === "bukan_ahli" ? 1 : 0)}</strong> sebulan.
+                              Saya (dan keluarga saya jika pakej keluarga / jika ada tambahan) dengan ini mengemukakan permohonan untuk mendaftar sebagai ahli Skim Khairat Kohasil Raudhah. Saya juga memperakui semua maklumat yang diberikan adalah benar dan saya juga telah membaca dan memahami serta bersetuju untuk mematuhi semua terma dan syarat Skim Khairat ini. Saya dengan fikiran waras dan tanpa paksaan mana – mana pihak dengan ini bersetuju untuk menyertai Skim Khairat ini dengan jumlah potongan gaji bulanan sebanyak <strong className="text-green-950 font-extrabold text-sm sm:text-base border-b-2 border-green-800">RM{getCalculatedMonthlyFee() + (warisData.statusKeahlian === "bukan_ahli" ? 1 : 0)}</strong> sebulan.
                             </p>
                           </div>
 
                           {/* Red Color Font Notice Box */}
                           <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs sm:text-sm text-red-700 space-y-2">
-                            {selectedFormPackage.category === "individu" && (
+                            {additionalDependents.length > 0 && (
                               <p className="font-bold text-amber-900 leading-snug pb-1 border-b border-amber-200">
-                                Nota Pakej Individu: Setiap tambahan 1 orang tanggungan dikenakan caj RM10/sebulan (Maksimum 5 orang). Jumlah tanggungan semasa: {individuDependents.length} orang (+RM{individuDependents.length * 10}/sebulan).
+                                Nota Tanggungan Tambahan: Setiap tambahan 1 orang tanggungan dikenakan caj RM10/sebulan (Maksimum 5 orang). Jumlah tanggungan tambahan: {additionalDependents.length} orang (+RM{additionalDependents.length * 10}/sebulan).
                               </p>
                             )}
                             <p className="font-bold text-red-800 leading-snug">
-                              Penting : Untuk Bukan Ahli KRTB, Caj Tambahan sebanyak RM1 akan dikenakan untuk setiap potongan gaji bulanan. Contoh Pakej Keluarga 20 + Ibu Individu 10 : Potongan Bulanan adalah RM30 + RM1 = RM31 sebulan
+                              Penting : Untuk Bukan Ahli Kohasil, Caj Tambahan sebanyak RM1 akan dikenakan untuk setiap potongan gaji bulanan. Contoh Pakej Keluarga 20 + Ibu Individu 10 : Potongan Bulanan adalah RM30 + RM1 = RM31 sebulan
                             </p>
                             <p className="font-semibold text-red-700 leading-snug">
                               Jika pakej keluarga , Sila hubungi kami untuk menambah nama anak jika mendapat anak baharu (apabila berumur 1 tahun) bagi memenuhi kuota pakej keluarga tersebut.Tertakluk kepada kategori pakej keluarga
@@ -1493,7 +1622,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                       type="button"
                                       onClick={(e) => {
                                         e.stopPropagation();
-                                        handleRemoveIndividuDependent(tab.id);
+                                        handleRemoveDependent(tab.id);
                                       }}
                                       className="ml-1 p-1 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                                       title="Buang tanggungan ini"
@@ -1505,23 +1634,21 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               );
                             })}
 
-                            {/* (+) Tambah Tanggungan Button for Individu Package */}
-                            {selectedFormPackage.category === "individu" && (
-                              <button
-                                type="button"
-                                onClick={handleAddIndividuDependent}
-                                disabled={individuDependents.length >= 5}
-                                className="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-400 text-green-950 hover:bg-amber-300 transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                                title="Tambah tanggungan (Maksimum 5 orang - RM10/sebulan per tanggungan)"
-                              >
-                                <span>+ Tambah Tanggungan (+RM10)</span>
-                              </button>
-                            )}
+                            {/* (+) Tambah Tanggungan Button for Individu & Keluarga Packages */}
+                            <button
+                              type="button"
+                              onClick={handleAddDependent}
+                              disabled={additionalDependents.length >= 5}
+                              className="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-400 text-green-950 hover:bg-amber-300 transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Tambah tanggungan (Maksimum 5 orang - RM10/sebulan per tanggungan)"
+                            >
+                              <span>+ Tambah Tanggungan (+RM10)</span>
+                            </button>
                           </div>
                         </div>
 
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-extrabold uppercase tracking-wider text-[#1c1c5a]">
+                          <span className="text-xs font-extrabold uppercase tracking-wider text-green-900">
                             {currentTabObj.description || currentTabObj.label}
                           </span>
                           {memberTabs.length > 1 && (
@@ -1537,6 +1664,29 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                           </div>
                         )}
 
+                        {/* Jenis Tanggungan Dropdown (For dependent / tanggungan tabs) */}
+                        {activeMemberTab !== "ahli" && activeMemberTab !== "pasangan" && (
+                          <div>
+                            <label htmlFor={`modal-jenisTanggungan-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                              Jenis Tanggungan <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                              id={`modal-jenisTanggungan-${activeMemberTab}`}
+                              required
+                              value={currentMemberData.jenisTanggungan || ""}
+                              onChange={(e) => handleMemberFieldChange(activeMemberTab, "jenisTanggungan", e.target.value)}
+                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 bg-white font-medium"
+                            >
+                              <option value="">-- Pilih Jenis Tanggungan --</option>
+                              {JENIS_TANGGUNGAN_OPTIONS.map((option) => (
+                                <option key={option} value={option}>
+                                  {option}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        )}
+
                         {/* Nama Penuh */}
                         <div>
                           <label htmlFor={`modal-nama-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
@@ -1548,42 +1698,42 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             required={activeMemberTab === "ahli"}
                             value={currentMemberData.nama}
                             onChange={(e) => handleMemberFieldChange(activeMemberTab, "nama", e.target.value)}
-                            placeholder={`Contoh: ${activeMemberTab === "ahli" ? "Ahmad bin Abdullah" : activeMemberTab === "pasangan" ? "Siti binti Ali" : "Ali bin Ahmad"}`}
-                            className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
+                            placeholder={` ${activeMemberTab === "ahli" ? "Ahmad bin Abdullah" : activeMemberTab === "pasangan" ? "Siti binti Ali" : "Ali bin Ahmad"}`}
+                            className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                           />
                         </div>
 
-                        {/* Grid: No Telefon & IC */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                          <div>
-                            <label htmlFor={`modal-telefon-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                              No Telefon {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
-                            </label>
-                            <input
-                              id={`modal-telefon-${activeMemberTab}`}
-                              type="tel"
-                              required={activeMemberTab === "ahli"}
-                              value={currentMemberData.telefon}
-                              onChange={(e) => handleMemberFieldChange(activeMemberTab, "telefon", e.target.value)}
-                              placeholder="Contoh: 011-1300 1999"
-                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
-                            />
-                          </div>
+                        {/* Nombor Kad Pengenalan */}
+                        <div>
+                          <label htmlFor={`modal-ic-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            Nombor Kad Pengenalan {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
+                          </label>
+                          <input
+                            id={`modal-ic-${activeMemberTab}`}
+                            type="text"
+                            required={activeMemberTab === "ahli"}
+                            value={currentMemberData.ic}
+                            onChange={(e) => handleMemberFieldChange(activeMemberTab, "ic", e.target.value)}
+                            placeholder=" 001210-10-0267"
+                            maxLength={14}
+                            className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
+                          />
+                        </div>
 
-                          <div>
-                            <label htmlFor={`modal-ic-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                              Nombor Kad Pengenalan {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
-                            </label>
-                            <input
-                              id={`modal-ic-${activeMemberTab}`}
-                              type="text"
-                              required={activeMemberTab === "ahli"}
-                              value={currentMemberData.ic}
-                              onChange={(e) => handleMemberFieldChange(activeMemberTab, "ic", e.target.value)}
-                              placeholder="Contoh: 900101141234"
-                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
-                            />
-                          </div>
+                        {/* No Telefon */}
+                        <div>
+                          <label htmlFor={`modal-telefon-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                            No Telefon {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
+                          </label>
+                          <input
+                            id={`modal-telefon-${activeMemberTab}`}
+                            type="tel"
+                            required={activeMemberTab === "ahli"}
+                            value={currentMemberData.telefon}
+                            onChange={(e) => handleMemberFieldChange(activeMemberTab, "telefon", e.target.value)}
+                            placeholder=" 011-1300 1999"
+                            className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
+                          />
                         </div>
 
                         {/* Checkbox for Sama Seperti Ahli on non-ahli tabs */}
@@ -1619,7 +1769,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             value={currentMemberData.alamat1}
                             onChange={(e) => handleMemberFieldChange(activeMemberTab, "alamat1", e.target.value)}
                             placeholder="No. Rumah, Jalan, Taman"
-                            className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
+                            className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
                           />
                         </div>
 
@@ -1636,8 +1786,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               disabled={activeMemberTab !== "ahli" && currentMemberData.sameAddressAsAhli}
                               value={currentMemberData.alamat2}
                               onChange={(e) => handleMemberFieldChange(activeMemberTab, "alamat2", e.target.value)}
-                              placeholder="Contoh: 50600"
-                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
+                              placeholder=" 50600"
+                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
                             />
                           </div>
 
@@ -1652,8 +1802,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               disabled={activeMemberTab !== "ahli" && currentMemberData.sameAddressAsAhli}
                               value={currentMemberData.alamat3}
                               onChange={(e) => handleMemberFieldChange(activeMemberTab, "alamat3", e.target.value)}
-                              placeholder="Contoh: Kuala Lumpur"
-                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
+                              placeholder=" Kuala Lumpur"
+                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
                             />
                           </div>
 
@@ -1667,7 +1817,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               disabled={activeMemberTab !== "ahli" && currentMemberData.sameAddressAsAhli}
                               value={currentMemberData.negeri}
                               onChange={(e) => handleMemberFieldChange(activeMemberTab, "negeri", e.target.value)}
-                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 bg-white disabled:bg-slate-100 disabled:text-slate-500"
+                              className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 bg-white disabled:bg-slate-100 disabled:text-slate-500"
                             >
                               <option value="">-- Pilih Negeri --</option>
                               {MALAYSIAN_STATES.map((state) => (
@@ -1695,7 +1845,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                     value={warisData.namaWaris}
                                     onChange={(e) => setWarisData({ ...warisData, namaWaris: e.target.value })}
                                     placeholder="Nama Penuh Waris"
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                                   />
                                 </div>
 
@@ -1709,8 +1859,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                     required
                                     value={warisData.telefonWaris}
                                     onChange={(e) => setWarisData({ ...warisData, telefonWaris: e.target.value })}
-                                    placeholder="Contoh: 012-3456789"
-                                    className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-[#2c2c84] focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
+                                    placeholder=" 012-3456789"
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                                   />
                                 </div>
                               </div>
@@ -1721,7 +1871,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                 Ahli / Bukan Ahli <span className="text-red-500">*</span>
                               </label>
                               <div className="grid grid-cols-2 gap-3">
-                                <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "ahli" ? "border-[#2c2c84] bg-[#F0F0FA] text-[#1c1c5a]" : "border-slate-200 text-slate-600"}`}>
+                                <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "ahli" ? "border-green-800 bg-green-50 text-green-900" : "border-slate-200 text-slate-600"}`}>
                                   <input
                                     type="radio"
                                     name="statusKeahlian"
@@ -1732,7 +1882,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                   />
                                   Ahli
                                 </label>
-                                <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "bukan_ahli" ? "border-[#2c2c84] bg-[#F0F0FA] text-[#1c1c5a]" : "border-slate-200 text-slate-600"}`}>
+                                <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "bukan_ahli" ? "border-green-800 bg-green-50 text-green-900" : "border-slate-200 text-slate-600"}`}>
                                   <input
                                     type="radio"
                                     name="statusKeahlian"

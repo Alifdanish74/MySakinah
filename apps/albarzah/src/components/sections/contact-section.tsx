@@ -269,8 +269,20 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
                     <input
                       id="ic"
                       type="text"
-                      placeholder="XXXXXX-XX-XXXX"
-                      {...register("ic")}
+                      placeholder="001210-10-0267"
+                      maxLength={14}
+                      {...register("ic", {
+                        onChange: (e) => {
+                          const digits = e.target.value.replace(/\D/g, "").slice(0, 12);
+                          let formatted = digits;
+                          if (digits.length > 6 && digits.length <= 8) {
+                            formatted = `${digits.slice(0, 6)}-${digits.slice(6)}`;
+                          } else if (digits.length > 8) {
+                            formatted = `${digits.slice(0, 6)}-${digits.slice(6, 8)}-${digits.slice(8)}`;
+                          }
+                          e.target.value = formatted;
+                        },
+                      })}
                       className="form-input"
                     />
                   </FormField>

@@ -79,6 +79,7 @@ export function IntroductionSection() {
               src="/images/preparation.png"
               alt="Kemudahan Tanpa Bebanan Kos"
               fill
+              sizes="(max-width: 768px) 200px, 200px"
               className="object-cover"
             />
           </div>

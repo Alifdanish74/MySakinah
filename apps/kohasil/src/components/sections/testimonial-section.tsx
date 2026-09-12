@@ -27,7 +27,7 @@ export const TESTIMONY_IMAGES: string[] = [
   "/images/elderly_parents.png",
   "/images/parent_carousel.png",
   "/images/parent_in_law_carousel.jpeg",
-  "/images/graduate_carousel.jpeg",
+  "/images/graduate_carousel.png",
 ];
 
 export function TestimonialSection() {
@@ -160,8 +160,8 @@ export function TestimonialSection() {
                     key={idx}
                     onClick={() => setCurrentIndex(idx)}
                     className={`relative h-12 w-16 sm:h-14 sm:w-20 flex-shrink-0 rounded-xl overflow-hidden border-2 transition-all ${isActive
-                        ? "border-amber-500 scale-105 shadow-md ring-2 ring-amber-400/30"
-                        : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
+                      ? "border-amber-500 scale-105 shadow-md ring-2 ring-amber-400/30"
+                      : "border-slate-200 opacity-60 hover:opacity-100 hover:border-slate-300"
                       }`}
                   >
                     <Image

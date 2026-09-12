@@ -5,6 +5,7 @@ export interface FaqItem {
   question: string;
   answer: string;
   requiresVerification?: boolean;
+  tooltipText?: string;
 }
 
 export const faqItems: FaqItem[] = [
@@ -38,4 +39,10 @@ export const faqItems: FaqItem[] = [
     answer:
       "Pihak BJSB akan menguruskan segala keperluan ketika jenazah sampai di Malaysia, dari lapangan terbang ke tanah perkuburan sehingga selesai.",
   },
+  {
+    id: "tuntutan-lewat",
+    question: "Adakah tuntutan boleh dibuat jika pihak waris terlupa membuat tuntutan",
+    answer: "Ya, jika sekiranya kematian / kemalangan berlaku didalam tempoh keahlian dan tuntutan dibuat didalam masa setahun dari tarikh kematian.",
+    tooltipText: "Contoh: Selepas tempoh 2 bulan kematian / kemalangan",
+  }
 ];

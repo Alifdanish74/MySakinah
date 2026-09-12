@@ -10,7 +10,14 @@ export const enquirySchema = z.object({
     .string()
     .min(9, "Nombor telefon tidak sah")
     .max(15, "Nombor telefon tidak sah"),
-  ic: z.string().optional(),
+  ic: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === "") return true;
+      const cleanIC = val.replace(/\D/g, "");
+      return cleanIC.length === 12;
+    }, "No. Kad Pengenalan mestilah 12 digit (cth: 001210-10-0267)"),
   alamat1: z.string().optional(),
   alamat2: z.string().optional(),
   negeri: z.string().optional(),

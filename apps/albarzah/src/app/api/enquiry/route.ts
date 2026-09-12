@@ -1,10 +1,12 @@
 // File: src/app/api/enquiry/route.ts — Albarzah
 import { enquirySchema } from "@/lib/validations";
 
+const MODULE_SLUG = "albarzah";
+
 /**
  * POST /api/enquiry
- * Albarzah form submission endpoint.
- * Saves user submissions to the admin dashboard ingest endpoint.
+ * Albarzah Form submission endpoint.
+ * Saves user submissions directly to the MySakinah Admin Dashboard system.
  */
 export async function POST(request: Request) {
   try {
@@ -22,60 +24,115 @@ export async function POST(request: Request) {
       );
     }
 
-    const submissionData = {
-      source: "albarzah",
-      timestamp: new Date().toISOString(),
-      nama: parsed.data.nama,
-      telefon: parsed.data.telefon,
-      ic: parsed.data.ic || "-",
-      alamat1: parsed.data.alamat1 || "-",
-      alamat2: parsed.data.alamat2 || "-",
-      negeri: parsed.data.negeri || "-",
-      namaWaris: parsed.data.namaWaris || "-",
-      telefonWaris: parsed.data.telefonWaris || "-",
-      statusKeahlian: parsed.data.statusKeahlian || "-",
-      noAhli: parsed.data.noAhli || "-",
-      pakej: parsed.data.pakej,
-      tempohLangganan: "1-tahun",
-      kaedahHubungi: parsed.data.kaedahHubungi
-        ? parsed.data.kaedahHubungi.toUpperCase()
-        : "WHATSAPP",
-    };
+    const data = parsed.data as any;
+    const membersData = body.members || {};
+    const memberKeys = Object.keys(membersData);
 
-    // Post to admin dashboard ingest endpoint if configured
-    const ingestUrl = process.env.INGEST_WEBHOOK_URL;
+    const submissionsToPost: Array<{ submitted_by: string; form_data: any }> = [];
 
-    if (ingestUrl) {
-      try {
-        const ingestRes = await fetch(`${ingestUrl}/albarzah`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Webhook-Secret": process.env.INGEST_WEBHOOK_SECRET || "",
+    if (memberKeys.length > 0) {
+      const ahli = membersData["ahli"] || {};
+      const mainName = ahli.nama || data.nama;
+
+      memberKeys.forEach((key, index) => {
+        const m = membersData[key];
+        if (!m || (!m.nama?.trim() && !m.ic?.trim())) return;
+
+        let roleLabel = "AHLI";
+        if (key === "pasangan") roleLabel = "PASANGAN";
+        else if (key.startsWith("anak")) roleLabel = "ANAK";
+        else if (key.startsWith("tanggungan")) roleLabel = "tanggungan";
+
+        submissionsToPost.push({
+          submitted_by: mainName,
+          form_data: {
+            no: (index + 1).toString(),
+            nama: m.nama || mainName,
+            no_kp: m.ic || data.ic || "-",
+            umur: "-",
+            kategori: roleLabel,
+            no_ahli: data.noAhli || "-",
+            bukan_anggota: data.statusKeahlian === "Bukan Ahli" ? "BUKAN ANGGOTA" : "",
+            no_telefon: m.telefon || data.telefon || "-",
+            alamat1: m.alamat1 || data.alamat1 || "-",
+            alamat2: m.alamat2 || data.alamat2 || "-",
+            alamat3: m.alamat3 || data.alamat3 || "-",
+            poskod: data.poskod || "-",
+            negeri: m.negeri || data.negeri || "-",
+            pakej: data.pakej,
+            tarikh_daftar: new Date().toLocaleDateString("en-GB"),
+            utama: mainName,
+            namaWaris: data.namaWaris || "-",
+            telefonWaris: data.telefonWaris || "-",
+            jenisTanggungan: m.jenisTanggungan || "",
+            kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
           },
-          body: JSON.stringify(submissionData),
         });
-        const responseText = await ingestRes.text();
-        console.log("[Ingest API] Response:", responseText);
-      } catch (ingestErr) {
-        console.warn("[Ingest API] Warning:", ingestErr);
-      }
-    } else {
-      console.log("[Ingest API] INGEST_WEBHOOK_URL not set — submission logged locally only.");
+      });
     }
 
-    console.log("[Enquiry API] Albarzah submission saved:", submissionData);
+    if (submissionsToPost.length === 0) {
+      const formDataPayload = {
+        no: "1",
+        nama: data.nama,
+        no_kp: data.ic || "-",
+        umur: "-",
+        kategori: (data.statusKeahlian || "AHLI").toUpperCase(),
+        no_ahli: data.noAhli || "-",
+        bukan_anggota: data.statusKeahlian === "BUKAN ANGGOTA" ? "BUKAN ANGGOTA" : "",
+        no_telefon: data.telefon,
+        alamat1: data.alamat1 || "-",
+        alamat2: data.alamat2 || "-",
+        alamat3: data.alamat3 || "-",
+        poskod: data.poskod || "-",
+        negeri: data.negeri || "-",
+        pakej: data.pakej,
+        tarikh_daftar: new Date().toLocaleDateString("en-GB"),
+        utama: data.nama,
+        namaWaris: data.namaWaris || "-",
+        telefonWaris: data.telefonWaris || "-",
+        kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+      };
+
+      submissionsToPost.push({
+        submitted_by: data.nama,
+        form_data: formDataPayload,
+      });
+    }
+
+    // Store in Admin Dashboard System
+    const adminApiUrl = process.env.ADMIN_API_URL || "http://localhost:3005";
+    try {
+      for (const item of submissionsToPost) {
+        const res = await fetch(`${adminApiUrl}/api/submissions`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            module_slug: MODULE_SLUG,
+            submitted_by: item.submitted_by,
+            form_data: item.form_data,
+          }),
+        });
+
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error(`[Albarzah Enquiry API] Error response from Admin API (${res.status}):`, errText);
+        }
+      }
+    } catch (adminErr) {
+      console.warn("[Albarzah Enquiry API] Warning dispatching to Admin Dashboard:", adminErr);
+    }
 
     return Response.json(
       {
         success: true,
-        message: `Permohonan pakej ${parsed.data.pakej} telah berjaya diterima dan direkodkan.`,
-        data: submissionData,
+        message: `Permohonan pakej ${data.pakej} telah berjaya diterima dan direkodkan.`,
+        count: submissionsToPost.length,
       },
       { status: 200 }
     );
   } catch (error) {
-    console.error("[Enquiry API] Error:", error);
+    console.error("[Albarzah Enquiry API] Error:", error);
     return Response.json(
       {
         success: false,

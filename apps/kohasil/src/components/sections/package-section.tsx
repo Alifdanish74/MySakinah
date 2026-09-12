@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { CheckCircle2, Star, X, Info, Phone, Send, Loader2, Sparkles, UserCheck, ArrowLeft } from "lucide-react";
@@ -415,6 +415,48 @@ function getAgeFromIC(icString: string): number | null {
   return currentYear - birthYear;
 }
 
+export function formatMalaysianIC(value: string): string {
+  const digits = value.replace(/\D/g, "").slice(0, 12);
+  if (digits.length <= 6) return digits;
+  if (digits.length <= 8) return `${digits.slice(0, 6)}-${digits.slice(6)}`;
+  return `${digits.slice(0, 6)}-${digits.slice(6, 8)}-${digits.slice(8)}`;
+}
+
+export function validateMalaysianIC(icString: string, isRequired: boolean = true): string | null {
+  const cleanIC = icString.replace(/\D/g, "");
+  if (!cleanIC) {
+    return isRequired ? "Sila masukkan No. Kad Pengenalan" : null;
+  }
+  if (cleanIC.length !== 12) {
+    return "No. Kad Pengenalan mestilah 12 digit (cth: 001210-10-0267)";
+  }
+
+  const yy = parseInt(cleanIC.substring(0, 2), 10);
+  const mm = parseInt(cleanIC.substring(2, 4), 10);
+  const dd = parseInt(cleanIC.substring(4, 6), 10);
+  const pb = parseInt(cleanIC.substring(6, 8), 10);
+
+  if (mm < 1 || mm > 12) {
+    return "Tarikh lahir No. KP tidak sah (bulan 01-12)";
+  }
+
+  const currentYear = new Date().getFullYear();
+  const currentYY = currentYear % 100;
+  const fullYear = yy <= currentYY ? 2000 + yy : 1900 + yy;
+  const daysInMonth = new Date(fullYear, mm, 0).getDate();
+
+  if (dd < 1 || dd > daysInMonth) {
+    return "Tarikh lahir No. KP tidak sah (hari tidak wujud)";
+  }
+
+  if (pb < 1 || pb > 99) {
+    return "Kod negeri No. KP tidak sah";
+  }
+
+  return null;
+}
+
+
 
 export interface MemberTab {
   id: string;
@@ -519,6 +561,16 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Auto-close form modal 5 seconds after successful submission
+  useEffect(() => {
+    if (formStatus === "success") {
+      const timer = setTimeout(() => {
+        setSelectedFormPackage(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [formStatus]);
 
   const getTabsForCurrentPackage = (): MemberTab[] => {
     if (!selectedFormPackage) return [{ id: "ahli", label: "Ahli", role: "ahli", description: "Maklumat Pemohon Utama (Ahli)" }];
@@ -644,6 +696,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   };
 
   const handleMemberFieldChange = (tabId: string, field: keyof MemberFormData, value: any) => {
+    const finalValue = field === "ic" ? formatMalaysianIC(value) : value;
+
     setMembersData((prev) => {
       const currentTab = prev[tabId] || {
         nama: "",
@@ -654,7 +708,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         alamat3: "",
         negeri: "",
       };
-      const updatedTab = { ...currentTab, [field]: value };
+      const updatedTab = { ...currentTab, [field]: finalValue };
       const nextMembers = { ...prev, [tabId]: updatedTab };
 
       // If updating Ahli's address, propagate to all tabs that have sameAddressAsAhli enabled
@@ -663,7 +717,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
           if (k !== "ahli" && nextMembers[k]?.sameAddressAsAhli) {
             nextMembers[k] = {
               ...nextMembers[k],
-              [field]: value,
+              [field]: finalValue,
             };
           }
         });
@@ -673,10 +727,23 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     });
 
     if (field === "ic") {
-      const ageError = validateAgeForPackage(value, selectedFormPackage?.id);
+      const isRequired = tabId === "ahli";
+      const cleanDigits = finalValue.replace(/\D/g, "");
+
+      if (cleanDigits.length === 12) {
+        const icError = validateMalaysianIC(finalValue, isRequired);
+        if (icError) {
+          const tabLabel = tabId === "ahli" ? "Ahli" : tabId;
+          setErrorMessage(`${tabLabel}: ${icError}`);
+          return;
+        }
+      }
+
+      const ageError = validateAgeForPackage(finalValue, selectedFormPackage?.id);
       if (ageError) {
-        setErrorMessage(`${tabId === "ahli" ? "Ahli" : tabId}: ${ageError}`);
-      } else if (errorMessage.includes("Melebihi had umur")) {
+        const tabLabel = tabId === "ahli" ? "Ahli" : tabId;
+        setErrorMessage(`${tabLabel}: ${ageError}`);
+      } else {
         setErrorMessage("");
       }
     }
@@ -732,11 +799,31 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       return;
     }
 
+    const ahliICError = validateMalaysianIC(ahli.ic, true);
+    if (ahliICError) {
+      setActiveMemberTab("ahli");
+      setErrorMessage(`Ahli: ${ahliICError}`);
+      return;
+    }
+
     const ageError = validateAgeForPackage(ahli.ic, selectedFormPackage?.id);
     if (ageError) {
       setActiveMemberTab("ahli");
-      setErrorMessage(ageError);
+      setErrorMessage(`Ahli: ${ageError}`);
       return;
+    }
+
+    for (const tab of getTabsForCurrentPackage()) {
+      if (tab.id === "ahli") continue;
+      const member = membersData[tab.id];
+      if (member && member.ic.trim()) {
+        const depICError = validateMalaysianIC(member.ic, false);
+        if (depICError) {
+          setActiveMemberTab(tab.id);
+          setErrorMessage(`${tab.label}: ${depICError}`);
+          return;
+        }
+      }
     }
 
     setErrorMessage("");
@@ -820,6 +907,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                 src="/images/pakejindividu.jpeg"
                 alt="Kemudahan Tanpa Bebanan Kos"
                 fill
+                sizes="(max-width: 768px) 200px, 200px"
                 className="object-cover"
               />
             </div>
@@ -932,6 +1020,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                 src="/images/pakejkeluarga.jpeg"
                 alt="Kemudahan Tanpa Bebanan Kos"
                 fill
+                sizes="(max-width: 768px) 200px, 200px"
                 className="object-cover"
               />
             </div>
@@ -1040,7 +1129,10 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       {/* ── MODAL 1: DETAILED BREAKDOWN TABLE ── */}
       <AnimatePresence>
         {activeModalPackage && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+            onClick={() => setActiveModalPackage(null)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -1048,6 +1140,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
               transition={{ duration: 0.2 }}
               className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-6 sm:p-8 shadow-2xl border"
               style={{ borderColor: "var(--color-brand-gold)" }}
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <button
@@ -1270,7 +1363,10 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       <AnimatePresence>
         {
           selectedFormPackage && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-md overflow-y-auto">
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-900/70 backdrop-blur-md overflow-y-auto"
+              onClick={() => setSelectedFormPackage(null)}
+            >
               <motion.div
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -1278,6 +1374,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="relative w-full max-w-lg max-h-[90vh] my-auto rounded-3xl bg-white shadow-2xl overflow-hidden border flex flex-col"
                 style={{ borderColor: "var(--color-brand-gold)" }}
+                onClick={(e) => e.stopPropagation()}
               >
                 {/* Close Button */}
                 <button
@@ -1374,6 +1471,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             >
                               Tutup Borang
                             </button>
+                            <p className="text-[11px] text-slate-400 italic text-center">
+                              (Borang ini akan ditutup secara automatik dalam masa 5 saat)
+                            </p>
                           </div>
                         </div>
                       );
@@ -1599,7 +1699,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             required={activeMemberTab === "ahli"}
                             value={currentMemberData.nama}
                             onChange={(e) => handleMemberFieldChange(activeMemberTab, "nama", e.target.value)}
-                            placeholder={`Contoh: ${activeMemberTab === "ahli" ? "Ahmad bin Abdullah" : activeMemberTab === "pasangan" ? "Siti binti Ali" : "Ali bin Ahmad"}`}
+                            placeholder={` ${activeMemberTab === "ahli" ? "Ahmad bin Abdullah" : activeMemberTab === "pasangan" ? "Siti binti Ali" : "Ali bin Ahmad"}`}
                             className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                           />
                         </div>
@@ -1615,7 +1715,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             required={activeMemberTab === "ahli"}
                             value={currentMemberData.ic}
                             onChange={(e) => handleMemberFieldChange(activeMemberTab, "ic", e.target.value)}
-                            placeholder="Contoh: 900101141234"
+                            placeholder=" 001210-10-0267"
+                            maxLength={14}
                             className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                           />
                         </div>
@@ -1631,7 +1732,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             required={activeMemberTab === "ahli"}
                             value={currentMemberData.telefon}
                             onChange={(e) => handleMemberFieldChange(activeMemberTab, "telefon", e.target.value)}
-                            placeholder="Contoh: 011-1300 1999"
+                            placeholder=" 011-1300 1999"
                             className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                           />
                         </div>
@@ -1686,7 +1787,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               disabled={activeMemberTab !== "ahli" && currentMemberData.sameAddressAsAhli}
                               value={currentMemberData.alamat2}
                               onChange={(e) => handleMemberFieldChange(activeMemberTab, "alamat2", e.target.value)}
-                              placeholder="Contoh: 50600"
+                              placeholder=" 50600"
                               className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
                             />
                           </div>
@@ -1702,7 +1803,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               disabled={activeMemberTab !== "ahli" && currentMemberData.sameAddressAsAhli}
                               value={currentMemberData.alamat3}
                               onChange={(e) => handleMemberFieldChange(activeMemberTab, "alamat3", e.target.value)}
-                              placeholder="Contoh: Kuala Lumpur"
+                              placeholder=" Kuala Lumpur"
                               className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
                             />
                           </div>
@@ -1759,7 +1860,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                     required
                                     value={warisData.telefonWaris}
                                     onChange={(e) => setWarisData({ ...warisData, telefonWaris: e.target.value })}
-                                    placeholder="Contoh: 012-3456789"
+                                    placeholder=" 012-3456789"
                                     className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                                   />
                                 </div>
