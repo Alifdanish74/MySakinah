@@ -28,14 +28,11 @@ export function OpeningCover() {
   useEffect(() => {
     if (visible && isOpen) {
       document.body.style.overflow = "hidden";
-      document.body.style.touchAction = "none";
     } else {
       document.body.style.overflow = "";
-      document.body.style.touchAction = "";
     }
     return () => {
       document.body.style.overflow = "";
-      document.body.style.touchAction = "";
     };
   }, [visible, isOpen]);
 
@@ -63,7 +60,7 @@ export function OpeningCover() {
           animate={isOpen ? "open" : "closed"}
           variants={entranceVariants}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-[9999] flex h-dvh w-screen flex-col items-center justify-center overflow-hidden px-4 text-center touch-none overscroll-none"
+          className="fixed inset-0 z-[9999] flex h-dvh w-screen flex-col items-center justify-center overflow-y-auto px-4 text-center overscroll-none"
           role="dialog"
           aria-modal="true"
           aria-label="Selamat datang ke Albarzah"
@@ -90,7 +87,7 @@ export function OpeningCover() {
           />
 
           {/* Central Content */}
-          <div className="relative z-10 flex w-full max-w-[340px] xs:max-w-[370px] sm:max-w-[440px] md:max-w-[500px] flex-col items-center px-4 text-center my-auto py-4 sm:py-6">
+          <div className="relative z-10 flex w-full max-w-[340px] xs:max-w-[370px] sm:max-w-[440px] md:max-w-[500px] flex-col items-center px-4 text-center my-auto py-4 sm:py-6 pb-28 sm:pb-8">
 
             {/* Top Center Circle Profile Image */}
             <motion.div
@@ -115,7 +112,7 @@ export function OpeningCover() {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="text-lg xs:text-xl sm:text-2xl md:text-3xl font-black uppercase tracking-wide text-white drop-shadow"
             >
-              US HJ MOHD ZAINAL HJ KHAMIS
+              US HJ MOHD ZAINAL <br /> BIN HJ KHAMIS
             </motion.h2>
 
             {/* Subtitle */}
@@ -126,7 +123,7 @@ export function OpeningCover() {
               className="text-xs xs:text-sm sm:text-base font-semibold italic mb-2.5"
               style={{ color: "var(--color-brand-gold-light)" }}
             >
-              (ustaz jenazah songkok tinggi)
+              (Ustaz Jenazah Songkok Tinggi)
             </motion.p>
 
             {/* Companies */}
@@ -151,7 +148,7 @@ export function OpeningCover() {
                 <br />
                 MENGURUSKAN JENAZAH DAN
                 <br />
-                PENGENDALIAN KURSUS JENAZAH
+                KURSUS JENAZAH
               </h1>
             </motion.div>
 
@@ -160,13 +157,13 @@ export function OpeningCover() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.45 }}
-              className="w-full flex flex-col items-center gap-1.5 mb-5"
+              className="w-full mb-5"
             >
               <motion.button
                 onClick={handleClick}
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
-                className="flex w-full items-center justify-center gap-2 rounded-full py-3.5 px-6 text-base xs:text-lg sm:text-xl font-black shadow-2xl transition-all uppercase tracking-wider"
+                className="flex w-full flex-col items-center justify-center gap-0.5 rounded-full py-3 px-6 shadow-2xl transition-all"
                 style={{
                   background: "var(--color-brand-gold-light)",
                   color: "var(--color-brand-green-dark)",
@@ -176,16 +173,14 @@ export function OpeningCover() {
                 type="button"
                 aria-label="Terokai Sekarang"
               >
-                TEROKI SEKARANG
-                <ChevronDown className="h-6 w-6 xs:h-7 xs:w-7 animate-bounce stroke-[3]" aria-hidden="true" />
+                <div className="flex items-center justify-center gap-2 text-base xs:text-lg sm:text-xl font-black uppercase tracking-wider">
+                  <span>TEROKI SEKARANG</span>
+                  <ChevronDown className="h-5 w-5 xs:h-6 xs:w-6 animate-bounce stroke-[3]" aria-hidden="true" />
+                </div>
+                <span className="text-xs xs:text-sm font-semibold italic normal-case tracking-normal opacity-90">
+                  (tekan untuk mengetahui lebih lanjut)
+                </span>
               </motion.button>
-
-              <p
-                className="text-xs xs:text-sm font-semibold italic"
-                style={{ color: "rgba(255,255,255,0.85)" }}
-              >
-                (tekan untuk mengetahui lebih lanjut)
-              </p>
             </motion.div>
 
             {/* Footer / Motto section */}
@@ -199,7 +194,7 @@ export function OpeningCover() {
                 BANTUAN PERKHIDMATAN 24 JAM
               </p>
               <p className="text-sm xs:text-base sm:text-lg md:text-xl font-black italic tracking-widest text-amber-300 drop-shadow-md">
-                “ INGAT MATI 1 TUNTUTAN ”
+                “ INGAT! MATI ITU 1 TUNTUTAN ”
               </p>
             </motion.div>
           </div>

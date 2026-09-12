@@ -3,10 +3,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Volume2, VolumeX } from "lucide-react";
+import { cn } from "../lib/utils";
 
 export interface AudioPlayerProps {
   src?: string;
   songName?: string;
+  position?: "bottom-left" | "bottom-center";
+  className?: string;
 }
 
 const FALLBACK_SOURCES = [
@@ -19,6 +22,8 @@ const FALLBACK_SOURCES = [
 export function AudioPlayer({
   src = "/assets/Adventurous%20Travel%20Background%20Music%20%231.mp3",
   songName,
+  position = "bottom-left",
+  className,
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);
@@ -111,26 +116,47 @@ export function AudioPlayer({
     };
   }, [isPlaying]);
 
+  const isBottomCenter = position === "bottom-center";
+
   return (
     <div
-      className="audio-player-fixed-container pointer-events-auto"
+      className={cn(
+        "audio-player-fixed-container pointer-events-auto",
+        isBottomCenter ? "position-bottom-center" : "position-bottom-left",
+        className
+      )}
       style={{
         position: "fixed",
-        bottom: "5rem",
-        left: "1rem",
         zIndex: 999999,
       }}
     >
       <style>{`
+        .audio-player-fixed-container.position-bottom-left {
+          bottom: 5rem;
+          left: 1rem;
+        }
         @media (min-width: 640px) {
-          .audio-player-fixed-container {
+          .audio-player-fixed-container.position-bottom-left {
             left: 1.5rem !important;
           }
         }
         @media (min-width: 1024px) {
-          .audio-player-fixed-container {
+          .audio-player-fixed-container.position-bottom-left {
             bottom: 2rem !important;
             left: 2rem !important;
+          }
+        }
+
+        .audio-player-fixed-container.position-bottom-center {
+          bottom: 4.75rem;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        @media (min-width: 1024px) {
+          .audio-player-fixed-container.position-bottom-center {
+            bottom: 1.5rem !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
           }
         }
       `}</style>
