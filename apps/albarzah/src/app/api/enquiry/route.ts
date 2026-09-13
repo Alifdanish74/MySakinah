@@ -1,5 +1,6 @@
 // File: src/app/api/enquiry/route.ts — Albarzah
 import { enquirySchema } from "@/lib/validations";
+import { saveSubmissionToDatabase } from "@sakinah/ui";
 
 const MODULE_SLUG = "albarzah";
 
@@ -100,27 +101,31 @@ export async function POST(request: Request) {
       });
     }
 
-    // Store in Admin Dashboard System
-    const adminApiUrl = process.env.ADMIN_API_URL || "http://localhost:3005";
-    try {
-      for (const item of submissionsToPost) {
-        const res = await fetch(`${adminApiUrl}/api/submissions`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            module_slug: MODULE_SLUG,
-            submitted_by: item.submitted_by,
-            form_data: item.form_data,
-          }),
-        });
+    // Store in Admin Dashboard System & Supabase
+    let saveFailed = false;
+    let saveErrorMessage = "";
 
-        if (!res.ok) {
-          const errText = await res.text();
-          console.error(`[Albarzah Enquiry API] Error response from Admin API (${res.status}):`, errText);
-        }
+    for (const item of submissionsToPost) {
+      const saveRes = await saveSubmissionToDatabase({
+        module_slug: MODULE_SLUG,
+        submitted_by: item.submitted_by,
+        form_data: item.form_data,
+      });
+
+      if (!saveRes.success) {
+        saveFailed = true;
+        saveErrorMessage = saveRes.error || "Gagal menyimpan maklumat permohonan.";
       }
-    } catch (adminErr) {
-      console.warn("[Albarzah Enquiry API] Warning dispatching to Admin Dashboard:", adminErr);
+    }
+
+    if (saveFailed) {
+      return Response.json(
+        {
+          success: false,
+          error: saveErrorMessage,
+        },
+        { status: 500 }
+      );
     }
 
     return Response.json(
