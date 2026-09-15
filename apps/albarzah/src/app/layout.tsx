@@ -64,9 +64,9 @@ export const metadata: Metadata = {
     locale: "ms_MY",
     url: "/",
     siteName: "Albarzah",
-    title: "Albarzah — Skim Pengurusan Jenazah \"TANPA TUNAI\"",
+    title: "Albarzah — Perlindungan Khairat Kematian 24 JAM",
     description:
-      "Mahukan kami uruskan jenazah \"TANPA TUNAI\" atau keluarkan \"TUNAI\" pada hari kematian? Perlindungan khairat kematian 24 jam untuk sekeluarga.",
+      "Albarzah - Sedia membantu urus jenazah 24 jam kenapa tidak urus jenazah \"TANPA TUNAI\" pada hari kematian ",
     images: [
       {
         url: "/images/opening_background_desktop.png",
@@ -78,9 +78,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Albarzah — Skim Pengurusan Jenazah \"TANPA TUNAI\"",
+    title: "Albarzah — Perlindungan Khairat Kematian 24 JAM",
     description:
-      "Mahukan kami uruskan jenazah \"TANPA TUNAI\" atau keluarkan \"TUNAI\" pada hari kematian? Bantuan pengurusan jenazah 24 jam.",
+      "Albarzah - Sedia membantu urus jenazah 24 jam kenapa tidak urus jenazah \"TANPA TUNAI\" pada hari kematian ",
     images: ["/images/opening_background_desktop.png"],
   },
 };

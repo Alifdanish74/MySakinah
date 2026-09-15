@@ -27,7 +27,7 @@ export function HeroSection() {
       className="hero-bg relative min-h-[92dvh] overflow-hidden flex items-center justify-center py-24 lg:py-20"
       style={
         {
-          "--hero-bg-image": "url('/images/albarzah_hero_bg.png')",
+          "--hero-bg-image": "url('/images/albarzah_hero_bg2.png')",
         } as React.CSSProperties
       }
     >

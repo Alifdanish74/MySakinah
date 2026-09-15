@@ -69,10 +69,10 @@ export function OpeningCover() {
           <picture className="absolute inset-0 z-0 h-full w-full">
             <source
               media="(min-width: 768px)"
-              srcSet="/images/albarzah_hero_bg.png"
+              srcSet="/images/albarzah_hero_bg2.png"
             />
             <img
-              src="/images/albarzah_hero_bg.png"
+              src="/images/albarzah_hero_bg2.png"
               alt=""
               className="h-full w-full object-cover object-center"
               aria-hidden="true"
@@ -194,7 +194,7 @@ export function OpeningCover() {
                 BANTUAN PERKHIDMATAN 24 JAM
               </p>
               <p className="text-sm xs:text-base sm:text-lg md:text-xl font-black italic tracking-widest text-amber-300 drop-shadow-md">
-                “ INGAT! MATI ITU 1 TUNTUTAN ”
+                “ INGAT MATI ITU 1 TUNTUTAN ”
               </p>
             </motion.div>
           </div>
