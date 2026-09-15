@@ -41,9 +41,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://albarzah.mysakinah.com"
   ),
-  title: "Albarzah — Skim Pengurusan Jenazah \"TANPA TUNAI\" 24 Jam",
+  title: "Albarzah — Perlindungan Khairat Kematian 24 JAM",
   description:
-    "Mahukan kami uruskan jenazah \"TANPA TUNAI\" atau keluarkan \"TUNAI\" pada hari kematian? Bantuan pengurusan jenazah lengkap 24 jam & khairat kematian untuk semua warganegara Malaysia. Serendah RM80 setahun.",
+    "Albarzah - Sedia membantu urus jenazah 24 jam kenapa tidak urus jenazah \"TANPA TUNAI\" pada hari kematian ",
   keywords: [
     "albarzah",
     "skim jenazah",
