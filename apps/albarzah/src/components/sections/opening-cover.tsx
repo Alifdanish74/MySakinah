@@ -146,9 +146,9 @@ export function OpeningCover() {
               <h1 className="text-base xs:text-lg sm:text-xl md:text-2xl font-black uppercase leading-snug tracking-wide text-white drop-shadow-lg">
                 LEBIH 30 TAHUN BERPENGALAMAN
                 <br />
-                MENGURUSKAN JENAZAH DAN
+                MENGURUSKAN JENAZAH
                 <br />
-                KURSUS JENAZAH
+                DAN KURSUS JENAZAH
               </h1>
             </motion.div>
 
