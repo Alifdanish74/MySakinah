@@ -9,12 +9,11 @@ import { SectionHeading } from "@sakinah/ui";
 import { OrnamentalDivider } from "@sakinah/ui";
 
 const syaratPenyertaan = [
-  "Keahlian adalah terbuka kepada semua ahli Koperasi Hasil Dalam Negeri Malaysia Berhad / KRTB dan kakitangan Lembaga Hasil Dalam Negeri (LHDN) yang berkhidmat di seluruh Malaysia (semua bangsa & agama).",
+  "Keahlian adalah terbuka kepada semua ahli Koperasi Rakan TEKUN Berhad (KRTB) dan semua kakitangan TEKUN Nasional (semua bangsa & agama).",
   "Tiada pemeriksaan / laporan kesihatan diperlukan untuk mendaftar pakej ini.",
   "Terdapat 3 Pakej Individu dan 3 Pakej Keluarga yang boleh didaftarkan untuk mereka yang berumur 16 tahun ke atas. Pakej Keluarga meliputi perlindungan kepada ahli, pasangan dan anak-anak (jumlah anak mengikut kategori pakej).",
   "Pihak peserta juga boleh menambah pendaftaran untuk anak (luar dari pakej keluarga) yang berumur 16 tahun ke atas dan ibu bapa sebagai peserta tambahan. Ahli wajib mendaftar diri sendiri terlebih dahulu.",
   "Pakej Individu 20 dan Keluarga 40 hanya terbuka / boleh didaftarkan kepada mereka yang berumur bawah 60 tahun sahaja pada hari/tarikh daftar. Ibu bapa yang berumur 60 tahun ke atas pada hari/tarikh daftar tidak boleh didaftarkan pakej ini.",
-  "Untuk bukan ahli KRTB: tambahan caj proses pentadbiran RM1 sebulan akan dikenakan pada pemotong gaji utama. Contoh: En Ali mendaftar pakej keluarga 20 sebulan dan pakej Individu 10 untuk Ibu. Jumlah potongan gaji adalah RM20 + RM10 + RM1 = RM31 sebulan.",
   "Tempoh perlindungan untuk peserta dewasa pakej Individu dan keluarga adalah sehingga tamat perkhidmatan / berhenti mencarum manakala untuk peserta tambahan / ibu bapa adalah bersama tempoh perkhidmatan peserta utama / berhenti mencarum / sehingga berumur 70 tahun.",
   "Tempoh perlindungan untuk anak-anak (dalam pakej keluarga sahaja) pula adalah pada ketika mereka berumur 1 tahun sehingga 17 tahun. Perlindungan adalah untuk anak-anak yang telah didaftarkan sahaja.",
   "Perlindungan bermula selepas 30 hari dari tarikh 01 / 15hb terdekat selepas pengesahan bayaran potongan gaji di KRTB dan BJSB.",

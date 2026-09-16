@@ -91,7 +91,7 @@ const individuPackages: PackageDetail[] = [
     coverage: "Ahli Sahaja",
     recommended: true,
     summaryBenefits: [
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,5000",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,500",
       "Wang Khairat Kepada Waris: RM4,820",
       "Dana Kemalangan Diri: RM10,000",
       "Jumlah Manfaat Kematian Biasa: RM7,000",
@@ -556,7 +556,6 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   const [warisData, setWarisData] = useState({
     namaWaris: "",
     telefonWaris: "",
-    statusKeahlian: "ahli" as "ahli" | "bukan_ahli",
   });
 
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -678,7 +677,6 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     setWarisData({
       namaWaris: "",
       telefonWaris: "",
-      statusKeahlian: "ahli",
     });
     onPackageSelect?.(pkg.name);
   };
@@ -863,7 +861,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
           negeri: ahli.negeri,
           namaWaris: warisData.namaWaris,
           telefonWaris: warisData.telefonWaris,
-          statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
+          statusKeahlian: "Ahli",
           pakej: selectedFormPackage?.name || "INDIVIDU 10",
           persetujuan: true,
           members: membersData,
@@ -1516,7 +1514,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed space-y-2">
                             <p>
-                              Saya (dan keluarga saya jika pakej keluarga / jika ada tambahan) dengan ini mengemukakan permohonan untuk mendaftar sebagai ahli Skim Khairat Kohasil Raudhah. Saya juga memperakui semua maklumat yang diberikan adalah benar dan saya juga telah membaca dan memahami serta bersetuju untuk mematuhi semua terma dan syarat Skim Khairat ini. Saya dengan fikiran waras dan tanpa paksaan mana – mana pihak dengan ini bersetuju untuk menyertai Skim Khairat ini dengan jumlah potongan gaji bulanan sebanyak <strong className="text-green-950 font-extrabold text-sm sm:text-base border-b-2 border-green-800">RM{getCalculatedMonthlyFee() + (warisData.statusKeahlian === "bukan_ahli" ? 1 : 0)}</strong> sebulan.
+                              Saya (dan keluarga saya jika pakej keluarga / jika ada tambahan) dengan ini mengemukakan permohonan untuk mendaftar sebagai ahli Skim Khairat KRTB Care. Saya juga memperakui semua maklumat yang diberikan adalah benar dan saya juga telah membaca dan memahami serta bersetuju untuk mematuhi semua terma dan syarat Skim Khairat ini. Saya dengan fikiran waras dan tanpa paksaan mana – mana pihak dengan ini bersetuju untuk menyertai Skim Khairat ini dengan jumlah potongan gaji bulanan sebanyak <strong className="text-green-950 font-extrabold text-sm sm:text-base border-b-2 border-green-800">RM{getCalculatedMonthlyFee()}</strong> sebulan.
                             </p>
                           </div>
 
@@ -1527,9 +1525,6 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                 Nota Tanggungan Tambahan: Setiap tambahan 1 orang tanggungan dikenakan caj RM10/sebulan (Maksimum 5 orang). Jumlah tanggungan tambahan: {additionalDependents.length} orang (+RM{additionalDependents.length * 10}/sebulan).
                               </p>
                             )}
-                            <p className="font-bold text-red-800 leading-snug">
-                              Penting : Untuk Bukan Ahli Kohasil, Caj Tambahan sebanyak RM1 akan dikenakan untuk setiap potongan gaji bulanan. Contoh Pakej Keluarga 20 + Ibu Individu 10 : Potongan Bulanan adalah RM30 + RM1 = RM31 sebulan
-                            </p>
                             <p className="font-semibold text-red-700 leading-snug">
                               Jika pakej keluarga , Sila hubungi kami untuk menambah nama anak jika mendapat anak baharu (apabila berumur 1 tahun) bagi memenuhi kuota pakej keluarga tersebut.Tertakluk kepada kategori pakej keluarga
                             </p>
@@ -1866,35 +1861,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               </div>
                             </div>
 
-                            <div className="pt-2 border-t border-slate-200">
-                              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Ahli / Bukan Ahli <span className="text-red-500">*</span>
-                              </label>
-                              <div className="grid grid-cols-2 gap-3">
-                                <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "ahli" ? "border-green-800 bg-green-50 text-green-900" : "border-slate-200 text-slate-600"}`}>
-                                  <input
-                                    type="radio"
-                                    name="statusKeahlian"
-                                    value="ahli"
-                                    checked={warisData.statusKeahlian === "ahli"}
-                                    onChange={() => setWarisData({ ...warisData, statusKeahlian: "ahli" })}
-                                    className="accent-green-800"
-                                  />
-                                  Ahli
-                                </label>
-                                <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "bukan_ahli" ? "border-green-800 bg-green-50 text-green-900" : "border-slate-200 text-slate-600"}`}>
-                                  <input
-                                    type="radio"
-                                    name="statusKeahlian"
-                                    value="bukan_ahli"
-                                    checked={warisData.statusKeahlian === "bukan_ahli"}
-                                    onChange={() => setWarisData({ ...warisData, statusKeahlian: "bukan_ahli" })}
-                                    className="accent-green-800"
-                                  />
-                                  Bukan Ahli
-                                </label>
-                              </div>
-                            </div>
+
                           </>
                         )}
 

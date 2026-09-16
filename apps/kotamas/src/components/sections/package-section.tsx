@@ -91,7 +91,7 @@ const individuPackages: PackageDetail[] = [
     coverage: "Ahli Sahaja",
     recommended: true,
     summaryBenefits: [
-      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,5000",
+      "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,500",
       "Wang Khairat Kepada Waris: RM4,820",
       "Dana Kemalangan Diri: RM10,000",
       "Jumlah Manfaat Kematian Biasa: RM7,000",

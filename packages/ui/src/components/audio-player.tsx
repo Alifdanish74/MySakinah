@@ -32,6 +32,7 @@ export function AudioPlayer({
 
   useEffect(() => {
     setCurrentSrc(src);
+    fallbackIndexRef.current = 0;
   }, [src]);
 
   const togglePlay = () => {
@@ -49,11 +50,12 @@ export function AudioPlayer({
   };
 
   const handleAudioError = () => {
-    if (fallbackIndexRef.current < FALLBACK_SOURCES.length) {
+    while (fallbackIndexRef.current < FALLBACK_SOURCES.length) {
       const nextSrc = FALLBACK_SOURCES[fallbackIndexRef.current];
       fallbackIndexRef.current += 1;
       if (nextSrc !== currentSrc) {
         setCurrentSrc(nextSrc);
+        break;
       }
     }
   };
@@ -183,8 +185,8 @@ export function AudioPlayer({
           boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
         }}
         type="button"
-        aria-label={isPlaying ? "Jeda Muzik Latar" : "Mainkan Muzik Latar"}
-        title={isPlaying ? "Jeda Muzik Latar" : "Mainkan Muzik Latar"}
+        aria-label={isPlaying ? "Henti Muzik Latar" : "Mainkan Muzik Latar"}
+        title={isPlaying ? "Henti Muzik Latar" : "Mainkan Muzik Latar"}
       >
         <div
           className="flex h-6 w-6 items-center justify-center rounded-full shrink-0"

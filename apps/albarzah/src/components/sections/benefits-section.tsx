@@ -1,207 +1,344 @@
 "use client";
 // File: src/components/sections/benefits-section.tsx — Albarzah
+// Per-pakej benefit breakdown with tab selector (RM80 | RM120 | RM180 | RM240)
 
-import { motion } from "framer-motion";
-import {
-  ShieldCheck,
-  Heart,
-  Clock,
-  FileCheck2,
-  Wallet,
-  CheckCircle2,
-  Sparkles,
-  Users,
-} from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ShieldCheck, Zap, ArrowRight } from "lucide-react";
 import { SECTION_IDS } from "@/lib/constants";
+import { packages } from "@/data/packages";
 import { ResponsiveContainer } from "@sakinah/ui";
 import { SectionHeading } from "@sakinah/ui";
 import { OrnamentalDivider } from "@sakinah/ui";
 import { staggerContainer, cardReveal, viewportOnce } from "@sakinah/ui";
 
-const keistimewaan = [
-  {
-    icon: ShieldCheck,
-    title: "Perlindungan Komprehensif",
-    description: "Manfaat kematian sehingga RM10,000 termasuk perlindungan tambahan kemalangan.",
-  },
-  {
-    icon: Heart,
-    title: "Harga Mampu Milik",
-    description: "Serendah RM80 setahun — bersamaan kurang daripada 22 sen sehari.",
-  },
-  {
-    icon: Clock,
-    title: "Perlindungan Hingga 75 Tahun",
-    description: "Tempoh perlindungan yang panjang — boleh diperbaharui sehingga umur 75 tahun.",
-  },
-  {
-    icon: FileCheck2,
-    title: "Tanpa Laporan Kesihatan",
-    description: "Tiada pemeriksaan kesihatan diperlukan. Pendaftaran mudah dan pantas.",
-  },
-  {
-    icon: Wallet,
-    title: "Bantuan Tunai Segera",
-    description: "Bantuan tunai khairat kematian dibayar dalam tempoh 24 jam hingga 180 hari.",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Kelengkapan Disediakan",
-    description: "Semua kelengkapan pengurusan jenazah akan disediakan sepenuhnya pada hari kejadian.",
-  },
-  {
-    icon: Sparkles,
-    title: "Bebas Risau Kos",
-    description: "Waris tidak perlu risau akan kos terlibat — semuanya ditanggung oleh Albarzah.",
-  },
-  {
-    icon: Users,
-    title: "Terbuka Non-Muslim",
-    description: "Terbuka kepada bukan Muslim — bantuan tunai kematian 24 jam disediakan.",
-  },
-];
+// Tab labels mapped to plan IDs
+const TABS = packages.map((pkg) => ({
+  id: pkg.id,
+  label: `RM${pkg.yearlyFee}`,
+  subLabel: pkg.dailyRate + "/hari",
+  recommended: pkg.recommended,
+}));
 
 export function BenefitsSection() {
+  const [activeTab, setActiveTab] = useState(packages[0].id);
+
+  const activePkg = packages.find((p) => p.id === activeTab) ?? packages[0];
+
   return (
     <section
       id={SECTION_IDS.manfaat}
-      aria-label="Keistimewaan Albarzah"
+      aria-label="Manfaat Pakej Albarzah"
       className="section-texture py-16 lg:py-24"
       style={{ background: "var(--color-brand-cream)" }}
     >
       <ResponsiveContainer>
         <SectionHeading
-          eyebrow="Keistimewaan Skim"
-          title="Satu Pelan, Perlindungan Menyeluruh"
-          subtitle="Nikmati keistimewaan skim khairat kematian yang direka khas untuk orang awam — mudah, mampu milik, dan menyeluruh."
-          className="mb-12"
+          eyebrow="MANFAAT PAKEJ INDIVIDU"
+          title="Butiran Manfaat Perlindungan Mengikut Pakej"
+          subtitle="Semak senarai penuh manfaat bagi Meninggal Biasa dan Berlaku Kemalangan untuk setiap pakej."
+          className="mb-10"
         />
 
-        {/* 8 Benefits Grid */}
+        {/* ── Plan Tab Selector ─────────────────────────────────────── */}
         <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-16"
-        >
-          {keistimewaan.map((item, idx) => {
-            const IconComp = item.icon;
-            return (
-              <motion.div
-                key={idx}
-                variants={cardReveal}
-                whileHover={{ y: -4, scale: 1.01 }}
-                transition={{ duration: 0.3 }}
-                className="flex flex-col gap-3.5 rounded-2xl p-6 border shadow-sm transition-all duration-300"
-                style={{
-                  background: "#fff",
-                  borderColor: "var(--color-brand-border)",
-                }}
-              >
-                <div
-                  className="flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-sm"
-                  style={{ background: "var(--color-brand-green)" }}
-                >
-                  <IconComp className="h-6 w-6" aria-hidden="true" />
-                </div>
-                <div>
-                  <h3
-                    className="text-base font-bold mb-1.5 leading-snug"
-                    style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green)" }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    {item.description}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
-
-        {/* Family coverage highlight */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: -12 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
-          transition={{ duration: 0.7 }}
-          className="overflow-hidden rounded-3xl border shadow-lg"
-          style={{
-            background: "#fff",
-            borderColor: "var(--color-brand-border)",
-          }}
+          transition={{ duration: 0.5 }}
+          className="flex justify-center mb-10"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-12 items-center">
-            {/* Decorative panel */}
-            <div
-              className="relative flex h-64 sm:h-80 lg:h-full lg:col-span-5 min-h-[280px] items-center justify-center"
-              style={{ background: "var(--color-brand-green)" }}
-            >
-              <div className="text-center px-8">
-                <div className="mb-4 flex justify-center">
-                  <Users className="h-20 w-20 text-white/30" aria-hidden="true" />
-                </div>
-                <p className="text-white/60 text-sm font-semibold uppercase tracking-wider mb-2">
-                  Pelan Premium
-                </p>
-                <p className="text-white text-xl font-bold leading-snug" style={{ fontFamily: "var(--font-heading)" }}>
-                  Perlindungan Untuk<br />Seluruh Keluarga
-                </p>
-              </div>
-              <div
-                className="absolute bottom-4 left-4 right-4 rounded-xl p-3 backdrop-blur-md text-white border"
-                style={{ background: "rgba(0,0,0,0.35)", borderColor: "rgba(255,255,255,0.15)" }}
-              >
-                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--color-brand-gold-light)" }}>
-                  Kasih Sayang Keluarga
-                </p>
-                <p className="text-sm font-bold">
-                  Pastikan Kebajikan Jenazah Keluarga Terjaga
-                </p>
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-8 sm:p-10 lg:col-span-7 flex flex-col justify-between">
-              <div>
-                <span
-                  className="inline-block rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider mb-3"
-                  style={{ background: "rgba(0,71,60,0.1)", color: "var(--color-brand-green)" }}
+          <div
+            className="inline-flex rounded-2xl p-1.5 gap-1"
+            style={{
+              background: "#fff",
+              border: "1.5px solid var(--color-brand-border)",
+            }}
+            role="tablist"
+            aria-label="Pilih pakej"
+          >
+            {TABS.map((tab) => {
+              const isActive = tab.id === activeTab;
+              return (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  aria-controls={`tabpanel-${tab.id}`}
+                  id={`tab-${tab.id}`}
+                  onClick={() => setActiveTab(tab.id)}
+                  type="button"
+                  className="relative flex flex-col items-center justify-center rounded-xl px-4 py-2.5 transition-all duration-250 cursor-pointer min-w-[72px]"
+                  style={
+                    isActive
+                      ? {
+                          background: "var(--color-brand-green)",
+                          color: "#fff",
+                        }
+                      : {
+                          background: "transparent",
+                          color: "var(--color-brand-text-muted)",
+                        }
+                  }
                 >
-                  Pelan Premium — RM120/Tahun
-                </span>
-                <h3
-                  className="text-2xl sm:text-3xl font-bold mb-4"
-                  style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green)" }}
-                >
-                  Keistimewaan Perlindungan Keluarga
-                </h3>
-
-                <div
-                  className="mb-6 inline-flex items-center gap-3 rounded-2xl px-5 py-3 border shadow-sm"
-                  style={{
-                    background: "var(--color-brand-sage-soft)",
-                    borderColor: "var(--color-brand-gold)",
-                  }}
-                >
-                  <span className="text-lg sm:text-xl font-extrabold text-green-900">
-                    RM120.00 Setahun
+                  {tab.recommended && (
+                    <span
+                      className="absolute -top-2 -right-1 text-[9px] font-black rounded-full px-1.5 py-0.5 leading-none"
+                      style={{
+                        background: "var(--color-brand-gold-light)",
+                        color: "var(--color-brand-green-dark)",
+                      }}
+                    >
+                      TERBAIK
+                    </span>
+                  )}
+                  <span className="text-sm font-black leading-none">
+                    {tab.label}
                   </span>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--color-brand-gold-light)", color: "var(--color-brand-green-dark)" }}>
-                    Nilai Terbaik
+                  <span
+                    className="text-[10px] font-semibold mt-0.5 opacity-70"
+                  >
+                    {tab.subLabel}
                   </span>
-                </div>
-
-                <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
-                  Dengan Pelan Premium, anda mendapat perlindungan untuk pasangan (RM5,000) dan setiap anak sehingga 4 orang (RM1,000 setiap seorang). Pengurusan jenazah penuh juga disertakan untuk peserta dan pasangan — <strong>sehingga umur 75 tahun</strong>.
-                </p>
-              </div>
-            </div>
+                </button>
+              );
+            })}
           </div>
         </motion.div>
 
+        {/* ── Benefits Panel ────────────────────────────────────────── */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            id={`tabpanel-${activeTab}`}
+            role="tabpanel"
+            aria-labelledby={`tab-${activeTab}`}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+          >
+            {activePkg.benefitGroups.map((group, gi) => {
+              const isAccident = gi === 1; // second group = kemalangan
+              return (
+                <div
+                  key={group.label}
+                  className="rounded-2xl overflow-hidden border"
+                  style={{
+                    borderColor: isAccident
+                      ? "var(--color-brand-gold)"
+                      : "var(--color-brand-border)",
+                    background: "#fff",
+                    boxShadow: "0 4px 24px rgba(0,71,60,0.06)",
+                  }}
+                >
+                  {/* Group header */}
+                  <div
+                    className="flex items-center gap-3 px-6 py-4"
+                    style={{
+                      background: isAccident
+                        ? "var(--color-brand-green)"
+                        : "var(--color-brand-green-dark)",
+                    }}
+                  >
+                    <div
+                      className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0"
+                      style={{ background: "rgba(255,255,255,0.12)" }}
+                    >
+                      {isAccident ? (
+                        <Zap
+                          className="h-4 w-4 text-white"
+                          aria-hidden="true"
+                        />
+                      ) : (
+                        <ShieldCheck
+                          className="h-4 w-4 text-white"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </div>
+                    <h3
+                      className="text-sm font-bold text-white uppercase tracking-wider"
+                      style={{ fontFamily: "var(--font-heading)" }}
+                    >
+                      {group.label}
+                    </h3>
+                  </div>
+
+                  {/* Benefit items */}
+                  <div className="divide-y" style={{ borderColor: "var(--color-brand-border)" }}>
+                    {group.items.map((item, ii) => (
+                      <motion.div
+                        key={item.no}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: ii * 0.06 }}
+                        className="flex items-start gap-4 px-5 py-4"
+                      >
+                        {/* Number badge */}
+                        <span
+                          className="flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
+                          style={{
+                            background: isAccident
+                              ? "rgba(243,182,1,0.15)"
+                              : "rgba(0,71,60,0.1)",
+                            color: isAccident
+                              ? "var(--color-brand-gold)"
+                              : "var(--color-brand-green)",
+                          }}
+                        >
+                          {item.no}
+                        </span>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0">
+                          <p
+                            className="text-sm font-semibold leading-snug"
+                            style={{ color: "var(--color-brand-text)" }}
+                          >
+                            {item.label}
+                          </p>
+                          {(item.timeline || item.detail) && (
+                            <div className="mt-1 flex flex-wrap gap-1.5">
+                              {item.timeline && (
+                                <span
+                                  className="text-[11px] font-semibold rounded-full px-2 py-0.5"
+                                  style={{
+                                    background: isAccident
+                                      ? "rgba(243,182,1,0.12)"
+                                      : "var(--color-brand-sage-soft)",
+                                    color: isAccident
+                                      ? "var(--color-brand-gold)"
+                                      : "var(--color-brand-green)",
+                                  }}
+                                >
+                                  {item.timeline}
+                                </span>
+                              )}
+                              {item.detail && (
+                                <span
+                                  className="text-[11px] text-slate-400 font-medium"
+                                >
+                                  {item.detail}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Value */}
+                        <span
+                          className="flex-shrink-0 text-base font-black tabular-nums"
+                          style={{
+                            color: isAccident
+                              ? "var(--color-brand-gold)"
+                              : "var(--color-brand-green)",
+                          }}
+                        >
+                          {item.value}
+                        </span>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Group subtotal */}
+                  {group.total && (
+                    <div
+                      className="flex items-center justify-between px-5 py-3"
+                      style={{
+                        background: isAccident
+                          ? "rgba(243,182,1,0.06)"
+                          : "var(--color-brand-sage-soft)",
+                        borderTop: `1px solid ${isAccident ? "rgba(243,182,1,0.2)" : "var(--color-brand-border)"}`,
+                      }}
+                    >
+                      <p
+                        className="text-xs font-bold uppercase tracking-wider"
+                        style={{
+                          color: isAccident
+                            ? "var(--color-brand-gold)"
+                            : "var(--color-brand-text-muted)",
+                        }}
+                      >
+                        Jumlah {group.label}
+                      </p>
+                      <p
+                        className="text-base font-black tabular-nums"
+                        style={{
+                          color: isAccident
+                            ? "var(--color-brand-gold)"
+                            : "var(--color-brand-green-dark)",
+                        }}
+                      >
+                        {group.total}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* ── Grand Total + CTA ────────────────────────────────────── */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`total-${activeTab}`}
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.22 }}
+            className="max-w-2xl mx-auto"
+          >
+            <div
+              className="flex flex-col sm:flex-row items-center justify-between gap-5 rounded-2xl px-8 py-6"
+              style={{
+                background: "var(--color-brand-green)",
+                border: "2px solid var(--color-brand-gold-light)",
+                boxShadow: "0 12px 40px rgba(0,71,60,0.22)",
+              }}
+            >
+              <div>
+                <p
+                  className="text-xs font-bold uppercase tracking-wider mb-1"
+                  style={{ color: "rgba(255,255,255,0.6)" }}
+                >
+                  Jumlah Keseluruhan Manfaat
+                </p>
+                <p
+                  className="text-4xl font-black text-white tabular-nums"
+                  style={{ fontFamily: "var(--font-heading)" }}
+                >
+                  {activePkg.totalManfaat}
+                </p>
+                <p
+                  className="text-sm mt-1"
+                  style={{ color: "rgba(255,255,255,0.65)" }}
+                >
+                  untuk Pakej {activePkg.name}
+                </p>
+              </div>
+
+              <motion.a
+                href={`#${SECTION_IDS.hubungi}`}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold flex-shrink-0 cursor-pointer"
+                style={{
+                  background: "var(--color-brand-gold-light)",
+                  color: "var(--color-brand-green-dark)",
+                }}
+                aria-label={`Daftar pakej ${activePkg.name}`}
+              >
+                Daftar Sekarang
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </motion.a>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Ornamental divider */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}

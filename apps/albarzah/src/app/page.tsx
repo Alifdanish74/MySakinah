@@ -1,44 +1,41 @@
 "use client";
-// File: src/app/page.tsx — Albarzah
+// File: src/app/page.tsx — Albarzah Digital Pamphlet
 
-import { useState } from "react";
 import { HeroSection } from "@/components/sections/hero-section";
-import { IntroductionSection } from "@/components/sections/introduction-section";
-import { BenefitsSection } from "@/components/sections/benefits-section";
+import { PamphletProfileSection } from "@/components/sections/pamphlet-profile-section";
+import { PamphletServicesSection } from "@/components/sections/pamphlet-services-section";
+import { PamphletNasihatSection } from "@/components/sections/pamphlet-nasihat-section";
 import { PackageSection } from "@/components/sections/package-section";
-import { AssistanceProcessSection } from "@/components/sections/assistance-process-section";
-import { ImpactSection } from "@/components/sections/impact-section";
-import { FaqSection } from "@/components/sections/faq-section";
+import { BenefitsSection } from "@/components/sections/benefits-section";
 import { ContactSection } from "@/components/sections/contact-section";
+import { FaqSection } from "@/components/sections/faq-section";
 
 export default function Home() {
-  const [selectedPackage, setSelectedPackage] = useState<string>("");
-
   return (
     <>
-      {/* ── Section 1: Hero ─────────────────────────────────────── */}
+      {/* ── 1. Hero & Point 7 (Jom Kita Berdakwah & Talian Hotline) ───────── */}
       <HeroSection />
 
-      {/* ── Section 2: Introduction ─────────────────────────────── */}
-      <IntroductionSection />
+      {/* ── 2. Point 3 & 4 (Profil Pengasas & Urus Jenazah Tanpa Tunai) ────── */}
+      <PamphletProfileSection />
 
-      {/* ── Section 3: Benefits ─────────────────────────────────── */}
+      {/* ── 3. Point 5 (8 Perkhidmatan Lengkap & Pelengkap Khairat) ───────── */}
+      <PamphletServicesSection />
+
+      {/* ── 4. Point 6 (Nasihat Ustaz, Pantun & Mutiara Kata) ─────────────── */}
+      <PamphletNasihatSection />
+
+      {/* ── 5. Points 8–11 Cards & Point 12 Borang Permohonan Modal ─────────── */}
+      <PackageSection />
+
+      {/* ── 6. Points 15 & 16 (Butiran Manfaat Pakej Individu Matrix) ───────── */}
       <BenefitsSection />
 
-      {/* ── Section 4: Package Selection (2 yearly plans) ──────── */}
-      <PackageSection onSelectPackage={setSelectedPackage} />
+      {/* ── 7. Point 7 Contact Info & Ibu Pejabat Bumijez ─────────────────── */}
+      <ContactSection />
 
-      {/* ── Section 5: 3-Step Registration Process ──────────────── */}
-      <AssistanceProcessSection />
-
-      {/* ── Section 6: Impact / Stats ───────────────────────────── */}
-      <ImpactSection />
-
-      {/* ── Section 7: FAQ ──────────────────────────────────────── */}
+      {/* ── 8. Soalan Lazim (FAQ) ─────────────────────────────────────────── */}
       <FaqSection />
-
-      {/* ── Section 8: Contact / Enquiry Form ───────────────────── */}
-      <ContactSection preselectedPackage={selectedPackage} />
     </>
   );
 }

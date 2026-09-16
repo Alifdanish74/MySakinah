@@ -112,7 +112,7 @@ const carouselItems = [
     id: "anak-universiti",
     tabLabel: "3. Anak 18 Tahun Keatas",
     badge: "Peserta Tambahan",
-    title: "Keistimewaan Untuk Anak Lebih 18 Tahun di Universiti",
+    title: "Keistimewaan Untuk Anak Lebih 18 Tahun",
     image: "/images/graduate_carousel.png",
     imageSubtitle: "Masa Depan & Pengajian",
     imageTitle: "Perlindungan Berterusan Anak Di IPT",
@@ -369,18 +369,20 @@ export function BenefitsSection() {
                     </p>
                   </div>
 
-                  <div
-                    className="flex items-start gap-3 rounded-xl p-4 border mt-auto"
-                    style={{
-                      background: "#fff9f0",
-                      borderColor: "#ffe3b3",
-                    }}
-                  >
-                    <AlertCircle className="h-5 w-5 flex-shrink-0 text-amber-600 mt-0.5" />
-                    <p className="text-xs sm:text-sm text-slate-700 font-medium">
-                      {currentItem.note}
-                    </p>
-                  </div>
+                  {currentItem.id !== "anak-universiti" && currentItem.note && (
+                    <div
+                      className="flex items-start gap-3 rounded-xl p-4 border mt-auto"
+                      style={{
+                        background: "#fff9f0",
+                        borderColor: "#ffe3b3",
+                      }}
+                    >
+                      <AlertCircle className="h-5 w-5 flex-shrink-0 text-amber-600 mt-0.5" />
+                      <p className="text-xs sm:text-sm text-slate-700 font-medium">
+                        {currentItem.note}
+                      </p>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
