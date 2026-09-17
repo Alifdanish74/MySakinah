@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/",
+      "destination": "https://www.mysakinahpro.my/"
+    },
+    {
       "source": "/kohasil/:path*",
       "destination": "https://sakinah-kohasil.vercel.app/kohasil/:path*"
     },
