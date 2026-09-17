@@ -5,28 +5,52 @@
       "destination": "https://www.mysakinahpro.my/"
     },
     {
-      "source": "/kohasil/:path*",
-      "destination": "https://sakinah-kohasil.vercel.app/kohasil/:path*"
+      "source": "/kohasil",
+      "destination": "https://koha-si-l-raudhah.vercel.app/kohasil"
     },
     {
-      "source": "/krtb/:path*",
-      "destination": "https://my-sakinah-krtb.vercel.app/krtb/:path*"
+      "source": "/kohasil/(.*)",
+      "destination": "https://koha-si-l-raudhah.vercel.app/kohasil/$1"
     },
     {
-      "source": "/kotamas/:path*",
-      "destination": "https://sakinah-kotamas.vercel.app/kotamas/:path*"
+      "source": "/krtb",
+      "destination": "https://my-sakinah-krtb.vercel.app/krtb"
     },
     {
-      "source": "/kopetro/:path*",
-      "destination": "https://sakinah-kopetro.vercel.app/kopetro/:path*"
+      "source": "/krtb/(.*)",
+      "destination": "https://my-sakinah-krtb.vercel.app/krtb/$1"
     },
     {
-      "source": "/albarzah/:path*",
-      "destination": "https://albarzah.vercel.app/albarzah/:path*"
+      "source": "/kotamas",
+      "destination": "https://kotamas-my-sakinah-pro.vercel.app/kotamas"
     },
     {
-      "source": "/membership_card/:path*",
-      "destination": "https://membership-card.vercel.app/membership_card/:path*"
+      "source": "/kotamas/(.*)",
+      "destination": "https://kotamas-my-sakinah-pro.vercel.app/kotamas/$1"
+    },
+    {
+      "source": "/kopetro",
+      "destination": "https://kopetro-my-sakinah-pro.vercel.app/kopetro"
+    },
+    {
+      "source": "/kopetro/(.*)",
+      "destination": "https://kopetro-my-sakinah-pro.vercel.app/kopetro/$1"
+    },
+    {
+      "source": "/albarzah",
+      "destination": "https://albarzah.vercel.app/albarzah"
+    },
+    {
+      "source": "/albarzah/(.*)",
+      "destination": "https://albarzah.vercel.app/albarzah/$1"
+    },
+    {
+      "source": "/membership_card",
+      "destination": "https://membership-card.vercel.app/membership_card"
+    },
+    {
+      "source": "/membership_card/(.*)",
+      "destination": "https://membership-card.vercel.app/membership_card/$1"
     }
   ]
 }
