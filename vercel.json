@@ -10,7 +10,7 @@
     },
     {
       "source": "/krtb/:path*",
-      "destination": "https://sakinah-krtb.vercel.app/krtb/:path*"
+      "destination": "https://my-sakinah-krtb.vercel.app/krtb/:path*"
     },
     {
       "source": "/kotamas/:path*",
@@ -22,11 +22,11 @@
     },
     {
       "source": "/albarzah/:path*",
-      "destination": "https://sakinah-albarzah.vercel.app/albarzah/:path*"
+      "destination": "https://albarzah.vercel.app/albarzah/:path*"
     },
     {
       "source": "/membership_card/:path*",
-      "destination": "https://sakinah-membership-card.vercel.app/membership_card/:path*"
+      "destination": "https://membership-card.vercel.app/membership_card/:path*"
     }
   ]
 }
