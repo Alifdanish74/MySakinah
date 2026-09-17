@@ -54,15 +54,23 @@
     },
     {
       "source": "/membership-card",
-      "destination": "https://membership-card.vercel.app/membership-card"
+      "destination": "https://membershipcard-dun.vercel.app/membership_card"
     },
     {
       "source": "/membership-card/(.*)",
-      "destination": "https://membership-card.vercel.app/membership-card/$1"
+      "destination": "https://membershipcard-dun.vercel.app/membership_card/$1"
+    },
+    {
+      "source": "/membership_card",
+      "destination": "https://membershipcard-dun.vercel.app/membership_card"
+    },
+    {
+      "source": "/membership_card/(.*)",
+      "destination": "https://membershipcard-dun.vercel.app/membership_card/$1"
     },
     {
       "source": "/api/lookup",
-      "destination": "https://membership-card.vercel.app/membership-card/api/lookup"
+      "destination": "https://membershipcard-dun.vercel.app/membership_card/api/lookup"
     },
     {
       "source": "/api/enquiry",
