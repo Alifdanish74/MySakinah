@@ -848,7 +848,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     };
 
     try {
-      const response = await fetch("/api/enquiry", {
+      const response = await fetch("/krtb/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

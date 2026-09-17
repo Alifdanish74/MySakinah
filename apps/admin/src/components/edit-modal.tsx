@@ -30,7 +30,7 @@ export function EditModal({ submission, onClose, onSaved }: EditModalProps) {
     setError(null);
 
     try {
-      const response = await fetch(`/api/submissions/${submission.id}`, {
+      const response = await fetch(`/admin/api/submissions/${submission.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

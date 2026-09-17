@@ -22,7 +22,7 @@ export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogPro
     setError(null);
 
     try {
-      const response = await fetch(`/api/submissions/${submission.id}`, {
+      const response = await fetch(`/admin/api/submissions/${submission.id}`, {
         method: "DELETE",
       });
 

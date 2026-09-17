@@ -46,7 +46,7 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
   const onSubmit = async (data: EnquiryFormData) => {
     setStatus("loading");
     try {
-      const response = await fetch("/api/enquiry", {
+      const response = await fetch("/kohasil/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

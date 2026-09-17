@@ -202,7 +202,7 @@ function BorangModal({ pakej, onClose }: BorangModalProps) {
     setErrMsg("");
     setStatus("loading");
     try {
-      const res = await fetch("/api/enquiry", {
+      const res = await fetch("/albarzah/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -6,11 +6,11 @@
     },
     {
       "source": "/admin",
-      "destination": "https://sakinah-admin.vercel.app/admin"
+      "destination": "https://mysakinah-admin.vercel.app/admin"
     },
     {
       "source": "/admin/(.*)",
-      "destination": "https://sakinah-admin.vercel.app/admin/$1"
+      "destination": "https://mysakinah-admin.vercel.app/admin/$1"
     },
     {
       "source": "/kohasil",
@@ -59,6 +59,22 @@
     {
       "source": "/membership_card/(.*)",
       "destination": "https://membership-card.vercel.app/membership_card/$1"
+    },
+    {
+      "source": "/membership-card",
+      "destination": "https://membership-card.vercel.app/membership_card"
+    },
+    {
+      "source": "/membership-card/(.*)",
+      "destination": "https://membership-card.vercel.app/membership_card/$1"
+    },
+    {
+      "source": "/api/lookup",
+      "destination": "https://membership-card.vercel.app/membership_card/api/lookup"
+    },
+    {
+      "source": "/api/enquiry",
+      "destination": "https://koha-si-l-raudhah.vercel.app/kohasil/api/enquiry"
     }
   ]
 }

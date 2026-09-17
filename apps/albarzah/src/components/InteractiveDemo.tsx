@@ -29,7 +29,7 @@ export function InteractiveDemo() {
   const fetchItems = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/items");
+      const res = await fetch("/albarzah/api/items");
       const json = await res.json();
       if (json.success) {
         setItems(json.data);
@@ -43,7 +43,7 @@ export function InteractiveDemo() {
 
   const fetchHealth = useCallback(async () => {
     try {
-      const res = await fetch("/api/health");
+      const res = await fetch("/albarzah/api/health");
       const json = await res.json();
       setHealth(json);
     } catch (error) {
@@ -69,7 +69,7 @@ export function InteractiveDemo() {
     if (!newItemName.trim()) return;
 
     try {
-      const res = await fetch("/api/items", {
+      const res = await fetch("/albarzah/api/items", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newItemName, category }),
