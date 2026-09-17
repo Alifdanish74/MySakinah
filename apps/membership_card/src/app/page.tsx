@@ -17,7 +17,7 @@ export default function MembershipCardPage() {
     setError(null);
 
     try {
-      const res = await fetch("/membership_card/api/lookup", {
+      const res = await fetch("/membership-card/api/lookup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ic }),

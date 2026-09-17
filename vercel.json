@@ -53,24 +53,16 @@
       "destination": "https://albarzah.vercel.app/albarzah/$1"
     },
     {
-      "source": "/membership_card",
-      "destination": "https://membership-card.vercel.app/membership_card"
-    },
-    {
-      "source": "/membership_card/(.*)",
-      "destination": "https://membership-card.vercel.app/membership_card/$1"
-    },
-    {
       "source": "/membership-card",
-      "destination": "https://membership-card.vercel.app/membership_card"
+      "destination": "https://membership-card.vercel.app/membership-card"
     },
     {
       "source": "/membership-card/(.*)",
-      "destination": "https://membership-card.vercel.app/membership_card/$1"
+      "destination": "https://membership-card.vercel.app/membership-card/$1"
     },
     {
       "source": "/api/lookup",
-      "destination": "https://membership-card.vercel.app/membership_card/api/lookup"
+      "destination": "https://membership-card.vercel.app/membership-card/api/lookup"
     },
     {
       "source": "/api/enquiry",

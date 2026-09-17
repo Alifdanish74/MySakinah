@@ -96,6 +96,7 @@ export async function saveSubmissionToDatabase({
           kotamas: { display_name: "KOTAMAS", icon: "star", color_from: "#7c3aed", color_to: "#4c1d95" },
           albarzah: { display_name: "Al-Barzah", icon: "moon", color_from: "#047857", color_to: "#064e3b" },
           membership_card: { display_name: "Kad Keahlian", icon: "credit-card", color_from: "#eab308", color_to: "#854d0e" },
+          "membership-card": { display_name: "Kad Keahlian", icon: "credit-card", color_from: "#eab308", color_to: "#854d0e" },
         };
 
         const meta = defaultNames[module_slug] || {
