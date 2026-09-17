@@ -39,7 +39,7 @@ export function Footer() {
         >
           <div className="mb-3 flex items-center justify-center gap-3">
             <img
-              src="/images/kopetro-logo.png"
+              src="/kopetro/images/kopetro-logo.png"
               alt="Logo KOPETRO"
               className="h-10 w-10 flex-shrink-0 rounded-lg object-contain bg-white/20 p-1"
               aria-hidden="true"

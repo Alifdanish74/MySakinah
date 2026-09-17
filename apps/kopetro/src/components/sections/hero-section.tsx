@@ -26,7 +26,7 @@ export function HeroSection() {
       className="hero-bg relative min-h-[92dvh] overflow-hidden flex items-center justify-center py-24 lg:py-20"
       style={
         {
-          "--hero-bg-image": "url('/images/opening_background_desktop.png')",
+          "--hero-bg-image": "url('/kopetro/images/opening_background_desktop.png')",
         } as React.CSSProperties
       }
     >
@@ -42,7 +42,7 @@ export function HeroSection() {
         }
         @media (max-width: 639px) {
           .hero-bg::before {
-            background-image: url('/images/opening_background.png') !important;
+            background-image: url('/kopetro/images/opening_background.png') !important;
           }
         }
       `}</style>

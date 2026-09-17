@@ -50,7 +50,7 @@ export function PamphletProfileSection() {
             <div className="relative flex-shrink-0">
               <div className="h-32 w-32 sm:h-40 sm:w-40 rounded-full p-1.5 bg-gradient-to-b from-amber-400 to-emerald-700 shadow-xl overflow-hidden">
                 <img
-                  src="/images/front_icon_ustaz.jpeg"
+                  src="/albarzah/images/front_icon_ustaz.jpeg"
                   alt="Us Hj Mohd Zainal Hj Khamis"
                   className="h-full w-full rounded-full object-cover"
                 />

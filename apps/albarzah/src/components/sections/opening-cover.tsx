@@ -69,10 +69,10 @@ export function OpeningCover() {
           <picture className="absolute inset-0 z-0 h-full w-full">
             <source
               media="(min-width: 768px)"
-              srcSet="/images/albarzah_hero_bg2.png"
+              srcSet="/albarzah/images/albarzah_hero_bg2.png"
             />
             <img
-              src="/images/albarzah_hero_bg2.png"
+              src="/albarzah/images/albarzah_hero_bg2.png"
               alt=""
               className="h-full w-full object-cover object-center"
               aria-hidden="true"
@@ -98,7 +98,7 @@ export function OpeningCover() {
             >
               <div className="relative h-28 w-28 xs:h-32 xs:w-32 sm:h-36 sm:w-36 md:h-40 md:w-40 rounded-full p-1.5 bg-gradient-to-b from-[var(--color-brand-gold-light,#f3b601)] to-amber-600 shadow-2xl">
                 <img
-                  src="/images/front_icon_ustaz.jpeg"
+                  src="/albarzah/images/front_icon_ustaz.jpeg"
                   alt="Us Hj Mohd Zainal Hj Khamis"
                   className="h-full w-full rounded-full object-cover border-2 border-white/30"
                 />

@@ -79,11 +79,11 @@ export function OpeningCover() {
             {/* Desktop: landscape image */}
             <source
               media="(min-width: 768px)"
-              srcSet="/images/opening_background_desktop.png"
+              srcSet="/kohasil/images/opening_background_desktop.png"
             />
             {/* Mobile default: portrait image */}
             <img
-              src="/images/opening_background.png"
+              src="/kohasil/images/opening_background.png"
               alt=""
               className="h-full w-full object-cover object-center"
               aria-hidden="true"
@@ -107,7 +107,7 @@ export function OpeningCover() {
               className="mb-2 sm:mb-3 lg:mb-4 rounded-xl sm:rounded-2xl bg-white p-2 sm:p-2.5 shadow-md border border-slate-100 flex items-center justify-center"
             >
               <img
-                src="/images/kohasil_logo.jpg"
+                src="/kohasil/images/kohasil_logo.jpg"
                 alt="Logo KOHASiL"
                 className="h-15 sm:h-15 lg:h-15 w-auto object-contain"
               />

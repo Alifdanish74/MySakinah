@@ -5,6 +5,14 @@
       "destination": "https://www.mysakinahpro.my/"
     },
     {
+      "source": "/admin",
+      "destination": "https://sakinah-admin.vercel.app/admin"
+    },
+    {
+      "source": "/admin/(.*)",
+      "destination": "https://sakinah-admin.vercel.app/admin/$1"
+    },
+    {
       "source": "/kohasil",
       "destination": "https://koha-si-l-raudhah.vercel.app/kohasil"
     },

@@ -79,16 +79,16 @@ export function OpeningCover() {
             {/* Desktop: landscape image */}
             <source
               media="(min-width: 1024px)"
-              srcSet="/images/opening_background_desktop.png"
+              srcSet="/kotamas/images/opening_background_desktop.png"
             />
             {/* Tablet: desktop image works fine */}
             <source
               media="(min-width: 640px)"
-              srcSet="/images/opening_background_desktop.png"
+              srcSet="/kotamas/images/opening_background_desktop.png"
             />
             {/* Mobile default: portrait image */}
             <img
-              src="/images/opening_background.png"
+              src="/kotamas/images/opening_background.png"
               alt=""
               className="h-full w-full object-cover"
               aria-hidden="true"
@@ -122,7 +122,7 @@ export function OpeningCover() {
                 className="mb-5 rounded-2xl bg-white p-3 shadow-md border border-slate-100 flex items-center justify-center"
               >
                 <img
-                  src="/images/logo_kotamas.png"
+                  src="/kotamas/images/logo_kotamas.png"
                   alt="Logo Kota Mas"
                   className="h-14 sm:h-16 w-auto object-contain"
                 />

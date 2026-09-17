@@ -26,7 +26,7 @@ export function Header() {
         >
           {/* Logo */}
           <img
-            src="/images/kopetro-logo.png"
+            src="/kopetro/images/kopetro-logo.png"
             alt="Logo KOPETRO"
             className="h-9 w-9 flex-shrink-0 rounded-lg object-contain"
             aria-hidden="true"
