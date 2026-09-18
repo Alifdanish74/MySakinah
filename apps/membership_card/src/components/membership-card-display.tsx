@@ -180,9 +180,8 @@ export function MembershipCardDisplay({ member }: MembershipCardDisplayProps) {
       {/* On-Screen Interactive 3D Card */}
       <div className="w-full max-w-[540px] perspective-1000 px-1 sm:px-0">
         <div
-          className={`relative w-full aspect-[85.6/54] rounded-2xl sm:rounded-3xl transform-style-3d cursor-pointer shadow-2xl transition-transform duration-700 ${
-            isFlipped ? "rotate-y-180" : ""
-          }`}
+          className={`relative w-full aspect-[85.6/54] rounded-2xl sm:rounded-3xl transform-style-3d cursor-pointer shadow-2xl transition-transform duration-700 ${isFlipped ? "rotate-y-180" : ""
+            }`}
           onClick={() => setIsFlipped(!isFlipped)}
         >
           {/* Front Side */}
@@ -204,7 +203,7 @@ export function MembershipCardDisplay({ member }: MembershipCardDisplayProps) {
         className="no-print inline-flex items-center gap-2 px-4 py-2 rounded-full bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium transition-colors"
       >
         <RotateCw className={`w-3.5 h-3.5 text-amber-400 transition-transform duration-500 ${isFlipped ? "rotate-180" : ""}`} />
-        <span>Klik Kad Untuk {isFlipped ? "Lihat Depan" : "Lihat Belakang (Waris & QR)"}</span>
+        <span>Klik Kad Untuk {isFlipped ? "Lihat Depan" : "Lihat Belakang"}</span>
       </button>
 
       {/* ========================================================================= */}

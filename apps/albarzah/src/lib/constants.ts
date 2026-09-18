@@ -22,4 +22,18 @@ export const SECTION_IDS = {
   impak: "impak",
   soalan: "soalan",
   hubungi: "hubungi",
+  // Pamphlet section point IDs (per client brief)
+  point3: "point-3",
+  point4: "point-4",
+  point5: "point-5",
+  point6: "point-6",
+  point7: "point-7",
+  point8: "point-8",
+  point9: "point-9",
+  point10: "point-10",
+  point11: "point-11",
+  point12: "point-12",
+  // Points 13 & 14 are intentionally omitted
+  point15: "point-15",
+  point16: "point-16",
 } as const;

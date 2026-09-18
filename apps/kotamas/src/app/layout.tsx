@@ -114,7 +114,7 @@ export default function RootLayout({
         <MobileBottomNavigation />
 
         {/* Floating Utilities */}
-        <AudioPlayer src="/assets/backgroundmusic.mp3" />
+        <AudioPlayer src="/kotamas/assets/backgroundmusic.mp3" />
         <ScrollToTop />
         <AutoScrollManager />
       </body>

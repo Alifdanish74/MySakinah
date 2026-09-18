@@ -1,353 +1,333 @@
 "use client";
 // File: src/components/sections/benefits-section.tsx — Albarzah
-// Per-pakej benefit breakdown with tab selector (RM80 | RM120 | RM180 | RM240)
+// Point 15 (RM80 & RM120) and Point 16 (RM180 & RM240)
+// Inline scrollable — no tabs, no accordion hiding packages
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, Zap, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ShieldCheck, Zap } from "lucide-react";
 import { SECTION_IDS } from "@/lib/constants";
-import { packages } from "@/data/packages";
 import { ResponsiveContainer } from "@sakinah/ui";
-import { SectionHeading } from "@sakinah/ui";
-import { OrnamentalDivider } from "@sakinah/ui";
-import { staggerContainer, cardReveal, viewportOnce } from "@sakinah/ui";
+import { viewportOnce } from "@sakinah/ui";
 
-// Tab labels mapped to plan IDs
-const TABS = packages.map((pkg) => ({
-  id: pkg.id,
-  label: `RM${pkg.yearlyFee}`,
-  subLabel: pkg.dailyRate + "/hari",
-  recommended: pkg.recommended,
-}));
+// ── Benefit data for Points 15 & 16 ───────────────────────────────────────
 
-export function BenefitsSection() {
-  const [activeTab, setActiveTab] = useState(packages[0].id);
+interface BenefitItem {
+  no: number;
+  label: string;
+  timeline?: string;
+  detail?: string;
+  value: string;
+}
 
-  const activePkg = packages.find((p) => p.id === activeTab) ?? packages[0];
+interface BenefitGroup {
+  label: string;
+  isAccident: boolean;
+  items: BenefitItem[];
+}
 
+interface PakejBenefitData {
+  id: string;
+  title: string;
+  yearlyFee: string;
+  groups: BenefitGroup[];
+}
+
+// ── POINT 15: RM80 & RM120 ────────────────────────────────────────────────
+const point15Data: PakejBenefitData[] = [
+  {
+    id: "benefit-80",
+    title: "MANFAAT PAKEJ INDIVIDU RM80 SETAHUN",
+    yearlyFee: "RM80",
+    groups: [
+      {
+        label: "Meninggal Biasa",
+        isAccident: false,
+        items: [
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM80" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM920" },
+        ],
+      },
+      {
+        label: "Berlaku Kemalangan",
+        isAccident: true,
+        items: [
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM5,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM5,000" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "benefit-120",
+    title: "MANFAAT PAKEJ INDIVIDU RM120 SETAHUN",
+    yearlyFee: "RM120",
+    groups: [
+      {
+        label: "Meninggal Biasa",
+        isAccident: false,
+        items: [
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM120" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM2,880" },
+        ],
+      },
+      {
+        label: "Berlaku Kemalangan",
+        isAccident: true,
+        items: [
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM5,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM5,000" },
+        ],
+      },
+    ],
+  },
+];
+
+// ── POINT 16: RM180 & RM240 ───────────────────────────────────────────────
+const point16Data: PakejBenefitData[] = [
+  {
+    id: "benefit-180",
+    title: "MANFAAT PAKEJ INDIVIDU RM180 SETAHUN",
+    yearlyFee: "RM180",
+    groups: [
+      {
+        label: "Meninggal Biasa",
+        isAccident: false,
+        items: [
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM180" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM4,820" },
+        ],
+      },
+      {
+        label: "Berlaku Kemalangan",
+        isAccident: true,
+        items: [
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM10,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM10,000" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "benefit-240",
+    title: "MANFAAT PAKEJ INDIVIDU RM240 SETAHUN",
+    yearlyFee: "RM240",
+    groups: [
+      {
+        label: "Meninggal Biasa",
+        isAccident: false,
+        items: [
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM240" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM6,760" },
+        ],
+      },
+      {
+        label: "Berlaku Kemalangan",
+        isAccident: true,
+        items: [
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM15,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM15,000" },
+        ],
+      },
+    ],
+  },
+];
+
+// ── Benefit Card Component ─────────────────────────────────────────────────
+function BenefitCard({ data }: { data: PakejBenefitData }) {
   return (
-    <section
-      id={SECTION_IDS.manfaat}
-      aria-label="Manfaat Pakej Albarzah"
-      className="section-texture py-16 lg:py-24"
-      style={{ background: "var(--color-brand-cream)" }}
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={viewportOnce}
+      transition={{ duration: 0.6 }}
+      className="rounded-3xl overflow-hidden border shadow-md"
+      style={{ background: "#fff", borderColor: "var(--color-brand-border)" }}
     >
-      <ResponsiveContainer>
-        <SectionHeading
-          eyebrow="MANFAAT PAKEJ INDIVIDU"
-          title="Butiran Manfaat Perlindungan Mengikut Pakej"
-          subtitle="Semak senarai penuh manfaat bagi Meninggal Biasa dan Berlaku Kemalangan untuk setiap pakej."
-          className="mb-10"
-        />
-
-        {/* ── Plan Tab Selector ─────────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: -12 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.5 }}
-          className="flex justify-center mb-10"
+      {/* Card header */}
+      <div
+        className="px-6 py-5"
+        style={{ background: "var(--color-brand-green-dark)" }}
+      >
+        <p
+          className="text-base sm:text-lg font-black text-white uppercase leading-snug"
+          style={{ fontFamily: "var(--font-heading)" }}
         >
-          <div
-            className="inline-flex rounded-2xl p-1.5 gap-1"
-            style={{
-              background: "#fff",
-              border: "1.5px solid var(--color-brand-border)",
-            }}
-            role="tablist"
-            aria-label="Pilih pakej"
-          >
-            {TABS.map((tab) => {
-              const isActive = tab.id === activeTab;
-              return (
-                <button
-                  key={tab.id}
-                  role="tab"
-                  aria-selected={isActive}
-                  aria-controls={`tabpanel-${tab.id}`}
-                  id={`tab-${tab.id}`}
-                  onClick={() => setActiveTab(tab.id)}
-                  type="button"
-                  className="relative flex flex-col items-center justify-center rounded-xl px-4 py-2.5 transition-all duration-250 cursor-pointer min-w-[72px]"
-                  style={
-                    isActive
-                      ? {
-                          background: "var(--color-brand-green)",
-                          color: "#fff",
-                        }
-                      : {
-                          background: "transparent",
-                          color: "var(--color-brand-text-muted)",
-                        }
-                  }
-                >
-                  {tab.recommended && (
-                    <span
-                      className="absolute -top-2 -right-1 text-[9px] font-black rounded-full px-1.5 py-0.5 leading-none"
-                      style={{
-                        background: "var(--color-brand-gold-light)",
-                        color: "var(--color-brand-green-dark)",
-                      }}
-                    >
-                      TERBAIK
-                    </span>
-                  )}
-                  <span className="text-sm font-black leading-none">
-                    {tab.label}
-                  </span>
-                  <span
-                    className="text-[10px] font-semibold mt-0.5 opacity-70"
-                  >
-                    {tab.subLabel}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </motion.div>
+          {data.title}
+        </p>
+      </div>
 
-        {/* ── Benefits Panel ────────────────────────────────────────── */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab}
-            id={`tabpanel-${activeTab}`}
-            role="tabpanel"
-            aria-labelledby={`tab-${activeTab}`}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
-          >
-            {activePkg.benefitGroups.map((group, gi) => {
-              const isAccident = gi === 1; // second group = kemalangan
-              return (
-                <div
-                  key={group.label}
-                  className="rounded-2xl overflow-hidden border"
-                  style={{
-                    borderColor: isAccident
-                      ? "var(--color-brand-gold)"
-                      : "var(--color-brand-border)",
-                    background: "#fff",
-                    boxShadow: "0 4px 24px rgba(0,71,60,0.06)",
-                  }}
-                >
-                  {/* Group header */}
-                  <div
-                    className="flex items-center gap-3 px-6 py-4"
+      <div className="divide-y" style={{ borderColor: "var(--color-brand-border)" }}>
+        {data.groups.map((group) => (
+          <div key={group.label}>
+            {/* Group header */}
+            <div
+              className="flex items-center gap-3 px-5 py-3"
+              style={{ background: group.isAccident ? "var(--color-brand-green)" : "var(--color-brand-green-dark)", opacity: 0.85 }}
+            >
+              <div
+                className="flex h-7 w-7 items-center justify-center rounded-lg flex-shrink-0"
+                style={{ background: "rgba(255,255,255,0.12)" }}
+              >
+                {group.isAccident ? (
+                  <Zap className="h-3.5 w-3.5 text-white" aria-hidden="true" />
+                ) : (
+                  <ShieldCheck className="h-3.5 w-3.5 text-white" aria-hidden="true" />
+                )}
+              </div>
+              <p className="text-xs font-black text-white uppercase tracking-wider">
+                {group.label}
+              </p>
+            </div>
+
+            {/* Benefit items */}
+            <ul className="divide-y" style={{ borderColor: "var(--color-brand-border)" }}>
+              {group.items.map((item) => (
+                <li key={item.no} className="flex items-start gap-3 px-5 py-3.5">
+                  <span
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black flex-shrink-0 mt-0.5"
                     style={{
-                      background: isAccident
-                        ? "var(--color-brand-green)"
-                        : "var(--color-brand-green-dark)",
+                      background: group.isAccident ? "rgba(243,182,1,0.15)" : "rgba(0,71,60,0.08)",
+                      color: group.isAccident ? "var(--color-brand-gold)" : "var(--color-brand-green)",
                     }}
                   >
-                    <div
-                      className="flex h-8 w-8 items-center justify-center rounded-lg flex-shrink-0"
-                      style={{ background: "rgba(255,255,255,0.12)" }}
-                    >
-                      {isAccident ? (
-                        <Zap
-                          className="h-4 w-4 text-white"
-                          aria-hidden="true"
-                        />
-                      ) : (
-                        <ShieldCheck
-                          className="h-4 w-4 text-white"
-                          aria-hidden="true"
-                        />
-                      )}
-                    </div>
-                    <h3
-                      className="text-sm font-bold text-white uppercase tracking-wider"
-                      style={{ fontFamily: "var(--font-heading)" }}
-                    >
-                      {group.label}
-                    </h3>
-                  </div>
-
-                  {/* Benefit items */}
-                  <div className="divide-y" style={{ borderColor: "var(--color-brand-border)" }}>
-                    {group.items.map((item, ii) => (
-                      <motion.div
-                        key={item.no}
-                        initial={{ opacity: 0, x: -8 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: ii * 0.06 }}
-                        className="flex items-start gap-4 px-5 py-4"
+                    {item.no}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold leading-snug flex-1" style={{ color: "var(--color-brand-text)" }}>
+                        {item.label}
+                      </p>
+                      <p
+                        className="text-sm font-black tabular-nums flex-shrink-0"
+                        style={{ color: group.isAccident ? "var(--color-brand-gold)" : "var(--color-brand-green)" }}
                       >
-                        {/* Number badge */}
-                        <span
-                          className="flex-shrink-0 h-6 w-6 rounded-full flex items-center justify-center text-xs font-black mt-0.5"
-                          style={{
-                            background: isAccident
-                              ? "rgba(243,182,1,0.15)"
-                              : "rgba(0,71,60,0.1)",
-                            color: isAccident
-                              ? "var(--color-brand-gold)"
-                              : "var(--color-brand-green)",
-                          }}
-                        >
-                          {item.no}
-                        </span>
-
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className="text-sm font-semibold leading-snug"
-                            style={{ color: "var(--color-brand-text)" }}
+                        {item.value}
+                      </p>
+                    </div>
+                    {(item.timeline || item.detail) && (
+                      <div className="mt-1 flex flex-wrap gap-1.5">
+                        {item.timeline && (
+                          <span
+                            className="text-[11px] font-semibold rounded-full px-2 py-0.5"
+                            style={{
+                              background: group.isAccident ? "rgba(243,182,1,0.10)" : "var(--color-brand-sage-soft)",
+                              color: group.isAccident ? "var(--color-brand-gold)" : "var(--color-brand-green)",
+                            }}
                           >
-                            {item.label}
-                          </p>
-                          {(item.timeline || item.detail) && (
-                            <div className="mt-1 flex flex-wrap gap-1.5">
-                              {item.timeline && (
-                                <span
-                                  className="text-[11px] font-semibold rounded-full px-2 py-0.5"
-                                  style={{
-                                    background: isAccident
-                                      ? "rgba(243,182,1,0.12)"
-                                      : "var(--color-brand-sage-soft)",
-                                    color: isAccident
-                                      ? "var(--color-brand-gold)"
-                                      : "var(--color-brand-green)",
-                                  }}
-                                >
-                                  {item.timeline}
-                                </span>
-                              )}
-                              {item.detail && (
-                                <span
-                                  className="text-[11px] text-slate-400 font-medium"
-                                >
-                                  {item.detail}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Value */}
-                        <span
-                          className="flex-shrink-0 text-base font-black tabular-nums"
-                          style={{
-                            color: isAccident
-                              ? "var(--color-brand-gold)"
-                              : "var(--color-brand-green)",
-                          }}
-                        >
-                          {item.value}
-                        </span>
-                      </motion.div>
-                    ))}
+                            {item.timeline}
+                          </span>
+                        )}
+                        {item.detail && (
+                          <span className="text-[11px] text-slate-400 font-medium">
+                            {item.detail}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
 
-                  {/* Group subtotal */}
-                  {group.total && (
-                    <div
-                      className="flex items-center justify-between px-5 py-3"
-                      style={{
-                        background: isAccident
-                          ? "rgba(243,182,1,0.06)"
-                          : "var(--color-brand-sage-soft)",
-                        borderTop: `1px solid ${isAccident ? "rgba(243,182,1,0.2)" : "var(--color-brand-border)"}`,
-                      }}
-                    >
-                      <p
-                        className="text-xs font-bold uppercase tracking-wider"
-                        style={{
-                          color: isAccident
-                            ? "var(--color-brand-gold)"
-                            : "var(--color-brand-text-muted)",
-                        }}
-                      >
-                        Jumlah {group.label}
-                      </p>
-                      <p
-                        className="text-base font-black tabular-nums"
-                        style={{
-                          color: isAccident
-                            ? "var(--color-brand-gold)"
-                            : "var(--color-brand-green-dark)",
-                        }}
-                      >
-                        {group.total}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </motion.div>
-        </AnimatePresence>
+// ── BenefitSection helper ──────────────────────────────────────────────────
+interface BenefitSectionBlockProps {
+  pointId: string;
+  pointNo: string;
+  heading: string;
+  subheading: string;
+  packages: PakejBenefitData[];
+  bg: string;
+}
 
-        {/* ── Grand Total + CTA ────────────────────────────────────── */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`total-${activeTab}`}
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.22 }}
-            className="max-w-2xl mx-auto"
+function BenefitSectionBlock({ pointId, pointNo, heading, subheading, packages: pkgs, bg }: BenefitSectionBlockProps) {
+  return (
+    <section
+      id={pointId}
+      aria-label={heading}
+      className="section-texture py-16 lg:py-24"
+      style={{ background: bg }}
+    >
+      <ResponsiveContainer>
+        {/* Point indicator */}
+        <div className="flex items-center gap-3 mb-8">
+          <span
+            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-black flex-shrink-0"
+            style={{ background: "var(--color-brand-green)", color: "#fff" }}
+            aria-hidden="true"
           >
-            <div
-              className="flex flex-col sm:flex-row items-center justify-between gap-5 rounded-2xl px-8 py-6"
-              style={{
-                background: "var(--color-brand-green)",
-                border: "2px solid var(--color-brand-gold-light)",
-                boxShadow: "0 12px 40px rgba(0,71,60,0.22)",
-              }}
-            >
-              <div>
-                <p
-                  className="text-xs font-bold uppercase tracking-wider mb-1"
-                  style={{ color: "rgba(255,255,255,0.6)" }}
-                >
-                  Jumlah Keseluruhan Manfaat
-                </p>
-                <p
-                  className="text-4xl font-black text-white tabular-nums"
-                  style={{ fontFamily: "var(--font-heading)" }}
-                >
-                  {activePkg.totalManfaat}
-                </p>
-                <p
-                  className="text-sm mt-1"
-                  style={{ color: "rgba(255,255,255,0.65)" }}
-                >
-                  untuk Pakej {activePkg.name}
-                </p>
-              </div>
+            {pointNo}
+          </span>
+          <div className="h-px flex-1 opacity-20" style={{ background: "var(--color-brand-green)" }} aria-hidden="true" />
+        </div>
 
-              <motion.a
-                href={`#${SECTION_IDS.hubungi}`}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-bold flex-shrink-0 cursor-pointer"
-                style={{
-                  background: "var(--color-brand-gold-light)",
-                  color: "var(--color-brand-green-dark)",
-                }}
-                aria-label={`Daftar pakej ${activePkg.name}`}
-              >
-                Daftar Sekarang
-                <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </motion.a>
-            </div>
-          </motion.div>
-        </AnimatePresence>
+        <div className="mb-10">
+          <p className="eyebrow-cinzel mb-2">POINT {pointNo} • BUTIRAN MANFAAT PAKEJ</p>
+          <h2
+            className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase leading-tight mb-2"
+            style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}
+          >
+            {heading}
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600 font-medium">{subheading}</p>
+        </div>
 
-        {/* Ornamental divider */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          <OrnamentalDivider className="mt-14" label="Albarzah" />
-        </motion.div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {pkgs.map((pkg) => (
+            <BenefitCard key={pkg.id} data={pkg} />
+          ))}
+        </div>
       </ResponsiveContainer>
     </section>
+  );
+}
+
+// ── Exported components ────────────────────────────────────────────────────
+export function BenefitPoint15Section() {
+  return (
+    <BenefitSectionBlock
+      pointId={SECTION_IDS.point15}
+      pointNo="15"
+      heading="Manfaat Pakej RM80 &amp; RM120"
+      subheading="Butiran lengkap manfaat bagi Pakej Individu RM80 dan RM120 setahun."
+      packages={point15Data}
+      bg="#fff"
+    />
+  );
+}
+
+export function BenefitPoint16Section() {
+  return (
+    <BenefitSectionBlock
+      pointId={SECTION_IDS.point16}
+      pointNo="16"
+      heading="Manfaat Pakej RM180 &amp; RM240"
+      subheading="Butiran lengkap manfaat bagi Pakej Individu RM180 dan RM240 setahun."
+      packages={point16Data}
+      bg="var(--color-brand-cream)"
+    />
+  );
+}
+
+// Legacy export for backward compatibility
+export function BenefitsSection() {
+  return (
+    <>
+      <BenefitPoint15Section />
+      <BenefitPoint16Section />
+    </>
   );
 }

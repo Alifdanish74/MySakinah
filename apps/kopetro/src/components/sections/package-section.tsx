@@ -1783,10 +1783,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             <input
                               id={`modal-alamat2-${activeMemberTab}`}
                               type="text"
+                              inputMode="numeric"
                               required={activeMemberTab === "ahli"}
                               disabled={activeMemberTab !== "ahli" && currentMemberData.sameAddressAsAhli}
                               value={currentMemberData.alamat2}
-                              onChange={(e) => handleMemberFieldChange(activeMemberTab, "alamat2", e.target.value)}
+                              onChange={(e) => {
+                                const digits = e.target.value.replace(/\D/g, "").slice(0, 5);
+                                handleMemberFieldChange(activeMemberTab, "alamat2", digits);
+                              }}
+                              maxLength={5}
                               placeholder=" 50600"
                               className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 disabled:bg-slate-100 disabled:text-slate-500"
                             />

@@ -4,7 +4,7 @@
 // active indicator dot, hover scale (matches Weddingcard Navbar)
 
 import { useEffect, useState, useCallback } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@sakinah/ui";
 import { mobileNavItems } from "@/data/navigation";
@@ -39,10 +39,12 @@ const PAGE_SECTION_IDS = [
 
 export function MobileBottomNavigation() {
   const pathname = usePathname();
+  const router = useRouter();
   const [activeSection, setActiveSection] = useState<string>(SECTION_IDS.utama);
 
   const handleScroll = useCallback(() => {
-    if (window.location.pathname !== "/") return;
+    // pathname from usePathname() is relative to basePath; "/" means the home page
+    if (pathname !== "/") return;
 
     let current = PAGE_SECTION_IDS[0];
 
@@ -57,7 +59,7 @@ export function MobileBottomNavigation() {
     }
 
     setActiveSection(current);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -113,9 +115,15 @@ export function MobileBottomNavigation() {
                 href={item.href}
                 onClick={(e) => {
                   if (!isRoute) {
-                    if (window.location.pathname === "/") {
-                      e.preventDefault();
+                    // Always intercept hash links — raw href="/#soalan" would navigate to
+                    // domain root instead of the basePath home page on sub-pages.
+                    e.preventDefault();
+                    if (pathname === "/") {
+                      // Already on home — smooth scroll
                       scrollToSection(sectionId);
+                    } else {
+                      // On a sub-page — navigate to home first, then scroll after mount
+                      router.push(`/#${sectionId}`);
                     }
                   }
                 }}

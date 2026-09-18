@@ -115,7 +115,7 @@ export default function RootLayout({
         <MobileBottomNavigation />
 
         {/* Floating Utilities */}
-        <AudioPlayer />
+        <AudioPlayer src="/kohasil/assets/Adventurous%20Travel%20Background%20Music%20%231.mp3" />
         <ScrollToTop />
         <AutoScrollManager />
       </body>

@@ -2,15 +2,9 @@
 // File: src/components/sections/hero-section.tsx
 
 import { motion } from "framer-motion";
-import { Phone, Clock, Wallet, ShieldCheck, ArrowRight, Users, HeartHandshake, Quote, Sparkles } from "lucide-react";
+import { Phone, Clock, Wallet, ShieldCheck, ArrowRight, Users } from "lucide-react";
 import { BRAND, SECTION_IDS } from "@/lib/constants";
-import { ResponsiveContainer } from "@sakinah/ui";
-import { HotlineCard } from "@sakinah/ui";
-import {
-  staggerContainer,
-  cardReveal,
-  viewportEager,
-} from "@sakinah/ui";
+import { ResponsiveContainer, HotlineCard, staggerContainer, cardReveal } from "@sakinah/ui";
 
 const trustIndicators = [
   { icon: Clock, label: "Pengurusan 24 Jam" },
@@ -24,36 +18,26 @@ export function HeroSection() {
     <section
       id={SECTION_IDS.utama}
       aria-label="Utama"
-      className="hero-bg relative min-h-[92dvh] overflow-hidden flex items-center justify-center py-16 lg:py-24"
+      className="hero-bg relative min-h-[88dvh] overflow-hidden flex items-center justify-center py-16 lg:py-24"
       style={
         {
           "--hero-bg-image": "url('/albarzah/images/albarzah_hero_bg2.png')",
         } as React.CSSProperties
       }
     >
-      {/* Custom responsive dome arch curve for mobile & desktop */}
-      <style jsx global>{`
-        .hero-dome-card {
-          border-radius: 40% 40% 2rem 2rem / 15% 15% 2rem 2rem;
-        }
-        @media (min-width: 640px) {
-          .hero-dome-card {
-            border-radius: 60% 60% 2.25rem 2.25rem / 35% 35% 2.25rem 2.25rem;
-          }
-        }
-      `}</style>
-
       <ResponsiveContainer className="flex justify-center">
         <div className="w-full max-w-3xl mx-auto px-4 sm:px-8 md:px-12 text-center flex flex-col items-center">
 
-          {/* Main Mosque Dome Arch Container */}
+          {/* Main Dome Arch Card */}
           <div
-            className="hero-dome-card w-full p-5 pt-8 sm:p-10 sm:pt-14 md:p-12 md:pt-16 shadow-2xl border flex flex-col items-center text-center backdrop-blur-md overflow-hidden"
+            className="w-full p-5 pt-10 sm:p-10 sm:pt-16 md:p-12 md:pt-20 shadow-2xl border flex flex-col items-center text-center backdrop-blur-md overflow-hidden"
             style={{
-              background: "rgba(255, 255, 255, 0.92)",
+              background: "rgba(255, 255, 255, 0.93)",
               borderColor: "var(--color-brand-gold-light)",
               borderWidth: "1.5px",
               boxShadow: "0 20px 60px rgba(0,71,60,0.22)",
+              /* Dome arch top corners */
+              borderRadius: "50% 50% 2rem 2rem / 20% 20% 2rem 2rem",
             }}
           >
             {/* Eyebrow Badge */}
@@ -61,18 +45,17 @@ export function HeroSection() {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              viewport={viewportEager}
               className="eyebrow-cinzel mb-3 inline-block rounded-full px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest"
               style={{
-                background: "rgba(0,179,15,0.12)",
+                background: "rgba(0,179,15,0.10)",
                 border: "1px solid var(--color-brand-green-light)",
                 color: "var(--color-brand-green-dark)",
               }}
             >
-              ALBARZAH • SKIM PENGURISAN JENAZAH &amp; KHAIRAT
+              ALBARZAH • SKIM PENGURUSAN JENAZAH &amp; KHAIRAT
             </motion.p>
 
-            {/* Main Brand Title */}
+            {/* Main Title */}
             <motion.h1
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -90,95 +73,41 @@ export function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-xs sm:text-sm font-extrabold uppercase tracking-widest mb-6"
+              className="text-xs sm:text-sm font-extrabold uppercase tracking-widest mb-5"
               style={{ color: "var(--color-brand-gold)" }}
             >
-              Jangan Menyesal Kemudian Hari
+              Khairat Kematian Yang Mampu Dimiliki
             </motion.p>
 
-            {/* ── PDF Slide 1 & 2: Mutiara Kata Quote Box ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
+            {/* Description */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="w-full mb-6 rounded-2xl p-4 sm:p-6 border relative text-left"
-              style={{
-                background: "var(--color-brand-sage-soft)",
-                borderColor: "var(--color-brand-border)",
-              }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-sm sm:text-base leading-relaxed text-slate-700 font-medium mb-7 max-w-lg"
             >
-              <Quote className="h-8 w-8 absolute top-3 right-4 opacity-15" style={{ color: "var(--color-brand-green)" }} />
-              <p className="text-[11px] font-black uppercase tracking-widest mb-1.5 flex items-center gap-1.5" style={{ color: "var(--color-brand-green)" }}>
-                <Sparkles className="h-3.5 w-3.5" />
-                MUTIARA KATA
-              </p>
-              <p className="text-sm sm:text-base font-bold italic leading-relaxed text-slate-800">
-                “ SEDARA SIAPA KITA TAK PENTING, YANG PENTING BAGAIMANA PENGURUSAN JENAZAH KITA YA. KITA YANG TERAKHIR, fikir-fikir kanlah…… ”
-              </p>
-            </motion.div>
-
-            {/* ── PDF Slide 1: Pantun Card ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="w-full mb-6 rounded-2xl p-4 text-center border"
-              style={{
-                background: "rgba(243,182,1,0.08)",
-                borderColor: "rgba(243,182,1,0.3)",
-              }}
-            >
-              <p className="text-xs sm:text-sm font-extrabold italic leading-relaxed" style={{ color: "var(--color-brand-green-dark)" }}>
-                Buat Mandi Tuan Puteri, Siapa Tak Daftar Dia Yang Rugi, <br />
-                <span className="font-black underline decoration-amber-400">Jangan Menyesal Kemudian Hari</span>
-              </p>
-            </motion.div>
-
-            {/* ── PDF Slide 3: Jom Kita Berdakwah Card (Point 7) ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.6 }}
-              className="w-full mb-8 rounded-2xl p-5 border text-center text-white"
-              style={{
-                background: "var(--color-brand-green)",
-                borderColor: "var(--color-brand-green-dark)",
-                boxShadow: "0 8px 24px rgba(0,71,60,0.15)",
-              }}
-            >
-              <div className="flex items-center justify-center gap-2 mb-2">
-                <HeartHandshake className="h-5 w-5" style={{ color: "var(--color-brand-gold-light)" }} />
-                <h3 className="text-base sm:text-lg font-black uppercase tracking-wider text-white">
-                  JOM KITA BERDAKWAH
-                </h3>
-              </div>
-              <p className="text-xs sm:text-sm font-medium leading-relaxed opacity-95 mb-3">
-                “ Menyampaikan perkara yang baik itu dakwah. Bagitahu pakej ini kepada keluarga dan kawan yang lain agar mereka juga mendapat manfaat. ”
-              </p>
-              <div className="pt-3 border-t border-white/20 text-[11px] sm:text-xs font-bold text-amber-200 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-4">
-                <span>US HJ MOHD ZAINAL HJ KHAMIS</span>
-                <span className="hidden sm:inline">•</span>
-                <span>ALBARZAH ENTERPRISE &amp; BUMIJEZ SDN BHD</span>
-              </div>
-            </motion.div>
+              Pengurusan jenazah lengkap{" "}
+              <strong>&ldquo;TANPA TUNAI&rdquo;</strong> — 24 jam bersedia membantu waris dalam kesedihan. Mulai dari{" "}
+              <strong className="text-emerald-800">RM80.00 setahun</strong> sahaja.
+            </motion.p>
 
             {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8, duration: 0.6 }}
-              className="flex flex-col gap-3 sm:flex-row justify-center w-full max-w-md mb-8"
+              transition={{ delay: 0.6, duration: 0.6 }}
+              className="flex flex-col gap-3 sm:flex-row justify-center w-full max-w-md mb-7"
             >
               <a
-                href={`#${SECTION_IDS.pakej}`}
+                href={`#${SECTION_IDS.point8}`}
                 className="hover-scale flex flex-1 items-center justify-center gap-2 rounded-full py-3.5 px-6 text-sm font-black uppercase tracking-wide transition-all shadow-md cursor-pointer"
                 style={{
-                  background: "var(--color-brand-gold-light)",
-                  color: "var(--color-brand-green-dark)",
+                  background: "var(--color-brand-green)",
+                  color: "#fff",
                 }}
                 aria-label="Lihat pilihan pakej tahunan Albarzah"
               >
-                LIHAT PAKEJ TAHUNAN
+                LIHAT PAKEJ
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </a>
               <a
@@ -192,7 +121,7 @@ export function HeroSection() {
                 aria-label={`Hubungi bantuan 24 jam: ${BRAND.hotline}`}
               >
                 <Phone className="h-4 w-4" aria-hidden="true" />
-                Hubungi 24 Jam
+                BANTUAN 24 JAM
               </a>
             </motion.div>
 
@@ -201,8 +130,8 @@ export function HeroSection() {
               variants={staggerContainer}
               initial="hidden"
               animate="visible"
-              transition={{ delayChildren: 0.9 }}
-              className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 w-full"
+              transition={{ delayChildren: 0.7 }}
+              className="grid grid-cols-2 gap-2 sm:grid-cols-4 w-full mb-6"
             >
               {trustIndicators.map(({ icon: Icon, label }) => (
                 <motion.div
@@ -211,10 +140,8 @@ export function HeroSection() {
                   className="flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 border bg-white/95"
                   style={{ borderColor: "var(--color-brand-border)" }}
                 >
-                  <Icon className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "var(--color-brand-green)" }} />
-                  <span className="text-[11px] font-bold text-slate-800">
-                    {label}
-                  </span>
+                  <Icon className="h-3.5 w-3.5 flex-shrink-0" style={{ color: "var(--color-brand-green)" }} aria-hidden="true" />
+                  <span className="text-[11px] font-bold text-slate-800">{label}</span>
                 </motion.div>
               ))}
             </motion.div>
@@ -223,17 +150,11 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.0 }}
-              className="mt-6 w-full"
+              transition={{ delay: 0.9 }}
+              className="w-full"
             >
-              <HotlineCard
-                style={{
-                  background: "var(--color-brand-green)",
-                  color: "#fff",
-                }}
-              />
+              <HotlineCard />
             </motion.div>
-
           </div>
         </div>
       </ResponsiveContainer>

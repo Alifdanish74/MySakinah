@@ -117,7 +117,7 @@ export default function RootLayout({
         <MobileBottomNavigation />
 
         {/* Floating Utilities */}
-        <AudioPlayer src="/assets/Hidupnya_insan.mp3" songName="Hidupnya Insan - Hijjaz" position="bottom-center" />
+        <AudioPlayer src="/albarzah/assets/Hidupnya_insan.mp3" songName="Hidupnya Insan - Hijjaz" position="bottom-center" />
         <ScrollToTop />
         <AutoScrollManager />
       </body>

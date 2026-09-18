@@ -281,8 +281,14 @@ export function EditModal({ submission, onClose, onSaved }: EditModalProps) {
                 <input
                   id="form-input-poskod"
                   type="text"
+                  inputMode="numeric"
                   value={formData.poskod || ""}
-                  onChange={(e) => handleFieldChange("poskod", e.target.value)}
+                  onChange={(e) => {
+                    const digits = e.target.value.replace(/\D/g, "").slice(0, 5);
+                    handleFieldChange("poskod", digits);
+                  }}
+                  maxLength={5}
+                  placeholder="e.g. 50600"
                   className="form-input"
                 />
               </div>
