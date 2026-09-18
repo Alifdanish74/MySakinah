@@ -88,31 +88,40 @@ export function ApplicationFormSection({ selectedPackage, onPackageChange }: App
     setErrMsg("");
     setStatus("loading");
     try {
+      const sanitizedTel = tel.replace(/[\s-]/g, "");
+      const sanitizedTelWaris = telWaris ? telWaris.replace(/[\s-]/g, "") : undefined;
+      const sanitizedTelKawan = telKawan ? telKawan.replace(/[\s-]/g, "") : undefined;
+      const sanitizedIc = ic ? ic.replace(/\D/g, "") : undefined;
+
       const res = await fetch("/albarzah/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nama,
-          telefon: tel,
-          ic: ic || undefined,
+          telefon: sanitizedTel,
+          ic: sanitizedIc,
           alamat: alamat || undefined,
           umur: umur || undefined,
           namaWaris: namaWaris || undefined,
-          telefonWaris: telWaris || undefined,
+          telefonWaris: sanitizedTelWaris,
           hubunganWaris: hubungan || undefined,
           namaKawan: namaKawan || undefined,
-          telefonKawan: telKawan || undefined,
+          telefonKawan: sanitizedTelKawan,
           jenisKawan: jenisKawan || undefined,
           pakej: selectedPackage,
           kaedahHubungi: "whatsapp",
           persetujuan: true,
         }),
       });
-      if (!res.ok) throw new Error();
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || "Ralat menghantar permohonan");
+      }
       setStatus("success");
-    } catch {
+    } catch (err: any) {
       setStatus("error");
-      setErrMsg("Ralat sambungan. Sila cuba lagi atau hubungi kami melalui WhatsApp.");
+      setErrMsg(err?.message || "Ralat sambungan. Sila cuba lagi atau hubungi kami melalui WhatsApp.");
     }
   };
 

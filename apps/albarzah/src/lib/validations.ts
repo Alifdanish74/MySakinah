@@ -59,17 +59,26 @@ export const enquirySchema = z.object({
     .max(300, "Alamat terlalu panjang")
     .optional()
     .or(z.literal("")),
-  telefon: z
-    .string()
-    .min(9, "Nombor telefon tidak sah")
-    .max(15, "Nombor telefon tidak sah"),
+  telefon: z.preprocess(
+    (val) => (typeof val === "string" ? val.replace(/[\s-]/g, "") : val),
+    z
+      .string()
+      .min(9, "Nombor telefon tidak sah (minimum 9 digit)")
+      .max(16, "Nombor telefon tidak sah")
+  ),
 
   // Step 2: Waris & Kawan
   namaWaris: z.string().optional(),
-  telefonWaris: z.string().optional(),
+  telefonWaris: z.preprocess(
+    (val) => (typeof val === "string" ? val.replace(/[\s-]/g, "") : val),
+    z.string().optional()
+  ),
   hubunganWaris: z.string().optional(),
   namaKawan: z.string().optional(),
-  telefonKawan: z.string().optional(),
+  telefonKawan: z.preprocess(
+    (val) => (typeof val === "string" ? val.replace(/[\s-]/g, "") : val),
+    z.string().optional()
+  ),
   jenisKawan: z.string().optional(),
 
   // Step 3: Pakej & Bayaran
@@ -78,12 +87,15 @@ export const enquirySchema = z.object({
     .enum(["telefon", "whatsapp", "email"])
     .optional()
     .default("whatsapp"),
-  persetujuan: z
-    .boolean({
-      message: "Anda perlu bersetuju untuk dihubungi oleh pihak Albarzah",
-    })
-    .optional()
-    .default(true),
+  persetujuan: z.preprocess(
+    (val) => (val === true || val === "true" || val === 1 || val === "1" ? true : val),
+    z
+      .boolean({
+        message: "Anda perlu bersetuju untuk dihubungi oleh pihak Albarzah",
+      })
+      .optional()
+      .default(true)
+  ),
 
   // Legacy fields (kept for compat)
   alamat1: z.string().optional(),

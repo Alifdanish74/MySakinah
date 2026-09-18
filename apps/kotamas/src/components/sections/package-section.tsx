@@ -850,35 +850,52 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     };
 
     try {
+      const sanitizedAhliTelefon = ahli.telefon?.replace(/[\s-]/g, "");
+      const sanitizedWarisTelefon = warisData.telefonWaris?.replace(/[\s-]/g, "");
+      const sanitizedAhliIC = ahli.ic?.replace(/\D/g, "");
+
+      const sanitizedMembers: Record<string, any> = {};
+      Object.keys(membersData).forEach((key) => {
+        const m = membersData[key];
+        if (m) {
+          sanitizedMembers[key] = {
+            ...m,
+            telefon: m.telefon ? m.telefon.replace(/[\s-]/g, "") : "",
+            ic: m.ic ? m.ic.replace(/\D/g, "") : "",
+          };
+        }
+      });
+
       const response = await fetch("/kotamas/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nama: ahli.nama,
-          telefon: ahli.telefon,
-          ic: ahli.ic,
+          telefon: sanitizedAhliTelefon,
+          ic: sanitizedAhliIC,
           alamat1: ahli.alamat1,
           alamat2: ahli.alamat2,
           alamat3: ahli.alamat3,
           negeri: ahli.negeri,
           namaWaris: warisData.namaWaris,
-          telefonWaris: warisData.telefonWaris,
+          telefonWaris: sanitizedWarisTelefon,
           statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
           pakej: selectedFormPackage?.name || "INDIVIDU 10",
           persetujuan: true,
-          members: membersData,
+          members: sanitizedMembers,
         }),
       });
 
       if (!response.ok) {
-        throw new Error("Ralat menghantar permohonan");
+        const errData = await response.json().catch(() => null);
+        throw new Error(errData?.error || "Ralat menghantar permohonan");
       }
 
       setFormStatus("success");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Form submit error:", err);
       setFormStatus("error");
-      setErrorMessage("Ralat sambungan. Sila cuba lagi.");
+      setErrorMessage(err?.message || "Ralat sambungan. Sila cuba lagi.");
     }
   };
 

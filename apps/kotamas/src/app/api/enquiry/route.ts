@@ -12,13 +12,34 @@ const MODULE_SLUG = "kotamas";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+
+    // Sanitize mobile inputs (strip whitespace & dashes from phone and IC fields)
+    if (typeof body.telefon === "string") body.telefon = body.telefon.replace(/[\s-]/g, "");
+    if (typeof body.telefonWaris === "string") body.telefonWaris = body.telefonWaris.replace(/[\s-]/g, "");
+    if (typeof body.ic === "string") body.ic = body.ic.replace(/\D/g, "");
+
+    if (body.members && typeof body.members === "object") {
+      for (const k of Object.keys(body.members)) {
+        if (body.members[k]) {
+          if (typeof body.members[k].telefon === "string") {
+            body.members[k].telefon = body.members[k].telefon.replace(/[\s-]/g, "");
+          }
+          if (typeof body.members[k].ic === "string") {
+            body.members[k].ic = body.members[k].ic.replace(/\D/g, "");
+          }
+        }
+      }
+    }
+
     const parsed = enquirySchema.safeParse(body);
 
     if (!parsed.success) {
+      console.warn("[KOTAMAS Enquiry API] Validation failed:", parsed.error.issues);
+      const firstErrorMsg = parsed.error.issues[0]?.message || "Ralat Pengesahan Maklumat";
       return Response.json(
         {
           success: false,
-          error: "Ralat Pengesahan Maklumat",
+          error: firstErrorMsg,
           issues: parsed.error.issues,
         },
         { status: 422 }
