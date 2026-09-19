@@ -5,6 +5,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { cn } from "@sakinah/ui";
 import { mobileNavItems } from "@/data/navigation";
@@ -59,7 +60,7 @@ export function MobileBottomNavigation() {
     }
 
     setActiveSection(current);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -108,13 +109,55 @@ export function MobileBottomNavigation() {
 
           const IconComponent = iconMap[item.icon];
 
+          const linkContent = (
+            <>
+              {IconComponent && (
+                <IconComponent
+                  className="h-5 w-5 flex-shrink-0"
+                  aria-hidden="true"
+                />
+              )}
+              <span className="text-[10px] font-semibold">{item.label}</span>
+
+              {/* Active gold dot indicator (Weddingcard-style) */}
+              {isActive && (
+                <motion.span
+                  layoutId="active-nav-dot"
+                  className="absolute bottom-1.5 h-1 w-6 rounded-full"
+                  style={{ background: "var(--color-brand-gold)" }}
+                  aria-hidden="true"
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                />
+              )}
+            </>
+          );
+
           return (
             <li key={item.href} className="flex flex-1">
-              {/* Weddingcard nav button: whileHover scale:1.1, duration 0.4 */}
-              <motion.a
-                href={item.href}
-                onClick={(e) => {
-                  if (!isRoute) {
+              {isRoute ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "relative flex flex-1 flex-col items-center justify-center gap-1",
+                    "min-h-[48px] touch-manipulation",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset",
+                    "transition-colors duration-200"
+                  )}
+                  style={{
+                    color: isActive
+                      ? "var(--color-brand-green)"
+                      : "var(--color-brand-text-muted)",
+                    "--tw-ring-color": "var(--color-brand-gold)",
+                  } as React.CSSProperties}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={item.label}
+                >
+                  {linkContent}
+                </Link>
+              ) : (
+                <motion.a
+                  href={item.href}
+                  onClick={(e) => {
                     // Always intercept hash links — raw href="/#soalan" would navigate to
                     // domain root instead of the basePath home page on sub-pages.
                     e.preventDefault();
@@ -125,45 +168,28 @@ export function MobileBottomNavigation() {
                       // On a sub-page — navigate to home first, then scroll after mount
                       router.push(`/#${sectionId}`);
                     }
-                  }
-                }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className={cn(
-                  "relative flex flex-1 flex-col items-center justify-center gap-1",
-                  "min-h-[48px] touch-manipulation",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset",
-                  "transition-colors duration-200"
-                )}
-                style={{
-                  color: isActive
-                    ? "var(--color-brand-green)"
-                    : "var(--color-brand-text-muted)",
-                  "--tw-ring-color": "var(--color-brand-gold)",
-                } as React.CSSProperties}
-                aria-current={isActive ? "page" : undefined}
-                aria-label={item.label}
-              >
-                {IconComponent && (
-                  <IconComponent
-                    className="h-5 w-5 flex-shrink-0"
-                    aria-hidden="true"
-                  />
-                )}
-                <span className="text-[10px] font-semibold">{item.label}</span>
-
-                {/* Active gold dot indicator (Weddingcard-style) */}
-                {isActive && (
-                  <motion.span
-                    layoutId="active-nav-dot"
-                    className="absolute bottom-1.5 h-1 w-6 rounded-full"
-                    style={{ background: "var(--color-brand-gold)" }}
-                    aria-hidden="true"
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                  />
-                )}
-              </motion.a>
+                  }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ duration: 0.3 }}
+                  className={cn(
+                    "relative flex flex-1 flex-col items-center justify-center gap-1",
+                    "min-h-[48px] touch-manipulation",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset",
+                    "transition-colors duration-200"
+                  )}
+                  style={{
+                    color: isActive
+                      ? "var(--color-brand-green)"
+                      : "var(--color-brand-text-muted)",
+                    "--tw-ring-color": "var(--color-brand-gold)",
+                  } as React.CSSProperties}
+                  aria-current={isActive ? "page" : undefined}
+                  aria-label={item.label}
+                >
+                  {linkContent}
+                </motion.a>
+              )}
             </li>
           );
         })}

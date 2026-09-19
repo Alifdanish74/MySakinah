@@ -138,21 +138,8 @@ export function ApplicationFormSection({ selectedPackage, onPackageChange }: App
     >
       <ResponsiveContainer>
 
-        {/* Point indicator */}
-        <div className="flex items-center gap-3 mb-8">
-          <span
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-black flex-shrink-0"
-            style={{ background: "var(--color-brand-green)", color: "#fff" }}
-            aria-hidden="true"
-          >
-            12
-          </span>
-          <div className="h-px flex-1 opacity-20" style={{ background: "var(--color-brand-green)" }} aria-hidden="true" />
-        </div>
-
         {/* Heading */}
         <div className="mb-6">
-          <p className="eyebrow-cinzel mb-2">POINT 12</p>
           <h2
             className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase leading-tight mb-2"
             style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}

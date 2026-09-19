@@ -40,7 +40,7 @@ export function HeroSection() {
               borderRadius: "50% 50% 2rem 2rem / 20% 20% 2rem 2rem",
             }}
           >
-            {/* Eyebrow Badge */}
+            {/* Eyebrow Badge
             <motion.p
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -53,7 +53,7 @@ export function HeroSection() {
               }}
             >
               ALBARZAH • SKIM PENGURUSAN JENAZAH &amp; KHAIRAT
-            </motion.p>
+            </motion.p> */}
 
             {/* Main Title */}
             <motion.h1

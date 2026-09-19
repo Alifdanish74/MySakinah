@@ -3,6 +3,7 @@
 // Weddingcard-matched footer: ornamental divider before footer, large display brand name,
 // whileInView entrance for footer content
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Phone, Shield, Heart } from "lucide-react";
 import { BRAND, SECTION_IDS } from "@/lib/constants";
@@ -199,9 +200,9 @@ export function Footer() {
               <a href="#" className="block transition-colors hover:text-white">
                 Dasar Privasi
               </a>
-              <a href="#" className="block transition-colors hover:text-white">
+              <Link href="/syarat" className="block transition-colors hover:text-white">
                 Terma &amp; Syarat
-              </a>
+              </Link>
             </div>
           </motion.div>
         </motion.div>

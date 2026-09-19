@@ -400,23 +400,11 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps) {
         <section
           key={pkg.id}
           id={pkg.pointId}
-          aria-label={`Point ${pkg.pointNo} — Pakej ${pkg.yearly} Setahun`}
+          aria-label={`Pakej ${pkg.yearly} Setahun`}
           className="section-texture py-12 lg:py-16"
           style={{ background: idx % 2 === 0 ? "var(--color-brand-ivory)" : "var(--color-brand-cream)" }}
         >
           <ResponsiveContainer>
-            {/* Point indicator */}
-            <div className="flex items-center gap-3 mb-6">
-              <span
-                className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-black flex-shrink-0"
-                style={{ background: "var(--color-brand-green)", color: "#fff" }}
-                aria-hidden="true"
-              >
-                {pkg.pointNo}
-              </span>
-              <div className="h-px flex-1 opacity-20" style={{ background: "var(--color-brand-green)" }} aria-hidden="true" />
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
               <PackageCard pkg={pkg} onSelectPackage={handleSelectPackageCard} />
 

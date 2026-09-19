@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@sakinah/ui";
 import { desktopNavItems } from "@/data/navigation";
 import { scrollToSection } from "@sakinah/ui";
@@ -41,7 +42,7 @@ export function DesktopNavigation() {
     }
 
     setActiveSection(current);
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname !== "/") return;
@@ -67,27 +68,55 @@ export function DesktopNavigation() {
       {desktopNavItems.map((item) => {
         const isRoute = item.href.startsWith("/") && !item.href.startsWith("/#");
         const sectionId = item.href.replace("/#", "").replace("#", "");
-        
+
         const isActive = isRoute
           ? pathname === item.href
           : pathname === "/" && activeSection === sectionId;
+
+        if (isRoute) {
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "relative px-4 py-2 rounded-lg text-sm font-semibold font-body transition-colors duration-200",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold",
+                isActive
+                  ? "text-brand-green"
+                  : "text-brand-text-muted hover:text-brand-green"
+              )}
+              style={{
+                color: isActive ? "var(--color-brand-green)" : "var(--color-brand-text-muted)",
+                fontFamily: "var(--font-body)",
+              }}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {item.label}
+              {isActive && (
+                <span
+                  className="absolute bottom-0 left-3 right-3 h-0.5 rounded-full"
+                  style={{ background: "var(--color-brand-gold)" }}
+                  aria-hidden="true"
+                />
+              )}
+            </Link>
+          );
+        }
 
         return (
           <a
             key={item.href}
             href={item.href}
             onClick={(e) => {
-              if (!isRoute) {
-                // Always intercept hash links — raw href="/#soalan" would navigate to
-                // domain root instead of the basePath home page on sub-pages.
-                e.preventDefault();
-                if (pathname === "/") {
-                  // Already on home — smooth scroll
-                  scrollToSection(sectionId);
-                } else {
-                  // On a sub-page — navigate to home first, then scroll after mount
-                  router.push(`/#${sectionId}`);
-                }
+              // Always intercept hash links — raw href="/#soalan" would navigate to
+              // domain root instead of the basePath home page on sub-pages.
+              e.preventDefault();
+              if (pathname === "/") {
+                // Already on home — smooth scroll
+                scrollToSection(sectionId);
+              } else {
+                // On a sub-page — navigate to home first, then scroll after mount
+                router.push(`/#${sectionId}`);
               }
             }}
             className={cn(

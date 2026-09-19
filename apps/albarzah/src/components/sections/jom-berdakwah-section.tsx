@@ -24,17 +24,6 @@ export function JomBerdakwahSection() {
     >
       <ResponsiveContainer>
 
-        {/* Point indicator */}
-        <div className="flex items-center gap-3 mb-8">
-          <span
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-black flex-shrink-0 bg-white/15 text-white border border-white/25"
-            aria-hidden="true"
-          >
-            07
-          </span>
-          <div className="h-px flex-1 opacity-20 bg-white" aria-hidden="true" />
-        </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
           {/* Left: Content */}

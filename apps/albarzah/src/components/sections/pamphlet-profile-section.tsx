@@ -26,18 +26,6 @@ export function PamphletProfileSection() {
     >
       <ResponsiveContainer>
 
-        {/* Point indicator */}
-        <div className="flex items-center gap-3 mb-8">
-          <span
-            className="flex h-10 w-10 items-center justify-center rounded-full text-sm font-black flex-shrink-0"
-            style={{ background: "var(--color-brand-green)", color: "#fff" }}
-            aria-hidden="true"
-          >
-            03
-          </span>
-          <div className="h-px flex-1 opacity-20" style={{ background: "var(--color-brand-green)" }} aria-hidden="true" />
-        </div>
-
         {/* Section heading */}
         <div className="mb-8 max-w-xl">
           <p className="eyebrow-cinzel mb-2">KHAIRAT KEMATIAN YANG MAMPU DIMILIKI</p>
