@@ -13,6 +13,7 @@ export { ResponsiveContainer } from "./components/responsive-container";
 export { ScrollToTop } from "./components/scroll-to-top";
 export { SectionHeading } from "./components/section-heading";
 export { TimelineStep } from "./components/timeline-step";
+export { SopProcessFlow, HubungiSvg, HadirSvg, UrusSvg, KebumiSvg, type SopStepItem } from "./components/sop-process-flow";
 
 // Lib utilities (re-exported so apps import from one place)
 export { cn, scrollToSection } from "./lib/utils";

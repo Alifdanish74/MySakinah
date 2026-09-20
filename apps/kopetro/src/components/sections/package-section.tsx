@@ -1545,9 +1545,6 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                 Nota Tanggungan Tambahan: Setiap tambahan 1 orang tanggungan dikenakan caj RM10/sebulan (Maksimum 5 orang). Jumlah tanggungan tambahan: {additionalDependents.length} orang (+RM{additionalDependents.length * 10}/sebulan).
                               </p>
                             )}
-                            <p className="font-bold text-red-800 leading-snug">
-                              Penting : Untuk Bukan Ahli Kohasil, Caj Tambahan sebanyak RM1 akan dikenakan untuk setiap potongan gaji bulanan. Contoh Pakej Keluarga 20 + Ibu Individu 10 : Potongan Bulanan adalah RM30 + RM1 = RM31 sebulan
-                            </p>
                             <p className="font-semibold text-red-700 leading-snug">
                               Jika pakej keluarga , Sila hubungi kami untuk menambah nama anak jika mendapat anak baharu (apabila berumur 1 tahun) bagi memenuhi kuota pakej keluarga tersebut.Tertakluk kepada kategori pakej keluarga
                             </p>

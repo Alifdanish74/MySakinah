@@ -4,9 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { PhoneCall, ShieldCheck, HeartHandshake, Sparkles, MapPin, CheckCircle } from "lucide-react";
 import { BRAND, SECTION_IDS } from "@/lib/constants";
-import { ResponsiveContainer } from "@sakinah/ui";
-import { SectionHeading } from "@sakinah/ui";
-import { OrnamentalDivider } from "@sakinah/ui";
+import { ResponsiveContainer, SectionHeading, OrnamentalDivider, SopProcessFlow } from "@sakinah/ui";
 import {
   staggerContainer,
   riseUp,
@@ -104,6 +102,9 @@ export function IntroductionSection() {
             Proses bantuan lancar dan pantas dari mula hingga selesai
           </p>
         </div>
+
+        {/* Shared SOP 4-Step Visual Flow Diagram */}
+        <SopProcessFlow />
 
         {/* Modus Operandi Grid */}
         <motion.div

@@ -4,9 +4,7 @@
 import { motion } from "framer-motion";
 import { PhoneCall, HeartHandshake, MapPin, CheckCircle, Sparkles } from "lucide-react";
 import { BRAND, SECTION_IDS } from "@/lib/constants";
-import { ResponsiveContainer } from "@sakinah/ui";
-import { SectionHeading } from "@sakinah/ui";
-import { OrnamentalDivider } from "@sakinah/ui";
+import { ResponsiveContainer, SectionHeading, OrnamentalDivider, SopProcessFlow } from "@sakinah/ui";
 import { staggerContainer, riseUp, viewportOnce } from "@sakinah/ui";
 
 const modusOperandiSteps = [
@@ -100,6 +98,9 @@ export function IntroductionSection() {
             Proses bantuan pantas dan sistematik dari mula hingga selesai
           </p>
         </div>
+
+        {/* Shared SOP 4-Step Visual Flow Diagram */}
+        <SopProcessFlow />
 
         <motion.div
           variants={staggerContainer}
