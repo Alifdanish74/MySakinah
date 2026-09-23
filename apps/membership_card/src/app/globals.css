@@ -128,3 +128,12 @@
     print-color-adjust: exact !important;
   }
 }
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="search"],
+textarea {
+  text-transform: uppercase;
+}
+

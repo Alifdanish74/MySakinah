@@ -118,6 +118,7 @@ export interface SopStepItem {
   label: string;
   IconComp: React.ComponentType<{ className?: string }>;
   alt?: string;
+  step?: string | number;
 }
 
 export interface SopProcessFlowProps {
@@ -127,10 +128,10 @@ export interface SopProcessFlowProps {
 }
 
 const defaultSopSteps: SopStepItem[] = [
-  { key: "hubungi", label: "HUBUNGI", IconComp: HubungiSvg, alt: "Langkah 1: Hubungi" },
-  { key: "hadir", label: "HADIR", IconComp: HadirSvg, alt: "Langkah 2: Hadir" },
-  { key: "urus", label: "URUS", IconComp: UrusSvg, alt: "Langkah 3: Urus" },
-  { key: "kebumi", label: "KEBUMI", IconComp: KebumiSvg, alt: "Langkah 4: Kebumi" },
+  { key: "hubungi", label: "HUBUNGI", IconComp: HubungiSvg, alt: "Langkah 1: Hubungi", step: "1" },
+  { key: "hadir", label: "HADIR", IconComp: HadirSvg, alt: "Langkah 2: Hadir", step: "2" },
+  { key: "urus", label: "URUS", IconComp: UrusSvg, alt: "Langkah 3: Urus", step: "3" },
+  { key: "kebumi", label: "KEBUMI", IconComp: KebumiSvg, alt: "Langkah 4: Kebumi", step: "4" },
 ];
 
 export function SopProcessFlow({ className = "", steps = defaultSopSteps, color = "#6E2020" }: SopProcessFlowProps) {
@@ -150,6 +151,13 @@ export function SopProcessFlow({ className = "", steps = defaultSopSteps, color 
               <div className="flex items-center gap-1 sm:gap-3 md:gap-5 flex-1 min-w-0">
                 {/* Step Item Card */}
                 <div className="flex flex-col items-center flex-1 min-w-0 group">
+                  {/* Step number badge above icon */}
+                  <div
+                    className="mb-1.5 sm:mb-2 flex h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 items-center justify-center rounded-full text-[10px] sm:text-sm md:text-sm font-bold text-white shadow-md flex-shrink-0"
+                    style={{ background: "var(--color-brand-gold, #BFA800)" }}
+                  >
+                    {step.step ?? idx + 1}
+                  </div>
                   <div className="relative w-full max-w-[56px] sm:max-w-[85px] md:max-w-[110px] aspect-square transition-transform duration-300 group-hover:scale-105 flex items-center justify-center">
                     <IconComponent className="w-full h-full drop-shadow-sm" />
                   </div>

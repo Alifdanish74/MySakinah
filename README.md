@@ -350,5 +350,5 @@ www.MySakinahPro.com/albarzah →  sakinah-albarzah.vercel.app
 **Bumijez Sdn Bhd**
 No 11, Tingkat 1, Jalan PP 2/1, Taman Putra Prima, 47130 Puchong, Selangor
 📧 info@bumijez.com.my
-📞 011-1300 1999 (24 jam)
+📞 011-1300 1999 (24 jam bersyarat)
 # mysakinah

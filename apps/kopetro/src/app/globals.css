@@ -621,3 +621,11 @@ body {
   background: linear-gradient(to bottom, var(--color-brand-gold), transparent);
   opacity: 0.4;
 }
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="search"],
+textarea {
+  text-transform: uppercase;
+}

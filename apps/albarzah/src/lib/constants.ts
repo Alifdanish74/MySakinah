@@ -5,7 +5,7 @@ export const BRAND = {
   tagline: "Perlindungan Jenazah Untuk Semua",
   description: "Skim keahlian pengurusan jenazah 24 jam dan manfaat khairat kematian untuk orang awam. Mulai dari RM80 setahun sahaja.",
   hotline: "011-1300 1999",
-  hotline_whatsapp: "01114977733",
+  hotline_whatsapp: "011-149 77733",
   hotlineTel: "tel:01113001999",
   product: "Albarzah",
 } as const;

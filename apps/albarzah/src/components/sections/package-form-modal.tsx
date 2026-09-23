@@ -107,7 +107,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
       const timer = setTimeout(() => {
         onClose();
         setStatus("idle");
-      }, 6000);
+      }, 5000);
       return () => clearTimeout(timer);
     }
   }, [status, onClose]);
@@ -364,7 +364,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                         id="modalAlamat"
                         rows={2}
                         value={alamat}
-                        onChange={(e) => setAlamat(e.target.value)}
+                        onChange={(e) => setAlamat(e.target.value.toUpperCase())}
                         placeholder="Nombor, Jalan, Taman, Poskod, Negeri"
                         className="form-input w-full"
                         style={{ resize: "vertical" }}
@@ -380,7 +380,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                         id="modalTel"
                         type="tel"
                         value={tel}
-                        onChange={(e) => setTel(e.target.value)}
+                        onChange={(e) => setTel(e.target.value.toUpperCase())}
                         placeholder="01X-XXX XXXX"
                         className="form-input w-full"
                         required
@@ -426,7 +426,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                           id="modalTelWaris"
                           type="tel"
                           value={telWaris}
-                          onChange={(e) => setTelWaris(e.target.value)}
+                          onChange={(e) => setTelWaris(e.target.value.toUpperCase())}
                           placeholder="01X-XXX XXXX"
                           className="form-input w-full"
                           autoComplete="off"
@@ -490,7 +490,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                           id="modalTelKawan"
                           type="tel"
                           value={telKawan}
-                          onChange={(e) => setTelKawan(e.target.value)}
+                          onChange={(e) => setTelKawan(e.target.value.toUpperCase())}
                           placeholder="01X-XXX XXXX"
                           className="form-input w-full"
                           autoComplete="off"

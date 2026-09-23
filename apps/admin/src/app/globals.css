@@ -395,3 +395,12 @@ body::before {
   z-index: 1;
   overflow-x: hidden;
 }
+
+input[type="text"],
+input[type="tel"],
+input[type="email"],
+input[type="search"],
+textarea {
+  text-transform: uppercase;
+}
+

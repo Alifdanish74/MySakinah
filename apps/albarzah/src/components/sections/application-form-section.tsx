@@ -317,7 +317,7 @@ export function ApplicationFormSection({ selectedPackage, onPackageChange }: App
                         id="bAlamat"
                         rows={3}
                         value={alamat}
-                        onChange={(e) => setAlamat(e.target.value)}
+                        onChange={(e) => setAlamat(e.target.value.toUpperCase())}
                         placeholder="Nombor, Jalan, Taman, Poskod, Negeri"
                         className="form-input w-full"
                         style={{ resize: "vertical" }}
@@ -334,7 +334,7 @@ export function ApplicationFormSection({ selectedPackage, onPackageChange }: App
                         id="bTel"
                         type="tel"
                         value={tel}
-                        onChange={(e) => setTel(e.target.value)}
+                        onChange={(e) => setTel(e.target.value.toUpperCase())}
                         placeholder="01X-XXX XXXX"
                         className="form-input w-full"
                         required
@@ -385,7 +385,7 @@ export function ApplicationFormSection({ selectedPackage, onPackageChange }: App
                         id="bTelWaris"
                         type="tel"
                         value={telWaris}
-                        onChange={(e) => setTelWaris(e.target.value)}
+                        onChange={(e) => setTelWaris(e.target.value.toUpperCase())}
                         placeholder="01X-XXX XXXX"
                         className="form-input w-full"
                         autoComplete="off"
@@ -453,7 +453,7 @@ export function ApplicationFormSection({ selectedPackage, onPackageChange }: App
                         id="bTelKawan"
                         type="tel"
                         value={telKawan}
-                        onChange={(e) => setTelKawan(e.target.value)}
+                        onChange={(e) => setTelKawan(e.target.value.toUpperCase())}
                         placeholder="01X-XXX XXXX"
                         className="form-input w-full"
                         autoComplete="off"

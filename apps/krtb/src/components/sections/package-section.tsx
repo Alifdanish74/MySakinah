@@ -72,7 +72,7 @@ const individuPackages: PackageDetail[] = [
     modalData_nonmuslim: {
       totalNormalDeath: "RM 5,000",
       items: [
-        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 Jam)", ahli: "RM 1,500" },
+        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500" },
         { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 120" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 2,880" },
@@ -112,7 +112,7 @@ const individuPackages: PackageDetail[] = [
     modalData_nonmuslim: {
       totalNormalDeath: "RM 7,000",
       items: [
-        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 Jam)", ahli: "RM 1,500" },
+        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500" },
         { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 180" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 4,820" },
@@ -152,7 +152,7 @@ const individuPackages: PackageDetail[] = [
     modalData_nonmuslim: {
       totalNormalDeath: "RM 9,000",
       items: [
-        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 Jam)", ahli: "RM 1,500" },
+        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500" },
         { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 240" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 6,760" },
@@ -177,12 +177,12 @@ const keluargaPackages: PackageDetail[] = [
       "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",
       "Wang Khairat Kepada Waris: Ahli RM2,880 & Pasangan RM2,880",
       "Dana Kemalangan Diri: Ahli RM5,000 & Pasangan RM5,000",
-      "Manfaat Untuk 2 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 Jam)"
+      "Manfaat Untuk 2 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 jam bersyarat)"
     ],
     modalData: {
       totalNormalDeath: "RM 5,000 (Ahli) + RM 5,000 (Pasangan)",
       items: [
-        { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 Jam)", ahli: "RM 1,500", pasangan: "RM 1,500" },
+        { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
         { no: 2, benefit: "Tahlil Dan Khatam Al Quran (BJSB)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 120", pasangan: "RM 120" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 2,880", pasangan: "RM 2,880" },
@@ -196,7 +196,7 @@ const keluargaPackages: PackageDetail[] = [
     modalData_nonmuslim: {
       totalNormalDeath: "RM 5,000 (Ahli) + RM 5,000 (Pasangan)",
       items: [
-        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 Jam)", ahli: "RM 1,500", pasangan: "RM 1,500" },
+        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
         { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 120", pasangan: "RM 120" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 2,880", pasangan: "RM 2,880" },
@@ -221,12 +221,12 @@ const keluargaPackages: PackageDetail[] = [
       "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",
       "Wang Khairat Kepada Waris: Ahli RM4,820 & Pasangan RM4,820",
       "Dana Kemalangan Diri: Ahli RM10,000 & Pasangan RM10,000",
-      "Manfaat Untuk 2 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 Jam)"
+      "Manfaat Untuk 2 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 jam bersyarat)"
     ],
     modalData: {
       totalNormalDeath: "RM 7,000 (Ahli) + RM 7,000 (Pasangan)",
       items: [
-        { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 Jam)", ahli: "RM 1,500", pasangan: "RM 1,500" },
+        { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
         { no: 2, benefit: "Tahlil Dan Khatam Al Quran (BJSB)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 180", pasangan: "RM 180" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 4,820", pasangan: "RM 4,820" },
@@ -240,7 +240,7 @@ const keluargaPackages: PackageDetail[] = [
     modalData_nonmuslim: {
       totalNormalDeath: "RM 7,000 (Ahli) + RM 7,000 (Pasangan)",
       items: [
-        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 Jam)", ahli: "RM 1,500", pasangan: "RM 1,500" },
+        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
         { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 180", pasangan: "RM 180" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 4,820", pasangan: "RM 4,820" },
@@ -265,12 +265,12 @@ const keluargaPackages: PackageDetail[] = [
       "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",
       "Wang Khairat Kepada Waris: Ahli RM6,760 & Pasangan RM6,760",
       "Dana Kemalangan Diri: Ahli RM15,000 & Pasangan RM15,000",
-      "Manfaat Untuk 5 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 Jam)"
+      "Manfaat Untuk 5 Orang Anak Berdaftar Pen. Jenazah Lengkap / Tunai RM1,200 (24 jam bersyarat)"
     ],
     modalData: {
       totalNormalDeath: "RM 9,000 (Ahli) + RM 9,000 (Pasangan)",
       items: [
-        { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 Jam)", ahli: "RM 1,500", pasangan: "RM 1,500" },
+        { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
         { no: 2, benefit: "Tahlil Dan Khatam Al Quran (BJSB)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 240", pasangan: "RM 240" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 6,760", pasangan: "RM 6,760" },
@@ -284,7 +284,7 @@ const keluargaPackages: PackageDetail[] = [
     modalData_nonmuslim: {
       totalNormalDeath: "RM 9,000 (Ahli) + RM 9,000 (Pasangan)",
       items: [
-        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 Jam)", ahli: "RM 1,500", pasangan: "RM 1,500" },
+        { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
         { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 240", pasangan: "RM 240" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 6,760", pasangan: "RM 6,760" },
@@ -693,7 +693,10 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   };
 
   const handleMemberFieldChange = (tabId: string, field: keyof MemberFormData, value: any) => {
-    const finalValue = field === "ic" ? formatMalaysianIC(value) : value;
+    let finalValue = field === "ic" ? formatMalaysianIC(value) : value;
+    if (typeof finalValue === "string") {
+      finalValue = finalValue.toUpperCase();
+    }
 
     setMembersData((prev) => {
       const currentTab = prev[tabId] || {
@@ -986,10 +989,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                   <ul className="space-y-2.5 mb-6 text-xs text-slate-700">
                     {pkg.summaryBenefits.map((b, i) => {
                       const isRed = b.includes("Manfaat Untuk");
+                      const isBold = b.includes("Jumlah Manfaat");
                       return (
                         <li key={i} className="flex items-start gap-2">
                           <CheckCircle2 className={`h-4 w-4 flex-shrink-0 mt-0.5 ${isRed ? "text-red-600" : "text-emerald-600"}`} />
-                          <span className={isRed ? "text-red-600 font-bold" : ""}>{b}</span>
+                          <span className={isRed ? "text-red-600 font-bold" : isBold ? "font-bold text-slate-900" : ""}>{b}</span>
                         </li>
                       );
                     })}
@@ -1099,10 +1103,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                   <ul className="space-y-2.5 mb-6 text-xs text-slate-700">
                     {pkg.summaryBenefits.map((b, i) => {
                       const isRed = b.includes("Manfaat Untuk");
+                      const isBold = b.includes("Jumlah Manfaat");
                       return (
                         <li key={i} className="flex items-start gap-2">
                           <CheckCircle2 className={`h-4 w-4 flex-shrink-0 mt-0.5 ${isRed ? "text-red-600" : "text-emerald-600"}`} />
-                          <span className={isRed ? "text-red-600 font-bold" : ""}>{b}</span>
+                          <span className={isRed ? "text-red-600 font-bold" : isBold ? "font-bold text-slate-900" : ""}>{b}</span>
                         </li>
                       );
                     })}
@@ -1216,11 +1221,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                   <div className="space-y-4 mb-6">
                     {/* Detailed Table matching exact layout from image */}
                     <div className="overflow-x-auto rounded-xl border border-slate-400 shadow-sm">
-                      <table className="w-full table-fixed text-left text-xs sm:text-sm border-collapse border border-slate-400">
+                      <table className="w-full text-left text-xs sm:text-sm border-collapse border border-slate-400">
                         <thead>
                           <tr className={`${activeModalTab === "nonmuslim" ? "bg-purple-100 text-purple-950" : "bg-[#D5E8F7] text-slate-900"} font-bold border-b border-slate-400`}>
-                            <th className="p-2.5 sm:p-3 w-10 sm:w-12 text-center border-r border-slate-400"></th>
-                            <th className={`p-2.5 sm:p-3 border-r border-slate-400 ${currentModalData.items[0]?.pasangan ? "w-1/2" : "w-2/3"}`}>
+                            <th className="p-2 sm:p-3 w-8 sm:w-10 text-center border-r border-slate-400 whitespace-nowrap"></th>
+                            <th className="p-2.5 sm:p-3 border-r border-slate-400">
                               <div className={`font-extrabold text-sm sm:text-base ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase tracking-wide`}>
                                 PAKEJ {activeModalPackage.name}
                               </div>
@@ -1232,15 +1237,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             </th>
                             {currentModalData.items[0]?.pasangan ? (
                               <>
-                                <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-r border-slate-400 w-1/4 ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
+                                <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-r border-slate-400 whitespace-nowrap ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
                                   Ahli (RM)
                                 </th>
-                                <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 w-1/4 ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
+                                <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 whitespace-nowrap ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
                                   Pasangan (RM)
                                 </th>
                               </>
                             ) : (
-                              <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 w-1/3 ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
+                              <th className={`p-2.5 sm:p-3 text-center sm:text-right font-extrabold border-slate-400 whitespace-nowrap ${activeModalTab === "nonmuslim" ? "text-purple-950" : "text-slate-900"} uppercase`}>
                                 NILAI MANFAAT PAKEJ (RM)
                               </th>
                             )}
@@ -1250,17 +1255,17 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                           {/* Items 1 to 4 */}
                           {currentModalData.items.map((item) => (
                             <tr key={item.no} className="hover:bg-slate-50 border-b border-slate-300">
-                              <td className="p-2.5 text-center font-bold text-slate-900 border-r border-slate-400">
+                              <td className="p-2.5 text-center font-bold text-slate-900 border-r border-slate-400 whitespace-nowrap">
                                 {item.no}
                               </td>
                               <td className="p-2.5 font-medium text-slate-900 border-r border-slate-400">
                                 {item.benefit}
                               </td>
-                              <td className="p-2.5 text-center sm:text-right font-bold text-slate-900 border-r border-slate-400">
+                              <td className="p-2.5 text-center sm:text-right font-bold text-slate-900 border-r border-slate-400 whitespace-nowrap">
                                 {item.ahli.replace(/[^0-9]/g, "")}
                               </td>
                               {item.pasangan && (
-                                <td className="p-2.5 text-center sm:text-right font-bold text-slate-900 border-slate-400">
+                                <td className="p-2.5 text-center sm:text-right font-bold text-slate-900 border-slate-400 whitespace-nowrap">
                                   {item.pasangan.replace(/[^0-9]/g, "")}
                                 </td>
                               )}
@@ -1269,15 +1274,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           {/* Row 5: *Jumlah Manfaat Untuk Kematian Biasa */}
                           <tr className="bg-slate-50 border-b border-slate-400 font-extrabold">
-                            <td className="p-2.5 border-r border-slate-400"></td>
+                            <td className="p-2.5 border-r border-slate-400 whitespace-nowrap"></td>
                             <td className="p-2.5 italic text-slate-900 border-r border-slate-400">
                               *Jumlah Manfaat Untuk Kematian Biasa
                             </td>
-                            <td className="p-2.5 text-center sm:text-right text-slate-900 border-r border-slate-400">
+                            <td className="p-2.5 text-center sm:text-right text-slate-900 border-r border-slate-400 whitespace-nowrap">
                               {calculateAhliTotal(currentModalData.items).replace(/[^0-9]/g, "")}
                             </td>
                             {currentModalData.items[0]?.pasangan && (
-                              <td className="p-2.5 text-center sm:text-right text-slate-900 border-slate-400">
+                              <td className="p-2.5 text-center sm:text-right text-slate-900 border-slate-400 whitespace-nowrap">
                                 {calculatePasanganTotal(currentModalData.items).replace(/[^0-9]/g, "")}
                               </td>
                             )}
@@ -1285,17 +1290,17 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           {/* Row 6: Item No. 5 - Meninggal / Kecacatan Kekal Akibat Kemalangan (in RED text) */}
                           <tr className="bg-red-50/40 border-b border-slate-400">
-                            <td className="p-2.5 text-center font-bold text-red-600 border-r border-slate-400">
+                            <td className="p-2.5 text-center font-bold text-red-600 border-r border-slate-400 whitespace-nowrap">
                               5
                             </td>
                             <td className="p-2.5 font-semibold text-red-600 border-r border-slate-400 leading-snug">
                               Meninggal / Kecacatan Kekal Akibat Kemalangan
                             </td>
-                            <td className="p-2.5 text-center sm:text-right font-extrabold text-red-600 border-r border-slate-400">
+                            <td className="p-2.5 text-center sm:text-right font-extrabold text-red-600 border-r border-slate-400 whitespace-nowrap">
                               {currentModalData.accidentAhli || "5000"}
                             </td>
                             {currentModalData.items[0]?.pasangan && (
-                              <td className="p-2.5 text-center sm:text-right font-extrabold text-red-600 border-slate-400">
+                              <td className="p-2.5 text-center sm:text-right font-extrabold text-red-600 border-slate-400 whitespace-nowrap">
                                 {currentModalData.accidentPasangan || "5000"}
                               </td>
                             )}
@@ -1860,7 +1865,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                     type="text"
                                     required
                                     value={warisData.namaWaris}
-                                    onChange={(e) => setWarisData({ ...warisData, namaWaris: e.target.value })}
+                                    onChange={(e) => setWarisData({ ...warisData, namaWaris: e.target.value.toUpperCase() })}
                                     placeholder="Nama Penuh Waris"
                                     className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                                   />
