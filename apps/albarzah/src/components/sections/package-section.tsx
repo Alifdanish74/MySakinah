@@ -25,11 +25,14 @@ interface PakejData {
   pointNo: string;
   yearly: string;
   yearlyValue: string;
+  packageName?: string;
+  period?: string;
   sebulan: string;
   sehari: string;
   umur: string;
   manfaatBiasa: BenefitRow[];
   kemalangan: BenefitRow[];
+  csrNote?: string;
   jumlahKeseluruhan: string;
 }
 
@@ -118,6 +121,26 @@ const PAKEJ_LIST: PakejData[] = [
     ],
     jumlahKeseluruhan: "RM24,000",
   },
+  {
+    id: "pakej-1500",
+    pointId: "pakej-1500",
+    pointNo: "12",
+    yearly: "RM 1,500.00",
+    yearlyValue: "PAKEJ PERMATA INDIVIDU",
+    packageName: "PAKEJ PERMATA INDIVIDU",
+    period: "SEUMUR HIDUP",
+    sebulan: "Bayaran Sekali Sahaja",
+    sehari: "Seumur Hidup",
+    umur: "SELEPAS UMUR 70 TAHUN DAN MESTI MELANGGANI MANA-MANA PAKEJ SELAMA 5 TAHUN",
+    manfaatBiasa: [
+      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM 1,500.00" },
+      { no: 2, label: "Pakej Diwarisi",                      note: "30 Hari Bekerja • Pakej Terendah", value: "RM 80.00" },
+      { no: 4, label: "Wang Khairat",                        note: "30 Hari Bekerja • Dibayar Kepada Waris", value: "RM 150.00" },
+    ],
+    kemalangan: [],
+    csrNote: "Pakej ini tidak ditakafulkan selebihnya adalah CSR Bumijez Sdn Bhd",
+    jumlahKeseluruhan: "RM 1,730.00",
+  },
 ];
 
 // ── Nota Penting Accordion ────────────────────────────────────────────────
@@ -190,12 +213,6 @@ interface PackageCardProps {
 function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
   const handleCTA = () => {
     onSelectPackage(pkg.yearlyValue);
-    setTimeout(() => {
-      const formEl = document.getElementById(SECTION_IDS.point12);
-      if (formEl) {
-        formEl.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }, 60);
   };
 
   return (
@@ -212,8 +229,8 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
         className="px-6 py-6 sm:px-8"
         style={{ background: "var(--color-brand-green)" }}
       >
-        <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.55)" }}>
-          PAKEJ MY SAKINAH PRO INDIVIDU
+        <p className="text-[10px] font-black uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.75)" }}>
+          {pkg.packageName || "PAKEJ MY SAKINAH PRO INDIVIDU"}
         </p>
         <p
           className="text-4xl sm:text-5xl font-black tabular-nums text-white leading-none"
@@ -221,19 +238,21 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
         >
           {pkg.yearly}
         </p>
-        <p className="text-sm font-bold mt-1" style={{ color: "rgba(255,255,255,0.7)" }}>SETAHUN</p>
+        <p className="text-sm font-bold mt-1" style={{ color: "rgba(255,255,255,0.7)" }}>
+          {pkg.period || "SETAHUN"}
+        </p>
         <div className="flex flex-wrap gap-x-4 gap-y-1 mt-3">
           <span
             className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
             style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}
           >
-            {pkg.sebulan} sebulan
+            {pkg.sebulan.toLowerCase().includes("bayar") || pkg.sebulan.toLowerCase().includes("sebulan") ? pkg.sebulan : `${pkg.sebulan} sebulan`}
           </span>
           <span
             className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
             style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}
           >
-            {pkg.sehari} sehari
+            {pkg.sehari.toLowerCase().includes("hidup") || pkg.sehari.toLowerCase().includes("sehari") ? pkg.sehari : `${pkg.sehari} sehari`}
           </span>
         </div>
       </div>
@@ -241,8 +260,13 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
       <div className="p-5 sm:p-6 space-y-5">
         {/* Eligibility */}
         <p
-          className="text-xs sm:text-sm font-semibold text-center leading-snug px-3 py-2.5 rounded-xl"
-          style={{ background: "var(--color-brand-sage-soft)", color: "var(--color-brand-green-dark)" }}
+          className="text-xs sm:text-sm font-bold text-center leading-snug px-3 py-2.5 rounded-xl uppercase tracking-wide"
+          style={{
+            background: pkg.id === "pakej-1500" ? "rgba(239,68,68,0.08)" : "var(--color-brand-sage-soft)",
+            color: pkg.id === "pakej-1500" ? "#c2410c" : "var(--color-brand-green-dark)",
+            borderColor: pkg.id === "pakej-1500" ? "rgba(239,68,68,0.2)" : "transparent",
+            borderWidth: pkg.id === "pakej-1500" ? "1px" : "0px",
+          }}
         >
           {pkg.umur}
         </p>
@@ -284,40 +308,42 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
         </div>
 
         {/* Berlaku Kemalangan */}
-        <div>
-          <p
-            className="text-[10px] font-black uppercase tracking-widest mb-3"
-            style={{ color: "var(--color-brand-text-muted)" }}
-          >
-            BERLAKU KEMALANGAN
-          </p>
-          <ul className="space-y-3">
-            {pkg.kemalangan.map((b) => (
-              <li key={b.no} className="flex items-start gap-3">
-                <span
-                  className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black flex-shrink-0 mt-0.5"
-                  style={{ background: "rgba(243,182,1,0.12)", color: "var(--color-brand-gold)" }}
-                >
-                  {b.no}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold leading-snug flex-1" style={{ color: "var(--color-brand-text)" }}>
-                      {b.label}
-                    </p>
-                    <p
-                      className="text-sm font-black tabular-nums flex-shrink-0"
-                      style={{ color: "var(--color-brand-gold)" }}
-                    >
-                      {b.value}
-                    </p>
+        {pkg.kemalangan.length > 0 && (
+          <div>
+            <p
+              className="text-[10px] font-black uppercase tracking-widest mb-3"
+              style={{ color: "var(--color-brand-text-muted)" }}
+            >
+              BERLAKU KEMALANGAN
+            </p>
+            <ul className="space-y-3">
+              {pkg.kemalangan.map((b) => (
+                <li key={b.no} className="flex items-start gap-3">
+                  <span
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black flex-shrink-0 mt-0.5"
+                    style={{ background: "rgba(243,182,1,0.12)", color: "var(--color-brand-gold)" }}
+                  >
+                    {b.no}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-semibold leading-snug flex-1" style={{ color: "var(--color-brand-text)" }}>
+                        {b.label}
+                      </p>
+                      <p
+                        className="text-sm font-black tabular-nums flex-shrink-0"
+                        style={{ color: "var(--color-brand-gold)" }}
+                      >
+                        {b.value}
+                      </p>
+                    </div>
+                    <p className="text-[11px] text-slate-400 font-medium mt-0.5">{b.note}</p>
                   </div>
-                  <p className="text-[11px] text-slate-400 font-medium mt-0.5">{b.note}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Total */}
         <div
@@ -334,6 +360,13 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
             {pkg.jumlahKeseluruhan}
           </p>
         </div>
+
+        {/* CSR Note */}
+        {pkg.csrNote && (
+          <p className="text-xs text-center font-semibold italic text-slate-600 px-3 py-2 bg-amber-50/60 rounded-xl border border-amber-200/60 leading-relaxed">
+            {pkg.csrNote}
+          </p>
+        )}
 
         {/* CTA */}
         <button
@@ -356,14 +389,14 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
 
 // ── Main PackageSection ────────────────────────────────────────────────────
 interface PackageSectionProps {
-  onSelectPackage: (yearlyValue: string) => void;
+  onSelectPackage?: (yearlyValue: string) => void;
 }
 
-export function PackageSection({ onSelectPackage }: PackageSectionProps) {
+export function PackageSection({ onSelectPackage }: PackageSectionProps = {}) {
   const [modalPackage, setModalPackage] = useState<string | null>(null);
 
   const handleSelectPackageCard = (yearlyValue: string) => {
-    onSelectPackage(yearlyValue);
+    onSelectPackage?.(yearlyValue);
     setModalPackage(yearlyValue);
   };
 
@@ -419,7 +452,7 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps) {
                     className="text-xl font-black uppercase"
                     style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}
                   >
-                    {pkg.yearly} SETAHUN
+                    {pkg.yearly} {pkg.period || "SETAHUN"}
                   </p>
                   <p className="text-sm text-slate-600 mt-2 font-medium leading-relaxed">
                     {pkg.umur}

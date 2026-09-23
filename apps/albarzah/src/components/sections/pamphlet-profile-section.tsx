@@ -85,24 +85,24 @@ export function PamphletProfileSection() {
           </div>
 
           {/* Organization Roles Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
             {ROLES.map(({ title, org, icon: Icon }) => (
               <div
                 key={org}
-                className="flex items-start gap-3 rounded-2xl p-3.5 bg-white border shadow-sm transition-all duration-200 hover:-translate-y-0.5"
+                className="flex items-start gap-2 sm:gap-3 rounded-2xl p-2.5 sm:p-3.5 bg-white border shadow-sm transition-all duration-200 hover:-translate-y-0.5"
                 style={{ borderColor: "var(--color-brand-border)" }}
               >
                 <div
-                  className="flex h-9 w-9 items-center justify-center rounded-xl flex-shrink-0 mt-0.5"
+                  className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl flex-shrink-0 mt-0.5"
                   style={{ background: "var(--color-brand-sage-soft)", color: "var(--color-brand-green)" }}
                 >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
+                  <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                <div className="min-w-0 flex-1">
+                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400 truncate">
                     {title}
                   </p>
-                  <p className="text-xs font-bold text-slate-800 leading-snug">
+                  <p className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug break-words">
                     {org}
                   </p>
                 </div>

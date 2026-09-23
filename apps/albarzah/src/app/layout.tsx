@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Playfair_Display, Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
 import { MobileBottomNavigation } from "@/components/layout/mobile-bottom-navigation";
 import { OpeningCover } from "@/components/sections/opening-cover";
 import { ScrollToTop } from "@sakinah/ui";
@@ -113,7 +112,6 @@ export default function RootLayout({
           {children}
         </main>
 
-        <Footer />
         <MobileBottomNavigation />
 
         {/* Floating Utilities */}

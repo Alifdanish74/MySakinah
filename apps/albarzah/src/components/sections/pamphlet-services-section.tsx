@@ -55,7 +55,7 @@ export function PamphletServicesSection() {
         </div>
 
         {/* ── 8 Perkhidmatan Lengkap Grid ─────────────────────────── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mb-10">
           {SERVICES_8.map(({ no, label, icon: Icon }) => (
             <motion.div
               key={no}
@@ -63,23 +63,23 @@ export function PamphletServicesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={viewportOnce}
               transition={{ duration: 0.4, delay: no * 0.05 }}
-              className="relative flex items-center gap-4 rounded-2xl p-4 border bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
+              className="relative flex items-center gap-2.5 sm:gap-4 rounded-2xl p-3 sm:p-4 border bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md"
               style={{ borderColor: "var(--color-brand-border)" }}
             >
               <div
-                className="flex h-11 w-11 items-center justify-center rounded-xl flex-shrink-0"
+                className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl flex-shrink-0"
                 style={{ background: "var(--color-brand-sage-soft)", color: "var(--color-brand-green)" }}
               >
-                <Icon className="h-5 w-5" aria-hidden="true" />
+                <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
               </div>
               <div className="flex-1 min-w-0">
                 <span
-                  className="text-[10px] font-black uppercase tracking-widest block mb-0.5"
+                  className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest block mb-0.5"
                   style={{ color: "var(--color-brand-gold)" }}
                 >
                   {String(no).padStart(2, "0")}
                 </span>
-                <p className="text-sm font-bold leading-snug" style={{ color: "var(--color-brand-green-dark)" }}>
+                <p className="text-xs sm:text-sm font-bold leading-snug break-words" style={{ color: "var(--color-brand-green-dark)" }}>
                   {label}
                 </p>
               </div>

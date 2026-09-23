@@ -19,6 +19,25 @@ const KAWAN_OPTIONS = [
   "KAWAN SEKOLAH", "KAWAN SERUMAH", "KAWAN SEKAMPUNG",
 ];
 
+const MALAYSIAN_STATES = [
+  "Johor",
+  "Kedah",
+  "Kelantan",
+  "Melaka",
+  "Negeri Sembilan",
+  "Pahang",
+  "Perak",
+  "Perlis",
+  "Pulau Pinang",
+  "Sabah",
+  "Sarawak",
+  "Selangor",
+  "Terengganu",
+  "Wilayah Persekutuan Kuala Lumpur",
+  "Wilayah Persekutuan Labuan",
+  "Wilayah Persekutuan Putrajaya",
+] as const;
+
 // ── IC helper ─────────────────────────────────────────────────────────────
 function getAgeFromIC(ic: string): string {
   const d = ic.replace(/\D/g, "");
@@ -70,12 +89,19 @@ const PACKAGE_DETAILS_MAP: Record<string, { yearly: string; monthly: string; dai
     age: "17 – 55 tahun",
     total: "RM24,000",
   },
-  "PAKEJ RM1,500 SEUMUR HIDUP": {
-    yearly: "RM1,500 SEUMUR HIDUP",
+  "PAKEJ PERMATA INDIVIDU": {
+    yearly: "RM1,500.00 SEUMUR HIDUP",
     monthly: "Bayaran Sekali Sahaja",
-    daily: "Pengurusan Jenazah Lengkap",
-    age: "Semua Umur",
-    total: "RM1,500 + Khairat",
+    daily: "Seumur Hidup",
+    age: "Selepas Umur 70 Tahun",
+    total: "RM1,730.00",
+  },
+  "PAKEJ RM1,500 SEUMUR HIDUP": {
+    yearly: "RM1,500.00 SEUMUR HIDUP",
+    monthly: "Bayaran Sekali Sahaja",
+    daily: "Seumur Hidup",
+    age: "Selepas Umur 70 Tahun",
+    total: "RM1,730.00",
   },
 };
 
@@ -89,7 +115,10 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
   const [ic, setIc] = useState("");
   const [umur, setUmur] = useState("");
   const [nama, setNama] = useState("");
-  const [alamat, setAlamat] = useState("");
+  const [alamat1, setAlamat1] = useState("");
+  const [poskod, setPoskod] = useState("");
+  const [daerah, setDaerah] = useState("");
+  const [negeri, setNegeri] = useState("");
   const [tel, setTel] = useState("");
   const [namaWaris, setNamaWaris] = useState("");
   const [telWaris, setTelWaris] = useState("");
@@ -140,6 +169,8 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
       const sanitizedTelKawan = telKawan ? telKawan.replace(/[\s-]/g, "") : undefined;
       const sanitizedIc = ic ? ic.replace(/\D/g, "") : undefined;
 
+      const fullAlamat = [alamat1, poskod, daerah, negeri].filter(Boolean).join(", ");
+
       const res = await fetch("/albarzah/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -147,7 +178,12 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
           nama,
           telefon: sanitizedTel,
           ic: sanitizedIc,
-          alamat: alamat || undefined,
+          alamat: fullAlamat || undefined,
+          alamat1: alamat1 || undefined,
+          alamat2: poskod || undefined,
+          poskod: poskod || undefined,
+          alamat3: daerah || undefined,
+          negeri: negeri || undefined,
           umur: umur || undefined,
           namaWaris: namaWaris || undefined,
           telefonWaris: sanitizedTelWaris,
@@ -357,19 +393,77 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                     </div>
 
                     <div>
-                      <label htmlFor="modalAlamat" className={labelClass}>
-                        ALAMAT TEMPAT TINGGAL
+                      <label htmlFor="modalAlamat1" className={labelClass}>
+                        ALAMAT 1
                       </label>
-                      <textarea
-                        id="modalAlamat"
-                        rows={2}
-                        value={alamat}
-                        onChange={(e) => setAlamat(e.target.value.toUpperCase())}
-                        placeholder="Nombor, Jalan, Taman, Poskod, Negeri"
+                      <input
+                        id="modalAlamat1"
+                        type="text"
+                        value={alamat1}
+                        onChange={(e) => setAlamat1(e.target.value.toUpperCase())}
+                        placeholder="No. Rumah, Jalan, Taman"
                         className="form-input w-full"
-                        style={{ resize: "vertical" }}
-                        autoComplete="street-address"
+                        style={{ textTransform: "uppercase" }}
+                        autoComplete="address-line1"
                       />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalPoskod" className={labelClass}>
+                          POSKOD
+                        </label>
+                        <input
+                          id="modalPoskod"
+                          type="text"
+                          inputMode="numeric"
+                          value={poskod}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, "").slice(0, 5);
+                            setPoskod(digits);
+                          }}
+                          maxLength={5}
+                          placeholder="50600"
+                          className="form-input w-full"
+                          autoComplete="postal-code"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalDaerah" className={labelClass}>
+                          BANDAR / DAERAH
+                        </label>
+                        <input
+                          id="modalDaerah"
+                          type="text"
+                          value={daerah}
+                          onChange={(e) => setDaerah(e.target.value.toUpperCase())}
+                          placeholder="Kuala Lumpur"
+                          className="form-input w-full"
+                          style={{ textTransform: "uppercase" }}
+                          autoComplete="address-level2"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="modalNegeri" className={labelClass}>
+                        NEGERI
+                      </label>
+                      <select
+                        id="modalNegeri"
+                        value={negeri}
+                        onChange={(e) => setNegeri(e.target.value)}
+                        className="form-input w-full bg-white font-medium"
+                        aria-label="Pilih Negeri"
+                      >
+                        <option value="">-- PILIH NEGERI --</option>
+                        {MALAYSIAN_STATES.map((st) => (
+                          <option key={st} value={st.toUpperCase()}>
+                            {st.toUpperCase()}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div>
