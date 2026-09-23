@@ -24,10 +24,11 @@ import { viewportOnce } from "@sakinah/ui";
  * Example: "/images/testimoni_1.jpg", "/images/whatsapp_feedback_2.png"
  */
 export const TESTIMONY_IMAGES: string[] = [
-  "/images/elderly_parents.png",
-  "/images/parent_carousel.png",
-  "/images/parent_in_law_carousel.jpeg",
-  "/images/graduate_carousel.png",
+  "/images/feedback.jpg",
+  "/images/feedback2.jpg",
+  "/images/feedback3.jpg",
+  "/images/feedback4.jpg",
+  "/images/feedback5.jpg",
 ];
 
 export function TestimonialSection() {

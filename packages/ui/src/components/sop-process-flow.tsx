@@ -30,7 +30,7 @@ export function HubungiSvg({ className }: { className?: string }) {
 export function HadirSvg({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" className={className}>
-      <rect x="32" y="32" width="448" height="448" rx="88" ry="88" fill="#6E2020" />
+      <rect x="24" y="24" width="464" height="464" rx="90" ry="90" fill="#6E2020" />
       <path
         d="M 140 180 L 350 180 Q 380 180, 386 210 L 392 285 Q 393 325, 375 325 L 367 325 A 30 30 0 0 0 307 325 L 201 325 A 30 30 0 0 0 141 325 L 125 325 Q 122 325, 122 315 L 122 198 Q 122 180, 140 180 Z"
         fill="#FFFFFF"
@@ -96,19 +96,21 @@ export function UrusSvg({ className }: { className?: string }) {
 export function KebumiSvg({ className }: { className?: string }) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%" className={className}>
-      <rect x="24" y="24" width="464" height="464" rx="90" ry="90" fill="#6E2020" />
-      <path
-        d="M 152 387 L 152 230 C 152 145, 200 94, 256 94 C 312 94, 360 145, 360 230 L 360 387 Z"
-        fill="#FFFFFF"
-      />
-      <path
-        d="M 276 166 A 78 78 0 1 0 332 284 A 65 65 0 1 1 276 166 Z"
-        fill="#6E2020"
-      />
-      <polygon
-        points="273.0,204.0 279.8,225.0 302.0,225.0 284.1,238.0 290.9,259.0 273.0,246.0 255.1,259.0 261.9,238.0 244.0,225.0 266.2,225.0"
-        fill="#6E2020"
-      />
+      <rect x="24" y="40" width="430" height="430" rx="90" ry="90" fill="#6E2020" />
+      <g transform="translate(256, 256) scale(0.85) translate(-256, -256)">
+        <path
+          d="M 152 387 L 152 230 C 152 145, 200 94, 256 94 C 312 94, 360 145, 360 230 L 360 387 Z"
+          fill="#FFFFFF"
+        />
+        <path
+          d="M 276 166 A 78 78 0 1 0 332 284 A 65 65 0 1 1 276 166 Z"
+          fill="#6E2020"
+        />
+        <polygon
+          points="273.0,204.0 279.8,225.0 302.0,225.0 284.1,238.0 290.9,259.0 273.0,246.0 255.1,259.0 261.9,238.0 244.0,225.0 266.2,225.0"
+          fill="#6E2020"
+        />
+      </g>
     </svg>
   );
 }
