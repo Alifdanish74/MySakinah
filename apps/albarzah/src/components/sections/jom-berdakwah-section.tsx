@@ -52,6 +52,10 @@ export function JomBerdakwahSection() {
               Menyampaikan perkara yang baik itu dakwah. Beritahu pakej ini kepada keluarga dan kawan yang lain agar mereka juga mendapat manfaat.
             </p>
 
+            <p className="text-base sm:text-lg text-white/90 font-medium leading-relaxed mb-6">
+              Mungkin anda tidak memerlukannya tetapi orang lain sedang mencari dan sangat memerlukannya
+            </p>
+
             <div
               className="rounded-2xl p-5 border mb-6"
               style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(243,182,1,0.35)" }}
@@ -66,7 +70,7 @@ export function JomBerdakwahSection() {
             </div>
 
             {/* CTA */}
-            <a
+            {/* <a
               href={`#${SECTION_IDS.point8}`}
               className="hover-scale inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-full py-3.5 px-8 text-sm font-black uppercase tracking-wide shadow-lg transition-all cursor-pointer"
               style={{
@@ -78,11 +82,11 @@ export function JomBerdakwahSection() {
             >
               LIHAT PAKEJ
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </a>
+            </a> */}
           </motion.div>
 
           {/* Right: Phone numbers */}
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 24 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={viewportOnce}
@@ -120,7 +124,7 @@ export function JomBerdakwahSection() {
                 </div>
               </a>
             ))}
-          </motion.div>
+          </motion.div> */}
         </div>
       </ResponsiveContainer>
     </section>

@@ -6,7 +6,7 @@ export interface BenefitItem {
   label: string;
   timeline?: string; // e.g. "30 hari bekerja"
   detail?: string;   // e.g. "Bumijez urus"
-  value: string;     // e.g. "RM1,500"
+  value: string;     // e.g. "RM 1,500"
 }
 
 export interface PackageBenefitGroup {
@@ -19,7 +19,7 @@ export interface Package {
   id: string;
   name: string;
   yearlyFee: number;
-  monthlyFee: string;   // e.g. "RM2.66"
+  monthlyFee: string;   // e.g. "RM 2.66"
   dailyRate: string;    // e.g. "22 sen"
   eligibility: string;
   eligibilityAge: string; // e.g. "17–65"
@@ -39,22 +39,22 @@ export const notaPenting = [
 ];
 
 export const packages: Package[] = [
-  // ─── PAKEJ A: RM80 ────────────────────────────────────────────────────
+  // ─── PAKEJ A: RM 80 ────────────────────────────────────────────────────
   {
     id: "pakej-80",
-    name: "Pakej RM80",
+    name: "Pakej RM 80",
     yearlyFee: 80,
-    monthlyFee: "RM2.66",
+    monthlyFee: "RM 2.66",
     dailyRate: "22 sen",
     eligibility: "Umur 17–65 tahun • Boleh bayar sehingga 70 tahun",
     eligibilityAge: "17–65",
     benefits: [
-      { label: "Pengurusan Jenazah Lengkap", value: "RM1,500" },
-      { label: "Tahlil & Khatam Al-Quran", value: "RM500" },
-      { label: "Pakej Diwarisi", value: "RM80" },
-      { label: "Wang Khairat", value: "RM920" },
-      { label: "Meninggal Kemalangan", value: "RM5,000" },
-      { label: "Kecacatan Kekal", value: "RM5,000" },
+      { label: "Pengurusan Jenazah Lengkap", value: "RM 1,500" },
+      { label: "Tahlil & Khatam Al-Quran", value: "RM 500" },
+      { label: "Pakej Diwarisi", value: "RM 80" },
+      { label: "Wang Khairat", value: "RM 920" },
+      { label: "Meninggal Kemalangan", value: "RM 5,000" },
+      { label: "Kecacatan Kekal", value: "RM 5,000" },
     ],
     benefitGroups: [
       {
@@ -65,28 +65,28 @@ export const packages: Package[] = [
             label: "Pengurusan Jenazah Lengkap / Tunai",
             timeline: "24 JAM",
             detail: "Bersyarat (Pilihan)",
-            value: "RM1,500",
+            value: "RM 1,500",
           },
           {
             no: 2,
             label: "Tahlil dan Khatam Al-Quran",
             timeline: "30 hari bekerja",
             detail: "Bumijez urus",
-            value: "RM500",
+            value: "RM 500",
           },
           {
             no: 3,
             label: "Pakej Diwarisi kepada Waris",
             timeline: "60 hari bekerja",
             detail: "Mengikut pakej diambil",
-            value: "RM80",
+            value: "RM 80",
           },
           {
             no: 4,
             label: "Wang Khairat kepada Waris",
             timeline: "90 hari bekerja",
             detail: "Dibayar kepada waris",
-            value: "RM920",
+            value: "RM 920",
           },
         ],
       },
@@ -98,18 +98,18 @@ export const packages: Package[] = [
             label: "Meninggal Akibat Kemalangan",
             timeline: "3 / 4 bulan",
             detail: "Tertakluk Takaful • Bayar kepada waris",
-            value: "RM5,000",
+            value: "RM 5,000",
           },
           {
             no: 2,
             label: "Kecacatan Kekal",
             detail: "Lihat pada kecacatan • Bayar kepada waris",
-            value: "RM5,000",
+            value: "RM 5,000",
           },
         ],
       },
     ],
-    totalManfaat: "RM8,000",
+    totalManfaat: "RM 8,000",
     details: [
       "Tiada pemeriksaan kesihatan diperlukan",
       "Terbuka untuk semua warganegara Malaysia",
@@ -117,22 +117,22 @@ export const packages: Package[] = [
     ],
   },
 
-  // ─── PAKEJ B: RM120 ───────────────────────────────────────────────────
+  // ─── PAKEJ B: RM 120 ───────────────────────────────────────────────────
   {
     id: "pakej-120",
-    name: "Pakej RM120",
+    name: "Pakej RM 120",
     yearlyFee: 120,
-    monthlyFee: "RM10.00",
+    monthlyFee: "RM 10.00",
     dailyRate: "33 sen",
     eligibility: "Umur 17–65 tahun • Boleh bayar sehingga 70 tahun",
     eligibilityAge: "17–65",
     benefits: [
-      { label: "Pengurusan Jenazah Lengkap", value: "RM1,500" },
-      { label: "Tahlil & Khatam Al-Quran", value: "RM500" },
-      { label: "Pakej Diwarisi", value: "RM120" },
-      { label: "Wang Khairat", value: "RM2,880" },
-      { label: "Meninggal Kemalangan", value: "RM5,000" },
-      { label: "Kecacatan Kekal", value: "RM5,000" },
+      { label: "Pengurusan Jenazah Lengkap", value: "RM 1,500" },
+      { label: "Tahlil & Khatam Al-Quran", value: "RM 500" },
+      { label: "Pakej Diwarisi", value: "RM 120" },
+      { label: "Wang Khairat", value: "RM 2,880" },
+      { label: "Meninggal Kemalangan", value: "RM 5,000" },
+      { label: "Kecacatan Kekal", value: "RM 5,000" },
     ],
     benefitGroups: [
       {
@@ -143,28 +143,28 @@ export const packages: Package[] = [
             label: "Pengurusan Jenazah Lengkap / Tunai",
             timeline: "24 JAM",
             detail: "Bersyarat (Pilihan)",
-            value: "RM1,500",
+            value: "RM 1,500",
           },
           {
             no: 2,
             label: "Tahlil dan Khatam Al-Quran",
             timeline: "30 hari bekerja",
             detail: "Bumijez urus",
-            value: "RM500",
+            value: "RM 500",
           },
           {
             no: 3,
             label: "Pakej Diwarisi kepada Waris",
             timeline: "60 hari bekerja",
             detail: "Mengikut pakej diambil",
-            value: "RM120",
+            value: "RM 120",
           },
           {
             no: 4,
             label: "Wang Khairat kepada Waris",
             timeline: "90 hari bekerja",
             detail: "Dibayar kepada waris",
-            value: "RM2,880",
+            value: "RM 2,880",
           },
         ],
       },
@@ -176,18 +176,18 @@ export const packages: Package[] = [
             label: "Meninggal Akibat Kemalangan",
             timeline: "3 / 4 bulan",
             detail: "Tertakluk Takaful • Bayar kepada waris",
-            value: "RM5,000",
+            value: "RM 5,000",
           },
           {
             no: 2,
             label: "Kecacatan Kekal",
             detail: "Lihat pada kecacatan • Bayar kepada waris",
-            value: "RM5,000",
+            value: "RM 5,000",
           },
         ],
       },
     ],
-    totalManfaat: "RM10,000",
+    totalManfaat: "RM 10,000",
     details: [
       "Tiada pemeriksaan kesihatan diperlukan",
       "Terbuka untuk semua warganegara Malaysia",
@@ -195,22 +195,22 @@ export const packages: Package[] = [
     ],
   },
 
-  // ─── PAKEJ C: RM180 ───────────────────────────────────────────────────
+  // ─── PAKEJ C: RM 180 ───────────────────────────────────────────────────
   {
     id: "pakej-180",
-    name: "Pakej RM180",
+    name: "Pakej RM 180",
     yearlyFee: 180,
-    monthlyFee: "RM15.00",
+    monthlyFee: "RM 15.00",
     dailyRate: "50 sen",
     eligibility: "Umur 17–65 tahun • Boleh bayar sehingga 70 tahun",
     eligibilityAge: "17–65",
     benefits: [
-      { label: "Pengurusan Jenazah Lengkap", value: "RM1,500" },
-      { label: "Tahlil & Khatam Al-Quran", value: "RM500" },
-      { label: "Pakej Diwarisi", value: "RM180" },
-      { label: "Wang Khairat", value: "RM4,820" },
-      { label: "Meninggal Kemalangan", value: "RM10,000" },
-      { label: "Kecacatan Kekal", value: "RM10,000" },
+      { label: "Pengurusan Jenazah Lengkap", value: "RM 1,500" },
+      { label: "Tahlil & Khatam Al-Quran", value: "RM 500" },
+      { label: "Pakej Diwarisi", value: "RM 180" },
+      { label: "Wang Khairat", value: "RM 4,820" },
+      { label: "Meninggal Kemalangan", value: "RM 10,000" },
+      { label: "Kecacatan Kekal", value: "RM 10,000" },
     ],
     benefitGroups: [
       {
@@ -221,28 +221,28 @@ export const packages: Package[] = [
             label: "Pengurusan Jenazah Lengkap / Tunai",
             timeline: "24 JAM",
             detail: "Bersyarat (Pilihan)",
-            value: "RM1,500",
+            value: "RM 1,500",
           },
           {
             no: 2,
             label: "Tahlil dan Khatam Al-Quran",
             timeline: "30 hari bekerja",
             detail: "Bumijez urus",
-            value: "RM500",
+            value: "RM 500",
           },
           {
             no: 3,
             label: "Pakej Diwarisi kepada Waris",
             timeline: "60 hari bekerja",
             detail: "Mengikut pakej diambil",
-            value: "RM180",
+            value: "RM 180",
           },
           {
             no: 4,
             label: "Wang Khairat kepada Waris",
             timeline: "90 hari bekerja",
             detail: "Dibayar kepada waris",
-            value: "RM4,820",
+            value: "RM 4,820",
           },
         ],
       },
@@ -254,18 +254,18 @@ export const packages: Package[] = [
             label: "Meninggal Akibat Kemalangan",
             timeline: "3 / 4 bulan",
             detail: "Tertakluk Takaful • Bayar kepada waris",
-            value: "RM10,000",
+            value: "RM 10,000",
           },
           {
             no: 2,
             label: "Kecacatan Kekal",
             detail: "Lihat pada kecacatan • Bayar kepada waris",
-            value: "RM10,000",
+            value: "RM 10,000",
           },
         ],
       },
     ],
-    totalManfaat: "RM17,000",
+    totalManfaat: "RM 17,000",
     details: [
       "Tiada pemeriksaan kesihatan diperlukan",
       "Terbuka untuk semua warganegara Malaysia",
@@ -273,22 +273,22 @@ export const packages: Package[] = [
     ],
   },
 
-  // ─── PAKEJ D: RM240 ───────────────────────────────────────────────────
+  // ─── PAKEJ D: RM 240 ───────────────────────────────────────────────────
   {
     id: "pakej-240",
-    name: "Pakej RM240",
+    name: "Pakej RM 240",
     yearlyFee: 240,
-    monthlyFee: "RM20.00",
+    monthlyFee: "RM 20.00",
     dailyRate: "66 sen",
     eligibility: "Umur 17–55 tahun • Boleh bayar sehingga 70 tahun",
     eligibilityAge: "17–55",
     benefits: [
-      { label: "Pengurusan Jenazah Lengkap", value: "RM1,500" },
-      { label: "Tahlil & Khatam Al-Quran", value: "RM500" },
-      { label: "Pakej Diwarisi", value: "RM240" },
-      { label: "Wang Khairat", value: "RM6,760" },
-      { label: "Meninggal Kemalangan", value: "RM15,000" },
-      { label: "Kecacatan Kekal", value: "RM15,000" },
+      { label: "Pengurusan Jenazah Lengkap", value: "RM 1,500" },
+      { label: "Tahlil & Khatam Al-Quran", value: "RM 500" },
+      { label: "Pakej Diwarisi", value: "RM 240" },
+      { label: "Wang Khairat", value: "RM 6,760" },
+      { label: "Meninggal Kemalangan", value: "RM 15,000" },
+      { label: "Kecacatan Kekal", value: "RM 15,000" },
     ],
     benefitGroups: [
       {
@@ -299,28 +299,28 @@ export const packages: Package[] = [
             label: "Pengurusan Jenazah Lengkap / Tunai",
             timeline: "24 JAM",
             detail: "Bersyarat (Pilihan)",
-            value: "RM1,500",
+            value: "RM 1,500",
           },
           {
             no: 2,
             label: "Tahlil dan Khatam Al-Quran",
             timeline: "30 hari bekerja",
             detail: "Bumijez urus",
-            value: "RM500",
+            value: "RM 500",
           },
           {
             no: 3,
             label: "Pakej Diwarisi kepada Waris",
             timeline: "60 hari bekerja",
             detail: "Mengikut pakej diambil",
-            value: "RM240",
+            value: "RM 240",
           },
           {
             no: 4,
             label: "Wang Khairat kepada Waris",
             timeline: "90 hari bekerja",
             detail: "Dibayar kepada waris",
-            value: "RM6,760",
+            value: "RM 6,760",
           },
         ],
       },
@@ -332,18 +332,18 @@ export const packages: Package[] = [
             label: "Meninggal Akibat Kemalangan",
             timeline: "3 / 4 bulan",
             detail: "Tertakluk Takaful • Bayar kepada waris",
-            value: "RM15,000",
+            value: "RM 15,000",
           },
           {
             no: 2,
             label: "Kecacatan Kekal",
             detail: "Lihat pada kecacatan • Bayar kepada waris",
-            value: "RM15,000",
+            value: "RM 15,000",
           },
         ],
       },
     ],
-    totalManfaat: "RM24,000",
+    totalManfaat: "RM 24,000",
     details: [
       "Tiada pemeriksaan kesihatan diperlukan",
       "Terbuka untuk semua warganegara Malaysia",

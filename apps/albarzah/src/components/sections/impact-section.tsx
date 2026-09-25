@@ -31,9 +31,9 @@ const stats = [
   },
   {
     icon: Wallet,
-    value: "RM80",
+    value: "RM 80",
     label: "Caruman Terendah",
-    note: "RM80 setahun sahaja",
+    note: "RM 80 setahun sahaja",
   },
 ];
 

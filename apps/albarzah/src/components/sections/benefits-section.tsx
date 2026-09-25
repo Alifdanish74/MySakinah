@@ -1,6 +1,6 @@
 "use client";
 // File: src/components/sections/benefits-section.tsx — Albarzah
-// Point 15 (RM80 & RM120) and Point 16 (RM180 & RM240)
+// Point 15 (RM 80 & RM 120) and Point 16 (RM 180 & RM 240)
 // Inline scrollable — no tabs, no accordion hiding packages
 
 import { motion } from "framer-motion";
@@ -32,108 +32,108 @@ interface PakejBenefitData {
   groups: BenefitGroup[];
 }
 
-// ── POINT 15: RM80 & RM120 ────────────────────────────────────────────────
+// ── POINT 15: RM 80 & RM 120 ────────────────────────────────────────────────
 const point15Data: PakejBenefitData[] = [
   {
     id: "benefit-80",
-    title: "MANFAAT PAKEJ INDIVIDU RM80 SETAHUN",
-    yearlyFee: "RM80",
+    title: "MANFAAT PAKEJ INDIVIDU RM 80 SETAHUN",
+    yearlyFee: "RM 80",
     groups: [
       {
         label: "Meninggal Biasa",
         isAccident: false,
         items: [
-          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
-          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
-          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM80" },
-          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM920" },
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM 1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM 500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM 80" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM 920" },
         ],
       },
       {
         label: "Berlaku Kemalangan",
         isAccident: true,
         items: [
-          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM5,000" },
-          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM5,000" },
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM 5,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM 5,000" },
         ],
       },
     ],
   },
   {
     id: "benefit-120",
-    title: "MANFAAT PAKEJ INDIVIDU RM120 SETAHUN",
-    yearlyFee: "RM120",
+    title: "MANFAAT PAKEJ INDIVIDU RM 120 SETAHUN",
+    yearlyFee: "RM 120",
     groups: [
       {
         label: "Meninggal Biasa",
         isAccident: false,
         items: [
-          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
-          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
-          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM120" },
-          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM2,880" },
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM 1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM 500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM 120" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM 2,880" },
         ],
       },
       {
         label: "Berlaku Kemalangan",
         isAccident: true,
         items: [
-          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM5,000" },
-          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM5,000" },
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM 5,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM 5,000" },
         ],
       },
     ],
   },
 ];
 
-// ── POINT 16: RM180 & RM240 ───────────────────────────────────────────────
+// ── POINT 16: RM 180 & RM 240 ───────────────────────────────────────────────
 const point16Data: PakejBenefitData[] = [
   {
     id: "benefit-180",
-    title: "MANFAAT PAKEJ INDIVIDU RM180 SETAHUN",
-    yearlyFee: "RM180",
+    title: "MANFAAT PAKEJ INDIVIDU RM 180 SETAHUN",
+    yearlyFee: "RM 180",
     groups: [
       {
         label: "Meninggal Biasa",
         isAccident: false,
         items: [
-          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
-          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
-          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM180" },
-          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM4,820" },
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM 1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM 500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM 180" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM 4,820" },
         ],
       },
       {
         label: "Berlaku Kemalangan",
         isAccident: true,
         items: [
-          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM10,000" },
-          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM10,000" },
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM 10,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM 10,000" },
         ],
       },
     ],
   },
   {
     id: "benefit-240",
-    title: "MANFAAT PAKEJ INDIVIDU RM240 SETAHUN",
-    yearlyFee: "RM240",
+    title: "MANFAAT PAKEJ INDIVIDU RM 240 SETAHUN",
+    yearlyFee: "RM 240",
     groups: [
       {
         label: "Meninggal Biasa",
         isAccident: false,
         items: [
-          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM1,500" },
-          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM500" },
-          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM240" },
-          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM6,760" },
+          { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", timeline: "24 JAM", detail: "Bersyarat", value: "RM 1,500" },
+          { no: 2, label: "Tahlil dan Khatam Al-Quran", timeline: "selepas 30 hari", detail: "Bumijez urus", value: "RM 500" },
+          { no: 3, label: "Pakej Diwarisi Kepada Waris", timeline: "selepas 60 hari bekerja", value: "RM 240" },
+          { no: 4, label: "Wang Khairat Kepada Waris", timeline: "selepas 90 hari bekerja", value: "RM 6,760" },
         ],
       },
       {
         label: "Berlaku Kemalangan",
         isAccident: true,
         items: [
-          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM15,000" },
-          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM15,000" },
+          { no: 1, label: "Meninggal", detail: "bayar kepada waris • 3 / 4 bulan • tertakluk kepada Takaful", value: "RM 15,000" },
+          { no: 2, label: "Kecacatan Kekal", detail: "lihat pada kecacatan • bayaran sehingga", value: "RM 15,000" },
         ],
       },
     ],
@@ -289,8 +289,8 @@ export function BenefitPoint15Section() {
     <BenefitSectionBlock
       pointId={SECTION_IDS.point15}
       pointNo="15"
-      heading="Manfaat Pakej RM80 &amp; RM120"
-      subheading="Butiran lengkap manfaat bagi Pakej Individu RM80 dan RM120 setahun."
+      heading="Manfaat Pakej RM 80 &amp; RM 120"
+      subheading="Butiran lengkap manfaat bagi Pakej Individu RM 80 dan RM 120 setahun."
       packages={point15Data}
       bg="#fff"
     />
@@ -302,8 +302,8 @@ export function BenefitPoint16Section() {
     <BenefitSectionBlock
       pointId={SECTION_IDS.point16}
       pointNo="16"
-      heading="Manfaat Pakej RM180 &amp; RM240"
-      subheading="Butiran lengkap manfaat bagi Pakej Individu RM180 dan RM240 setahun."
+      heading="Manfaat Pakej RM 180 &amp; RM 240"
+      subheading="Butiran lengkap manfaat bagi Pakej Individu RM 180 dan RM 240 setahun."
       packages={point16Data}
       bg="var(--color-brand-cream)"
     />

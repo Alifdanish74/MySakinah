@@ -199,7 +199,7 @@ export function IntroductionSection() {
                 className="text-xl sm:text-2xl font-bold mb-3"
                 style={{ fontFamily: "var(--font-heading)" }}
               >
-                Serendah RM80.00 Setahun
+                Serendah RM 80.00 Setahun
               </h4>
               <p className="text-sm leading-relaxed text-white/85">
                 Terbuka kepada semua warganegara Malaysia berumur 1 hingga 69 tahun — tanpa pemeriksaan kesihatan. Nikmati perlindungan jenazah komprehensif dengan bayaran tahunan yang berpatutan.

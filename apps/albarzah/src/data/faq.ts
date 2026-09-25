@@ -34,6 +34,6 @@ export const faqItems: FaqItem[] = [
   {
     question: "Bolehkah saya mendaftar untuk ahli keluarga saya?",
     answer:
-      "Ya, dengan Pelan Premium anda boleh mendapatkan perlindungan untuk pasangan dan sehingga 4 orang anak dalam satu pakej. Perlindungan pasangan bernilai RM5,000 manakala setiap anak dilindungi sebanyak RM1,000.",
+      "Ya, dengan Pelan Premium anda boleh mendapatkan perlindungan untuk pasangan dan sehingga 4 orang anak dalam satu pakej. Perlindungan pasangan bernilai RM 5,000 manakala setiap anak dilindungi sebanyak RM 1,000.",
   },
 ];

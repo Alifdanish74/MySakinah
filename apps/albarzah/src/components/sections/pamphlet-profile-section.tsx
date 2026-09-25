@@ -19,7 +19,7 @@ const ROLES = [
 export function PamphletProfileSection() {
   return (
     <section
-      id={SECTION_IDS.point3}
+      id={SECTION_IDS.utama}
       aria-label="Profil Pengasas"
       className="section-texture py-16 lg:py-24"
       style={{ background: "#fff" }}
@@ -73,36 +73,41 @@ export function PamphletProfileSection() {
                 className="text-xl sm:text-2xl lg:text-3xl font-black uppercase tracking-tight mb-1.5"
                 style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}
               >
-                US HJ MOHD ZAINAL BIN HJ KHAMIS
+                US HJ MOHD ZAINAL <br /> BIN HJ KHAMIS
               </h3>
               <p className="text-sm font-bold italic mb-2" style={{ color: "var(--color-brand-gold)" }}>
-                Ustaz Jenazah Songkok Tinggi — Pengalaman Lebih 30 Tahun
+                Ustaz Jenazah Songkok Tinggi <br /> Pengalaman Lebih 30 Tahun
               </p>
-              <p className="text-sm text-slate-600 font-medium leading-relaxed">
-                Mengetuai kepimpinan pengurusan jenazah Islam dan institusi pendidikan &amp; kebajikan utama di Malaysia.
-              </p>
+              <ul className="mt-3 text-sm text-slate-600 font-medium leading-relaxed list-disc list-outside pl-5 space-y-1.5 text-left">
+                <li>Mengetuai kepimpinan pengurusan jenazah Islam dan institusi pendidikan &amp; kebajikan utama di Malaysia.</li>
+                <li>Menguruskan jenazah di Hospital-hospital sekitar Lembah Klang &amp; kebajikan utama di Malaysia.</li>
+                <li>Pertama di Malaysia memperkenalkan konsep bersepadu khairat kematian.</li>
+                <li>Pengurusan jenazah berisiko dan penyakit berjangkit.</li>
+                <li>Panel pengurusan jenazah dibeberapa Hospital di Lembah Klang.</li>
+                <li>Proses Penghantaran jenazah ke luar negara.</li>
+              </ul>
             </div>
           </div>
 
           {/* Organization Roles Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
             {ROLES.map(({ title, org, icon: Icon }) => (
               <div
                 key={org}
-                className="flex items-start gap-2 sm:gap-3 rounded-2xl p-2.5 sm:p-3.5 bg-white border shadow-sm transition-all duration-200 hover:-translate-y-0.5"
+                className="flex items-start gap-1.5 sm:gap-3 rounded-2xl p-2 sm:p-3.5 bg-white border shadow-sm transition-all duration-200 hover:-translate-y-0.5"
                 style={{ borderColor: "var(--color-brand-border)" }}
               >
                 <div
-                  className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl flex-shrink-0 mt-0.5"
+                  className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-xl flex-shrink-0 mt-0.5"
                   style={{ background: "var(--color-brand-sage-soft)", color: "var(--color-brand-green)" }}
                 >
                   <Icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400 truncate">
+                  <p className="text-[8px] xs:text-[9px] sm:text-[10px] font-black uppercase tracking-wide text-slate-400 leading-tight break-words mb-0.5">
                     {title}
                   </p>
-                  <p className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug break-words">
+                  <p className="text-[10.5px] sm:text-xs font-bold text-slate-800 leading-snug break-words">
                     {org}
                   </p>
                 </div>

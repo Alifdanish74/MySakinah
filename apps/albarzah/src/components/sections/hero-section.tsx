@@ -1,6 +1,12 @@
 "use client";
 // File: src/components/sections/hero-section.tsx
+// (Replaced by PamphletProfileSection in page.tsx)
 
+export function HeroSection() {
+  return null;
+}
+
+/*
 import { motion } from "framer-motion";
 import { Phone, Clock, Wallet, ShieldCheck, ArrowRight, Users } from "lucide-react";
 import { BRAND, SECTION_IDS } from "@/lib/constants";
@@ -8,12 +14,12 @@ import { ResponsiveContainer, HotlineCard, staggerContainer, cardReveal } from "
 
 const trustIndicators = [
   { icon: Clock, label: "Pengurusan 24 Jam" },
-  { icon: Wallet, label: "Serendah RM80/Tahun" },
+  { icon: Wallet, label: "Serendah RM 80/Tahun" },
   { icon: Users, label: "Terbuka Untuk Semua" },
   { icon: ShieldCheck, label: "Tanpa Laporan Kesihatan" },
 ];
 
-export function HeroSection() {
+export function OldHeroSection() {
   return (
     <section
       id={SECTION_IDS.utama}
@@ -27,8 +33,6 @@ export function HeroSection() {
     >
       <ResponsiveContainer className="flex justify-center">
         <div className="w-full max-w-3xl mx-auto px-4 sm:px-8 md:px-12 text-center flex flex-col items-center">
-
-          {/* Main Dome Arch Card */}
           <div
             className="w-full p-5 pt-10 sm:p-10 sm:pt-16 md:p-12 md:pt-20 shadow-2xl border flex flex-col items-center text-center backdrop-blur-md overflow-hidden"
             style={{
@@ -36,26 +40,9 @@ export function HeroSection() {
               borderColor: "var(--color-brand-gold-light)",
               borderWidth: "1.5px",
               boxShadow: "0 20px 60px rgba(0,71,60,0.22)",
-              /* Dome arch top corners */
               borderRadius: "50% 50% 2rem 2rem / 20% 20% 2rem 2rem",
             }}
           >
-            {/* Eyebrow Badge
-            <motion.p
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, duration: 0.5 }}
-              className="eyebrow-cinzel mb-3 inline-block rounded-full px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest"
-              style={{
-                background: "rgba(0,179,15,0.10)",
-                border: "1px solid var(--color-brand-green-light)",
-                color: "var(--color-brand-green-dark)",
-              }}
-            >
-              ALBARZAH • SKIM PENGURUSAN JENAZAH &amp; KHAIRAT
-            </motion.p> */}
-
-            {/* Main Title */}
             <motion.h1
               initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -79,7 +66,6 @@ export function HeroSection() {
               Khairat Kematian Yang Mampu Dimiliki
             </motion.p>
 
-            {/* Description */}
             <motion.p
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -88,10 +74,9 @@ export function HeroSection() {
             >
               Pengurusan jenazah lengkap{" "}
               <strong>&ldquo;TANPA TUNAI&rdquo;</strong> — 24 jam bersedia membantu waris dalam kesedihan. Mulai dari{" "}
-              <strong className="text-emerald-800">RM80.00 setahun</strong> sahaja.
+              <strong className="text-emerald-800">RM 80.00 setahun</strong> sahaja.
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -125,7 +110,6 @@ export function HeroSection() {
               </a>
             </motion.div>
 
-            {/* Trust Indicators */}
             <motion.div
               variants={staggerContainer}
               initial="hidden"
@@ -146,7 +130,6 @@ export function HeroSection() {
               ))}
             </motion.div>
 
-            {/* Hotline Banner */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -161,3 +144,4 @@ export function HeroSection() {
     </section>
   );
 }
+*/

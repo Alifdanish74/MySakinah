@@ -109,7 +109,7 @@ export function RealitiSection() {
                 WANG TUNAI PENGURUSAN
               </h3>
               <p className="text-sm text-slate-700 leading-relaxed font-medium">
-                Menyediakan wang tunai sekiranya waris memilih untuk menguruskan jenazah sendiri dengan melengkapkan dokumen yang diperlukan.
+                Menyediakan wang tunai RM 1500 sekiranya waris memilih untuk menguruskan jenazah sendiri dengan melengkapkan dokumen yang diperlukan.
               </p>
             </div>
           </motion.div>

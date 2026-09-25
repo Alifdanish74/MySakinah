@@ -22,12 +22,12 @@ import { SECTION_IDS } from "@/lib/constants";
 const SERVICES_8 = [
   { no: 1, label: "Khidmat Nasihat Kepada Waris", icon: Headphones },
   { no: 2, label: "Dokumen Kematian", icon: FileText },
-  { no: 3, label: "Mandi", icon: Droplets },
-  { no: 4, label: "Kafan", icon: Shirt },
-  { no: 5, label: "Solat", icon: HeartHandshake },
-  { no: 6, label: "Van", icon: Truck },
-  { no: 7, label: "Kebumi", icon: Mountain },
-  { no: 8, label: "Talkin", icon: BookOpenCheck },
+  { no: 3, label: "Mandi Jenazah", icon: Droplets },
+  { no: 4, label: "Kafan Jenazah", icon: Shirt },
+  { no: 5, label: "Solat Jenazah", icon: HeartHandshake },
+  { no: 6, label: "Van Jenazah", icon: Truck },
+  { no: 7, label: "Kebumi Jenazah", icon: Mountain },
+  { no: 8, label: "Membaca Talkin", icon: BookOpenCheck },
 ];
 
 export function PamphletServicesSection() {

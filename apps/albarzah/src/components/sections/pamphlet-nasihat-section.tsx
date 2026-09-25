@@ -56,21 +56,21 @@ export function PamphletNasihatSection() {
                 Us. Hj Mohd Zainal Bin Hj Khamis
               </h3>
               <p className="text-sm text-slate-800 font-semibold leading-relaxed italic">
-                &ldquo; Ambil pakej sekurang-kurangnya <strong className="text-emerald-900 underline">RM80 setahun</strong>. Jangan sampai tak ambil.{" "}
-                <span className="text-red-600 uppercase font-black">&apos;RUGI&apos;</span>{" "}
-                jika anda bayar 30 tahun pun masih ada untung. Saya rasa belum tentu kita mencapai usia itu. &rdquo;
+                &ldquo; Ambilah pakej termurah <strong className="text-emerald-900 underline">RM 80 Setahun</strong> jangan sampai tak ambil{" "}
+                <span className="text-red-600 uppercase font-black">RUGI</span>{" "}
+                jika bayar 30 tahun pun tak rugi. Kalau berkemampuan ambilah pakej yang mahal. &rdquo;
               </p>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-slate-200 text-right">
+            {/* <div className="mt-6 pt-4 border-t border-slate-200 text-right">
               <a
                 href={`#${SECTION_IDS.point8}`}
                 className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-wider text-emerald-800 hover:text-emerald-900"
               >
-                <span>Daftar RM80/Tahun Sekarang</span>
+                <span>Daftar RM 80/Tahun Sekarang</span>
                 <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
               </a>
-            </div>
+            </div> */}
           </motion.div>
 
           {/* 2. PANTUN NASIHAT */}

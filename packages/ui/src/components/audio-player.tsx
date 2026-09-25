@@ -133,6 +133,10 @@ export function AudioPlayer({
       }}
     >
       <style>{`
+        .audio-player-fixed-container {
+          max-width: calc(100vw - 2rem);
+          width: max-content;
+        }
         .audio-player-fixed-container.position-bottom-left {
           bottom: 5rem;
           left: 1rem;
@@ -153,6 +157,8 @@ export function AudioPlayer({
           bottom: 4.75rem;
           left: 50%;
           transform: translateX(-50%);
+          width: max-content;
+          max-width: calc(100vw - 2rem);
         }
         @media (min-width: 1024px) {
           .audio-player-fixed-container.position-bottom-center {
@@ -177,7 +183,7 @@ export function AudioPlayer({
         onClick={togglePlay}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="flex items-center gap-2.5 rounded-full px-4 py-2.5 shadow-xl border backdrop-blur-md transition-all duration-300 pointer-events-auto"
+        className="flex items-center gap-2 sm:gap-2.5 rounded-full px-3 sm:px-4 py-2 sm:py-2.5 shadow-xl border backdrop-blur-md transition-all duration-300 pointer-events-auto w-auto max-w-full"
         style={{
           background: isPlaying ? "var(--color-brand-green, #00473c)" : "rgba(255,255,255,0.92)",
           borderColor: "var(--color-brand-gold, #c99a00)",
@@ -189,18 +195,18 @@ export function AudioPlayer({
         title={isPlaying ? "Henti Muzik Latar" : "Mainkan Muzik Latar"}
       >
         <div
-          className="flex h-6 w-6 items-center justify-center rounded-full shrink-0"
+          className="flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full shrink-0"
           style={{ background: isPlaying ? "rgba(255,255,255,0.2)" : "var(--color-brand-sage-soft, #f0faf2)" }}
         >
           {isPlaying ? (
-            <Volume2 className="h-4 w-4 text-amber-300 animate-pulse" />
+            <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-300 animate-pulse" />
           ) : (
-            <VolumeX className="h-4 w-4 text-slate-500" />
+            <VolumeX className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-500" />
           )}
         </div>
 
         {songName && (
-          <span className="text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap px-0.5 drop-shadow-sm">
+          <span className="text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap truncate min-w-0 flex-1 px-0.5 drop-shadow-sm">
             {songName}
           </span>
         )}

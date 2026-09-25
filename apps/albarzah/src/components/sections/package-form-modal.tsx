@@ -61,47 +61,47 @@ function formatIC(raw: string): string {
 
 // ── Package Metadata for Modal Header ─────────────────────────────────────
 const PACKAGE_DETAILS_MAP: Record<string, { yearly: string; monthly: string; daily: string; age: string; total: string }> = {
-  "PAKEJ RM80.00 SETAHUN": {
-    yearly: "RM80.00 SETAHUN",
-    monthly: "RM2.66 / sebulan",
+  "PAKEJ RM 80.00 SETAHUN": {
+    yearly: "RM 80.00 SETAHUN",
+    monthly: "RM 2.66 / sebulan",
     daily: "22 sen / sehari",
     age: "17 – 65 tahun",
-    total: "RM8,000",
+    total: "RM 8,000",
   },
-  "PAKEJ RM120.00 SETAHUN": {
-    yearly: "RM120.00 SETAHUN",
-    monthly: "RM10.00 / sebulan",
+  "PAKEJ RM 120.00 SETAHUN": {
+    yearly: "RM 120.00 SETAHUN",
+    monthly: "RM 10.00 / sebulan",
     daily: "33 sen / sehari",
     age: "17 – 65 tahun",
-    total: "RM10,000",
+    total: "RM 10,000",
   },
-  "PAKEJ RM180.00 SETAHUN": {
-    yearly: "RM180.00 SETAHUN",
-    monthly: "RM15.00 / sebulan",
+  "PAKEJ RM 180.00 SETAHUN": {
+    yearly: "RM 180.00 SETAHUN",
+    monthly: "RM 15.00 / sebulan",
     daily: "50 sen / sehari",
     age: "17 – 65 tahun",
-    total: "RM17,000",
+    total: "RM 17,000",
   },
-  "PAKEJ RM240.00 SETAHUN": {
-    yearly: "RM240.00 SETAHUN",
-    monthly: "RM20.00 / sebulan",
+  "PAKEJ RM 240.00 SETAHUN": {
+    yearly: "RM 240.00 SETAHUN",
+    monthly: "RM 20.00 / sebulan",
     daily: "66 sen / sehari",
     age: "17 – 55 tahun",
-    total: "RM24,000",
+    total: "RM 24,000",
   },
   "PAKEJ PERMATA INDIVIDU": {
-    yearly: "RM1,500.00 SEUMUR HIDUP",
+    yearly: "RM 1,500.00 SEUMUR HIDUP",
     monthly: "Bayaran Sekali Sahaja",
     daily: "Seumur Hidup",
     age: "Selepas Umur 70 Tahun",
-    total: "RM1,730.00",
+    total: "RM 1,730.00",
   },
-  "PAKEJ RM1,500 SEUMUR HIDUP": {
-    yearly: "RM1,500.00 SEUMUR HIDUP",
+  "PAKEJ RM 1,500 SEUMUR HIDUP": {
+    yearly: "RM 1,500.00 SEUMUR HIDUP",
     monthly: "Bayaran Sekali Sahaja",
     daily: "Seumur Hidup",
     age: "Selepas Umur 70 Tahun",
-    total: "RM1,730.00",
+    total: "RM 1,730.00",
   },
 };
 
@@ -394,7 +394,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
 
                     <div>
                       <label htmlFor="modalAlamat1" className={labelClass}>
-                        ALAMAT 1
+                        ALAMAT TEMPAT TINGGAL SEKARANG
                       </label>
                       <input
                         id="modalAlamat1"

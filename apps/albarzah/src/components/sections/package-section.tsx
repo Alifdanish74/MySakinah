@@ -4,8 +4,8 @@
 // CTA scrolls to #point-12 and pre-selects the package via callback
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Info, ChevronDown, ArrowDown } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 import { SECTION_IDS } from "@/lib/constants";
 import { notaPenting } from "@/data/packages";
 import { ResponsiveContainer, viewportOnce } from "@sakinah/ui";
@@ -41,85 +41,85 @@ const PAKEJ_LIST: PakejData[] = [
     id: "pakej-80",
     pointId: SECTION_IDS.point8,
     pointNo: "08",
-    yearly: "RM80.00",
-    yearlyValue: "PAKEJ RM80.00 SETAHUN",
-    sebulan: "RM2.66",
+    yearly: "RM 80.00",
+    yearlyValue: "PAKEJ RM 80.00 SETAHUN",
+    sebulan: "RM 2.66",
     sehari: "22 sen",
     umur: "Umur bermula 17 tahun hingga 65 tahun dan boleh bayar sehingga 70 tahun",
     manfaatBiasa: [
-      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM1,500" },
-      { no: 2, label: "Tahlil dan Khatam Al-Quran",         note: "30 Hari Bekerja • Bumijez Urus", value: "RM500" },
-      { no: 3, label: "Pakej Diwarisi",                      note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM80" },
-      { no: 4, label: "Wang Khairat",                        note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM920" },
+      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM 1,500" },
+      { no: 2, label: "Tahlil dan Khatam Al-Quran", note: "30 Hari Bekerja • Bumijez Urus", value: "RM 500" },
+      { no: 3, label: "Pakej Diwarisi", note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM 80" },
+      { no: 4, label: "Wang Khairat", note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM 920" },
     ],
     kemalangan: [
-      { no: 1, label: "Meninggal",       note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM5,000" },
-      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM5,000" },
+      { no: 1, label: "Meninggal", note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM 5,000" },
+      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM 5,000" },
     ],
-    jumlahKeseluruhan: "RM8,000",
+    jumlahKeseluruhan: "RM 8,000",
   },
   {
     id: "pakej-120",
     pointId: SECTION_IDS.point9,
     pointNo: "09",
-    yearly: "RM120.00",
-    yearlyValue: "PAKEJ RM120.00 SETAHUN",
-    sebulan: "RM10.00",
+    yearly: "RM 120.00",
+    yearlyValue: "PAKEJ RM 120.00 SETAHUN",
+    sebulan: "RM 10.00",
     sehari: "33 sen",
     umur: "Umur bermula 17 tahun hingga 65 tahun dan boleh bayar sehingga 70 tahun",
     manfaatBiasa: [
-      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM1,500" },
-      { no: 2, label: "Tahlil dan Khatam Al-Quran",         note: "30 Hari Bekerja • Bumijez Urus", value: "RM500" },
-      { no: 3, label: "Pakej Diwarisi",                      note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM120" },
-      { no: 4, label: "Wang Khairat",                        note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM2,880" },
+      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM 1,500" },
+      { no: 2, label: "Tahlil dan Khatam Al-Quran", note: "30 Hari Bekerja • Bumijez Urus", value: "RM 500" },
+      { no: 3, label: "Pakej Diwarisi", note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM 120" },
+      { no: 4, label: "Wang Khairat", note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM 2,880" },
     ],
     kemalangan: [
-      { no: 1, label: "Meninggal",       note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM5,000" },
-      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM5,000" },
+      { no: 1, label: "Meninggal", note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM 5,000" },
+      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM 5,000" },
     ],
-    jumlahKeseluruhan: "RM10,000",
+    jumlahKeseluruhan: "RM 10,000",
   },
   {
     id: "pakej-180",
     pointId: SECTION_IDS.point10,
     pointNo: "10",
-    yearly: "RM180.00",
-    yearlyValue: "PAKEJ RM180.00 SETAHUN",
-    sebulan: "RM15.00",
+    yearly: "RM 180.00",
+    yearlyValue: "PAKEJ RM 180.00 SETAHUN",
+    sebulan: "RM 15.00",
     sehari: "50 sen",
     umur: "Umur bermula 17 tahun hingga 65 tahun dan boleh bayar sehingga 70 tahun",
     manfaatBiasa: [
-      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM1,500" },
-      { no: 2, label: "Tahlil dan Khatam Al-Quran",         note: "30 Hari Bekerja • Bumijez Urus", value: "RM500" },
-      { no: 3, label: "Pakej Diwarisi",                      note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM180" },
-      { no: 4, label: "Wang Khairat",                        note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM4,820" },
+      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM 1,500" },
+      { no: 2, label: "Tahlil dan Khatam Al-Quran", note: "30 Hari Bekerja • Bumijez Urus", value: "RM 500" },
+      { no: 3, label: "Pakej Diwarisi", note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM 180" },
+      { no: 4, label: "Wang Khairat", note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM 4,820" },
     ],
     kemalangan: [
-      { no: 1, label: "Meninggal",       note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM10,000" },
-      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM10,000" },
+      { no: 1, label: "Meninggal", note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM 10,000" },
+      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM 10,000" },
     ],
-    jumlahKeseluruhan: "RM17,000",
+    jumlahKeseluruhan: "RM 17,000",
   },
   {
     id: "pakej-240",
     pointId: SECTION_IDS.point11,
     pointNo: "11",
-    yearly: "RM240.00",
-    yearlyValue: "PAKEJ RM240.00 SETAHUN",
-    sebulan: "RM20.00",
+    yearly: "RM 240.00",
+    yearlyValue: "PAKEJ RM 240.00 SETAHUN",
+    sebulan: "RM 20.00",
     sehari: "66 sen",
     umur: "Umur bermula 17 tahun hingga 55 tahun dan boleh bayar sehingga 70 tahun",
     manfaatBiasa: [
-      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM1,500" },
-      { no: 2, label: "Tahlil dan Khatam Al-Quran",         note: "30 Hari Bekerja • Bumijez Urus", value: "RM500" },
-      { no: 3, label: "Pakej Diwarisi",                      note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM240" },
-      { no: 4, label: "Wang Khairat",                        note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM6,760" },
+      { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM 1,500" },
+      { no: 2, label: "Tahlil dan Khatam Al-Quran", note: "30 Hari Bekerja • Bumijez Urus", value: "RM 500" },
+      { no: 3, label: "Pakej Diwarisi", note: "60 Hari Bekerja • Mengikut Pakej Diambil", value: "RM 240" },
+      { no: 4, label: "Wang Khairat", note: "90 Hari Bekerja • Dibayar Kepada Waris", value: "RM 6,760" },
     ],
     kemalangan: [
-      { no: 1, label: "Meninggal",       note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM15,000" },
-      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM15,000" },
+      { no: 1, label: "Meninggal", note: "3 / 4 Bulan • Tertakluk Takaful • Bayar Kepada Waris", value: "RM 15,000" },
+      { no: 2, label: "Kecacatan Kekal", note: "Lihat Pada Kecacatan • Bayar Kepada Waris", value: "RM 15,000" },
     ],
-    jumlahKeseluruhan: "RM24,000",
+    jumlahKeseluruhan: "RM 24,000",
   },
   {
     id: "pakej-1500",
@@ -134,75 +134,14 @@ const PAKEJ_LIST: PakejData[] = [
     umur: "SELEPAS UMUR 70 TAHUN DAN MESTI MELANGGANI MANA-MANA PAKEJ SELAMA 5 TAHUN",
     manfaatBiasa: [
       { no: 1, label: "Pengurusan Jenazah Lengkap / Tunai", note: "24 Jam Bersyarat • Pilihan", value: "RM 1,500.00" },
-      { no: 2, label: "Pakej Diwarisi",                      note: "30 Hari Bekerja • Pakej Terendah", value: "RM 80.00" },
-      { no: 4, label: "Wang Khairat",                        note: "30 Hari Bekerja • Dibayar Kepada Waris", value: "RM 150.00" },
+      { no: 2, label: "Pakej Diwarisi", note: "30 Hari Bekerja • Pakej Terendah", value: "RM 80.00" },
+      { no: 4, label: "Wang Khairat", note: "30 Hari Bekerja • Dibayar Kepada Waris", value: "RM 150.00" },
     ],
     kemalangan: [],
     csrNote: "Pakej ini tidak ditakafulkan selebihnya adalah CSR Bumijez Sdn Bhd",
     jumlahKeseluruhan: "RM 1,730.00",
   },
 ];
-
-// ── Nota Penting Accordion ────────────────────────────────────────────────
-function NotaPentingAccordion() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div
-      className="rounded-2xl overflow-hidden border"
-      style={{ borderColor: "var(--color-brand-gold)", background: "#fff" }}
-    >
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 cursor-pointer"
-        aria-expanded={open}
-        aria-controls="nota-penting-body"
-      >
-        <div className="flex items-center gap-2">
-          <Info className="h-4 w-4 flex-shrink-0" style={{ color: "var(--color-brand-gold)" }} aria-hidden="true" />
-          <span className="text-sm font-black uppercase tracking-wider text-left" style={{ color: "var(--color-brand-green-dark)" }}>
-            NOTA PENTING
-          </span>
-        </div>
-        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.22 }}>
-          <ChevronDown className="h-4 w-4 flex-shrink-0" style={{ color: "var(--color-brand-gold)" }} aria-hidden="true" />
-        </motion.div>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            id="nota-penting-body"
-            key="nota"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.28 }}
-            style={{ overflow: "hidden" }}
-          >
-            <div className="px-5 pb-5 border-t" style={{ borderColor: "var(--color-brand-border)" }}>
-              <ul className="mt-4 space-y-3">
-                {notaPenting.map((nota, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <span
-                      className="flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center text-[10px] font-black mt-0.5"
-                      style={{ background: "var(--color-brand-gold-light)", color: "var(--color-brand-green-dark)" }}
-                    >
-                      {i === 0 ? "★" : i}
-                    </span>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--color-brand-text)" }}>
-                      {nota}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
 
 // ── Single Package Card ────────────────────────────────────────────────────
 interface PackageCardProps {
@@ -368,6 +307,24 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
           </p>
         )}
 
+        {/* Embedded Nota Penting content */}
+        <div
+          className="rounded-2xl p-3.5 sm:p-4 border space-y-2"
+          style={{ background: "var(--color-brand-sage-soft)", borderColor: "var(--color-brand-border)" }}
+        >
+          {notaPenting.map((nota, i) => (
+            <div key={i} className="flex items-start gap-2.5">
+              <span
+                className="h-1.5 w-1.5 rounded-full mt-1.5 flex-shrink-0"
+                style={{ background: "var(--color-brand-gold)" }}
+              />
+              <p className="text-xs leading-relaxed font-medium" style={{ color: "var(--color-brand-text-muted)" }}>
+                {nota}
+              </p>
+            </div>
+          ))}
+        </div>
+
         {/* CTA */}
         <button
           type="button"
@@ -405,7 +362,7 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps = {}) {
       <PackageFormModal
         isOpen={!!modalPackage}
         onClose={() => setModalPackage(null)}
-        packageName={modalPackage || "PAKEJ RM80.00 SETAHUN"}
+        packageName={modalPackage || "PAKEJ RM 80.00 SETAHUN"}
       />
       {/* Section intro heading above the 4 package sections */}
       <div
@@ -419,10 +376,10 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps = {}) {
               className="text-2xl sm:text-3xl lg:text-4xl font-black uppercase leading-tight mb-3"
               style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}
             >
-              PILIH PAKEJ YANG SESUAI
+              PILIH PAKEJ YANG DITAWARKAN
             </h2>
             <p className="text-sm sm:text-base text-slate-600 font-medium">
-              PAKEJ KHAIRAT KEMATIAN DAN PENGURUSAN JENAZAH LENGKAP
+              PAKEJ KHAIRAT KEMATIAN MAMPU MILIK
             </p>
           </div>
         </ResponsiveContainer>
@@ -438,28 +395,8 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps = {}) {
           style={{ background: idx % 2 === 0 ? "var(--color-brand-ivory)" : "var(--color-brand-cream)" }}
         >
           <ResponsiveContainer>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+            <div className="max-w-xl mx-auto">
               <PackageCard pkg={pkg} onSelectPackage={handleSelectPackageCard} />
-
-              {/* Side info + Nota Penting */}
-              <div className="space-y-4">
-                <div
-                  className="rounded-2xl p-5 border"
-                  style={{ background: "#fff", borderColor: "var(--color-brand-border)" }}
-                >
-                  <p className="eyebrow-cinzel mb-1.5">PAKEJ MY SAKINAH PRO INDIVIDU</p>
-                  <p
-                    className="text-xl font-black uppercase"
-                    style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}
-                  >
-                    {pkg.yearly} {pkg.period || "SETAHUN"}
-                  </p>
-                  <p className="text-sm text-slate-600 mt-2 font-medium leading-relaxed">
-                    {pkg.umur}
-                  </p>
-                </div>
-                <NotaPentingAccordion />
-              </div>
             </div>
           </ResponsiveContainer>
         </section>
@@ -467,3 +404,4 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps = {}) {
     </div>
   );
 }
+

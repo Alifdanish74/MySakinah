@@ -179,7 +179,7 @@ export function ContactSection() {
           </motion.div>
 
           {/* Pejabat & Alamat Card */}
-          <motion.div
+          {/* <motion.div
             variants={cardReveal}
             className="rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm transition-all duration-300 hover:shadow-md md:col-span-2 lg:col-span-1"
             style={{
@@ -240,7 +240,7 @@ export function ContactSection() {
             <div className="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 text-center">
               Dikelola oleh BUMIJEZ SDN BHD
             </div>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       </ResponsiveContainer>
     </section>
