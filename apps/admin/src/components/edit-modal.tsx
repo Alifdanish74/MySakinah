@@ -1,11 +1,9 @@
 "use client";
-// File: src/components/edit-modal.tsx
-// Modal for editing submission status, notes, and Excel template fields
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Save, Loader2 } from "lucide-react";
 import type { Submission } from "@/lib/types";
+import { calculateAgeFromIC, getUmurDisplay } from "@/lib/utils";
 
 interface EditModalProps {
   submission: Submission;
@@ -16,12 +14,28 @@ interface EditModalProps {
 export function EditModal({ submission, onClose, onSaved }: EditModalProps) {
   const [status, setStatus] = useState<Submission["status"]>(submission.status || "pending");
   const [notes, setNotes]   = useState<string>(submission.notes || "");
-  const [formData, setFormData] = useState<Record<string, any>>(submission.form_data || {});
+  const [formData, setFormData] = useState<Record<string, any>>(() => {
+    const rawFd = { ...(submission.form_data || {}) };
+    if (!rawFd.umur || rawFd.umur === "-" || rawFd.umur === "—") {
+      const computed = calculateAgeFromIC(rawFd.no_kp || rawFd.ic);
+      if (computed) rawFd.umur = computed;
+    }
+    return rawFd;
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState<string | null>(null);
 
   function handleFieldChange(key: string, value: any) {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFormData((prev) => {
+      const next = { ...prev, [key]: value };
+      if (key === "no_kp") {
+        const computed = calculateAgeFromIC(value);
+        if (computed && (!prev.umur || prev.umur === "-" || prev.umur === "—" || prev.umur === calculateAgeFromIC(prev.no_kp))) {
+          next.umur = computed;
+        }
+      }
+      return next;
+    });
   }
 
   async function handleSubmit(e: React.FormEvent) {

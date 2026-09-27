@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import type { Submission } from "@/lib/types";
+import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay } from "@/lib/utils";
 import { EditModal } from "./edit-modal";
 import { DeleteDialog } from "./delete-dialog";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,14 +30,22 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
   const filtered = submissions.filter((s) => {
     const q = search.toLowerCase();
     const fd = s.form_data || {};
+    const umurStr = getUmurDisplay(fd);
+    const alamatStr = getAlamatDisplay(fd);
+    const poskodStr = getPoskodDisplay(fd);
+    const negeriStr = getNegeriDisplay(fd);
+
     return (
       (fd.nama ?? s.submitted_by ?? "").toLowerCase().includes(q) ||
       (fd.no_kp ?? "").toLowerCase().includes(q) ||
+      umurStr.toLowerCase().includes(q) ||
       (fd.kategori ?? "").toLowerCase().includes(q) ||
       (fd.no_ahli ?? "").toLowerCase().includes(q) ||
       (fd.no_telefon ?? "").toLowerCase().includes(q) ||
+      alamatStr.toLowerCase().includes(q) ||
+      poskodStr.toLowerCase().includes(q) ||
+      negeriStr.toLowerCase().includes(q) ||
       (fd.pakej ?? "").toLowerCase().includes(q) ||
-      (fd.negeri ?? "").toLowerCase().includes(q) ||
       (fd.utama ?? "").toLowerCase().includes(q) ||
       s.status.toLowerCase().includes(q)
     );
@@ -79,15 +88,15 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       const no = fd.no || (index + 1).toString();
       const nama = fd.nama || s.submitted_by || "";
       const no_kp = fd.no_kp || "";
-      const umur = fd.umur || "";
+      const umur = getUmurDisplay(fd);
       const kategori = fd.kategori || "AHLI";
       const no_ahli = fd.no_ahli || "";
       const bukan_anggota = fd.bukan_anggota || (no_ahli ? "" : "BUKAN ANGGOTA");
       const no_telefon = fd.no_telefon || "";
-      const alamat1 = fd.alamat1 || "";
+      const alamat1 = fd.alamat1 || fd.alamat || "";
       const alamat2 = fd.alamat2 || "";
-      const poskod = fd.poskod || "";
-      const negeri = fd.negeri || "";
+      const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
+      const negeri = getNegeriDisplay(fd) === "—" ? "" : getNegeriDisplay(fd);
       const pakej = fd.pakej || "";
       const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
       const utama = fd.utama || nama;
@@ -97,7 +106,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
         no,
         `"${nama.replace(/"/g, '""')}"`,
         `"${no_kp}"`,
-        umur,
+        `"${umur === "—" ? "" : umur}"`,
         `"${kategori}"`,
         `"${no_ahli}"`,
         `"${bukan_anggota}"`,
@@ -128,7 +137,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       {/* Top Search & Actions Bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
+      <div className="search-action-bar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
         <div style={{ position: "relative", width: "100%", maxWidth: 380 }}>
           <Search
             size={15}
@@ -144,7 +153,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
           <input
             id="submission-search"
             type="search"
-            placeholder="Search by Nama, IC, Phone, Pakej, Negeri..."
+            placeholder="Search by Nama, IC, Umur, Alamat, Poskod, Negeri..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="form-input"
@@ -176,9 +185,14 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       {/* Excel Structure Data Table */}
       <div
         className="surface"
-        style={{ overflowX: "auto", borderRadius: "var(--radius-lg)", border: "1px solid var(--color-admin-border)" }}
+        style={{
+          overflowX: "auto",
+          WebkitOverflowScrolling: "touch",
+          borderRadius: "var(--radius-lg)",
+          border: "1px solid var(--color-admin-border)",
+        }}
       >
-        <table className="admin-table" style={{ fontSize: "0.8125rem", width: "100%", borderCollapse: "collapse" }}>
+        <table className="admin-table" style={{ fontSize: "0.8125rem", width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
           <thead>
             <tr style={{ background: "rgba(15, 23, 42, 0.8)", borderBottom: "1px solid var(--color-admin-border)" }}>
               <th style={{ width: 40, textAlign: "center" }}>NO</th>
@@ -188,7 +202,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
               <th>KATEGORI</th>
               <th>NO AHLI / ANGGOTA</th>
               <th>NO TELEFON</th>
-              <th>ALAMAT & NEGERI</th>
+              <th>ALAMAT</th>
+              <th>POSKOD</th>
+              <th>NEGERI</th>
               <th>PAKEJ</th>
               <th>TARIKH DAFTAR</th>
               <th>UTAMA</th>
@@ -201,7 +217,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
               {paginated.length === 0 && (
                 <tr>
                   <td
-                    colSpan={13 + (canEdit ? 1 : 0)}
+                    colSpan={15 + (canEdit ? 1 : 0)}
                     style={{ textAlign: "center", padding: "3rem", color: "var(--color-admin-text-muted)" }}
                   >
                     No matching records found.
@@ -213,11 +229,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                 const rowNo = fd.no || ((page - 1) * PAGE_SIZE + i + 1).toString();
                 const nama = fd.nama || s.submitted_by || "—";
                 const no_kp = fd.no_kp || "—";
-                const umur = fd.umur || "—";
+                const umur = getUmurDisplay(fd);
                 const kategori = fd.kategori || "AHLI";
                 const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "—");
                 const no_telefon = fd.no_telefon || fd.phone || "—";
-                const alamatStr = [fd.alamat1, fd.alamat2, fd.poskod, fd.negeri].filter(Boolean).join(", ") || "—";
+                const alamatStr = getAlamatDisplay(fd);
+                const poskodStr = getPoskodDisplay(fd);
+                const negeriStr = getNegeriDisplay(fd);
                 const pakej = fd.pakej || "—";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
                 const utama = fd.utama || nama;
@@ -240,7 +258,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                     <td style={{ fontFamily: "monospace", color: "var(--color-admin-primary)", fontSize: "0.75rem" }}>
                       {no_kp}
                     </td>
-                    <td>{umur}</td>
+                    <td style={{ fontWeight: 600, color: "var(--color-admin-text)" }}>
+                      {umur}
+                    </td>
                     <td>
                       <span
                         style={{
@@ -276,8 +296,14 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                       {no_ahli}
                     </td>
                     <td>{no_telefon}</td>
-                    <td style={{ maxWidth: 220, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--color-admin-text-muted)" }}>
+                    <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--color-admin-text-muted)" }}>
                       {alamatStr}
+                    </td>
+                    <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
+                      {poskodStr}
+                    </td>
+                    <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
+                      {negeriStr}
                     </td>
                     <td style={{ fontWeight: 500, color: "var(--color-admin-accent)" }}>
                       {pakej}
@@ -285,7 +311,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                     <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
                       {tarikh_daftar}
                     </td>
-                    <td style={{ fontWeight: 500, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <td style={{ fontWeight: 500, maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {utama}
                     </td>
                     <td>

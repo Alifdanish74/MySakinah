@@ -5,6 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAccessibleModules, canAccessModule } from "@/lib/auth";
+import { calculateAgeFromIC } from "@/lib/utils";
 
 export async function OPTIONS() {
   return new Response(null, {
@@ -135,13 +136,22 @@ export async function POST(req: NextRequest) {
       targetModuleId = newMod.id;
     }
 
+    // Ensure Umur is populated if missing or "-"
+    const enrichedFormData = { ...form_data };
+    if (!enrichedFormData.umur || enrichedFormData.umur === "-" || enrichedFormData.umur === "—") {
+      const computedUmur = calculateAgeFromIC(enrichedFormData.no_kp || enrichedFormData.ic);
+      if (computedUmur) {
+        enrichedFormData.umur = computedUmur;
+      }
+    }
+
     // Insert submission
     const { data: newSubmission, error: insertErr } = await supabase
       .from("submissions")
       .insert({
         module_id: targetModuleId,
-        form_data,
-        submitted_by: submitted_by || form_data.full_name || form_data.email || "Anonymous",
+        form_data: enrichedFormData,
+        submitted_by: submitted_by || enrichedFormData.nama || enrichedFormData.full_name || enrichedFormData.email || "Anonymous",
         status: "pending",
       })
       .select()
