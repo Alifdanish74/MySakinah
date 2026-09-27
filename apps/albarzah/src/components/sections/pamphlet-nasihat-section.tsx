@@ -134,6 +134,32 @@ export function PamphletNasihatSection() {
               Fikir-fikirkanlah……
             </div>
           </motion.div>
+          {/* 4. MATI ITU PASTI */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={viewportOnce}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="rounded-3xl p-6 sm:p-8 border text-white shadow-lg flex flex-col items-center justify-center text-center relative overflow-hidden min-h-[160px]"
+            style={{
+              background: "var(--color-brand-green-dark)",
+              borderColor: "var(--color-brand-gold-light)",
+              borderWidth: "1.5px",
+            }}
+          >
+            <Quote className="h-20 w-20 absolute -bottom-3 -right-3 opacity-10 text-amber-300" aria-hidden="true" />
+            <div className="relative z-10 my-auto">
+              {/* <p className="eyebrow-cinzel mb-2" style={{ color: "rgba(255,255,255,0.7)" }}>
+                PERINGATAN
+              </p> */}
+              <h3
+                className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-amber-300 drop-shadow-md leading-tight"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                MATI ITU PASTI
+              </h3>
+            </div>
+          </motion.div>
 
         </div>
       </ResponsiveContainer>

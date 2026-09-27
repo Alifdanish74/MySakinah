@@ -56,18 +56,18 @@ export function JomBerdakwahSection() {
               Mungkin anda tidak memerlukannya tetapi orang lain sedang mencari dan sangat memerlukannya
             </p>
 
-            <div
+            {/* <div
               className="rounded-2xl p-5 border mb-6"
               style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(243,182,1,0.35)" }}
             >
               <p className="text-xs font-black uppercase tracking-widest text-amber-300 mb-1">HUBUNGI KAMI</p>
-              <p className="text-base sm:text-lg font-black text-white leading-snug mb-0.5">
-                US HJ MOHD ZAINAL HJ KHAMIS
+              <p className="text-center px-36 text-2xl font-black text-white leading-snug mb-0.5">
+                MATI ITU PASTI
               </p>
               <p className="text-xs font-semibold text-white/65 uppercase tracking-wide">
                 ALBARZAH ENTERPRISE &amp; BUMIJEZ SDN BHD
               </p>
-            </div>
+            </div> */}
 
             {/* CTA */}
             {/* <a

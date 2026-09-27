@@ -43,7 +43,7 @@ export function ContactSection() {
           className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
           {/* Hotline 24 Jam Card */}
-          <motion.div
+          {/* <motion.div
             variants={cardReveal}
             className="rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm transition-all duration-300 hover:shadow-md"
             style={{
@@ -108,7 +108,7 @@ export function ContactSection() {
               <ShieldCheck className="h-4 w-4 text-emerald-600 flex-shrink-0" />
               <span>Bumijez Sdn Bhd — Talian Bersedia 24/7</span>
             </div>
-          </motion.div>
+          </motion.div> */}
 
           {/* Penasihat & Konsultan Card */}
           <motion.div
@@ -136,7 +136,7 @@ export function ContactSection() {
                 className="text-xl font-bold mb-1"
                 style={{ color: "var(--color-brand-green-dark)", fontFamily: "var(--font-heading)" }}
               >
-                Us. Hj Mohd Zainal Hj Khamis
+                Us. Hj Mohd Zainal Bin Hj Khamis
               </h3>
               <p className="text-xs font-medium text-slate-500 mb-6">
                 Penasihat Perkhidmatan Pengurusan Jenazah Bumijez Sdn Bhd
@@ -179,7 +179,7 @@ export function ContactSection() {
           </motion.div>
 
           {/* Pejabat & Alamat Card */}
-          {/* <motion.div
+          <motion.div
             variants={cardReveal}
             className="rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-sm transition-all duration-300 hover:shadow-md md:col-span-2 lg:col-span-1"
             style={{
@@ -240,7 +240,7 @@ export function ContactSection() {
             <div className="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-500 text-center">
               Dikelola oleh BUMIJEZ SDN BHD
             </div>
-          </motion.div> */}
+          </motion.div>
         </motion.div>
       </ResponsiveContainer>
     </section>

@@ -98,8 +98,8 @@ export function OpeningCover() {
             >
               <div className="relative h-28 w-28 xs:h-32 xs:w-32 sm:h-36 sm:w-36 md:h-40 md:w-40 rounded-full p-1.5 bg-gradient-to-b from-[var(--color-brand-gold-light,#f3b601)] to-amber-600 shadow-2xl">
                 <img
-                  src="/albarzah/images/front_icon_ustaz.jpeg"
-                  alt="Us Hj Mohd Zainal Hj Khamis"
+                  src="/albarzah/images/front_icon_ustaz_1.jpeg"
+                  alt="Us Hj Mohd Zainal Bin Hj Khamis"
                   className="h-full w-full rounded-full object-cover border-2 border-white/30"
                 />
               </div>
@@ -194,7 +194,7 @@ export function OpeningCover() {
                 BANTUAN PERKHIDMATAN 24 JAM
               </p>
               <p className="text-sm xs:text-base sm:text-lg md:text-xl font-black italic tracking-widest text-amber-300 drop-shadow-md">
-                “ INGAT MATI ITU 1 TUNTUTAN ”
+                “ INGAT MATI ITU TUNTUTAN ”
               </p>
             </motion.div>
           </div>

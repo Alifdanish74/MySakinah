@@ -40,9 +40,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://albarzah.mysakinah.com"
   ),
-  title: "Albarzah - Perlindungan Khairat 24 jam. Kenapa tidak urus jenazah \"TANPA TUNAI\"",
+  title: 'Albarzah - Perlindungan Khairat Kematian 24 jam kenapa tidak urus jenazah "TANPA TUNAI"',
   description:
-    "Simpan link ini satu hari pasti diperlukan dan bagitau mereka yang memerlukan ",
+    "Simpan link ini satu hari pasti diperlukan dan bagitahu/hantar kepada yang memerlukan",
   keywords: [
     "albarzah",
     "skim jenazah",
@@ -65,7 +65,7 @@ export const metadata: Metadata = {
     siteName: "Albarzah",
     title: 'Albarzah - Perlindungan Khairat 24 jam. Kenapa tidak urus jenazah "TANPA TUNAI"',
     description:
-      "Simpan link ini satu hari pasti diperlukan dan bagitau mereka yang memerlukan",
+      "Simpan link ini satu hari pasti diperlukan dan bagitahu/hantar kepada yang memerlukan",
     images: [
       {
         url: "/images/opening_background_desktop.png",
@@ -79,7 +79,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: 'Albarzah - Perlindungan Khairat 24 jam. Kenapa tidak urus jenazah "TANPA TUNAI"',
     description:
-      "Simpan link ini satu hari pasti diperlukan dan bagitau mereka yang memerlukan",
+      "Simpan link ini satu hari pasti diperlukan dan bagitahu/hantar kepada yang memerlukan",
     images: ["/images/opening_background_desktop.png"],
   },
 };

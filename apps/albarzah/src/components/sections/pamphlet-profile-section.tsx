@@ -8,12 +8,12 @@ import { ResponsiveContainer, viewportOnce } from "@sakinah/ui";
 import { SECTION_IDS } from "@/lib/constants";
 
 const ROLES = [
-  { title: "PENGARAH", org: "Albarzah Enterprise", icon: Building2 },
+  { title: "PENGARAH URUSAN", org: "Albarzah Enterprise", icon: Building2 },
   { title: "PENGERUSI EKSEKUTIF", org: "BUMIJEZ Sdn Bhd", icon: Landmark },
   { title: "PENGERUSI", org: "Koperasi Darul Jenazah (KODARUL)", icon: ShieldCheck },
-  { title: "MAAHAD TAHFIZ", org: "Maahad Tahfiz Al-Quran Al-Ikhwaniah", icon: BookOpen },
-  { title: "INSTITUSI ANTARABANGSA", org: "United Institute Arakan Malaysia (UAIM)", icon: Award },
-  { title: "PERTUBUHAN AMAL", org: "Pertubuhan Amal Barzah", icon: Heart },
+  { title: "PENGERUSI", org: "Maahad Tahfiz Al-Quran Al-Ikhwaniah", icon: BookOpen },
+  { title: "PENGERUSI", org: "United Institute Arakan Malaysia (UAIM)", icon: Award },
+  { title: "PENGERUSI", org: "Pertubuhan Amal Barzah", icon: Heart },
 ];
 
 export function PamphletProfileSection() {
@@ -79,8 +79,6 @@ export function PamphletProfileSection() {
                 Ustaz Jenazah Songkok Tinggi <br /> Pengalaman Lebih 30 Tahun
               </p>
               <ul className="mt-3 text-sm text-slate-600 font-medium leading-relaxed list-disc list-outside pl-5 space-y-1.5 text-left">
-                <li>Mengetuai kepimpinan pengurusan jenazah Islam dan institusi pendidikan &amp; kebajikan utama di Malaysia.</li>
-                <li>Menguruskan jenazah di Hospital-hospital sekitar Lembah Klang &amp; kebajikan utama di Malaysia.</li>
                 <li>Pertama di Malaysia memperkenalkan konsep bersepadu khairat kematian.</li>
                 <li>Pengurusan jenazah berisiko dan penyakit berjangkit.</li>
                 <li>Panel pengurusan jenazah dibeberapa Hospital di Lembah Klang.</li>

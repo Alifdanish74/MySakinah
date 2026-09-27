@@ -307,23 +307,31 @@ function PackageCard({ pkg, onSelectPackage }: PackageCardProps) {
           </p>
         )}
 
-        {/* Embedded Nota Penting content */}
-        <div
-          className="rounded-2xl p-3.5 sm:p-4 border space-y-2"
-          style={{ background: "var(--color-brand-sage-soft)", borderColor: "var(--color-brand-border)" }}
-        >
-          {notaPenting.map((nota, i) => (
-            <div key={i} className="flex items-start gap-2.5">
-              <span
-                className="h-1.5 w-1.5 rounded-full mt-1.5 flex-shrink-0"
-                style={{ background: "var(--color-brand-gold)" }}
-              />
-              <p className="text-xs leading-relaxed font-medium" style={{ color: "var(--color-brand-text-muted)" }}>
-                {nota}
-              </p>
-            </div>
-          ))}
-        </div>
+        {/* Embedded Nota Penting content (annual packages only) */}
+        {pkg.id !== "pakej-1500" && (
+          <div
+            className="rounded-2xl p-3.5 sm:p-4 border space-y-2.5"
+            style={{ background: "var(--color-brand-sage-soft)", borderColor: "var(--color-brand-border)" }}
+          >
+            <p
+              className="text-sm font-black uppercase tracking-wider text-center mb-1"
+              style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green-dark)" }}
+            >
+              NOTA PENTING
+            </p>
+            {notaPenting.map((nota, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <span
+                  className="h-1.5 w-1.5 rounded-full mt-1.5 flex-shrink-0"
+                  style={{ background: "var(--color-brand-gold)" }}
+                />
+                <p className="text-xs leading-relaxed font-medium" style={{ color: "var(--color-brand-text-muted)" }}>
+                  {nota}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* CTA */}
         <button
@@ -378,9 +386,37 @@ export function PackageSection({ onSelectPackage }: PackageSectionProps = {}) {
             >
               PILIH PAKEJ YANG DITAWARKAN
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 font-medium">
+            <p className="text-sm sm:text-base text-slate-600 font-medium mb-6">
               PAKEJ KHAIRAT KEMATIAN MAMPU MILIK
             </p>
+
+            {/* List of Available Packages */}
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+              {[
+                { no: 1, label: "RM 80 Setahun", href: `#${SECTION_IDS.point8}` },
+                { no: 2, label: "RM 120 Setahun", href: `#${SECTION_IDS.point9}` },
+                { no: 3, label: "RM 180 Setahun", href: `#${SECTION_IDS.point10}` },
+                { no: 4, label: "RM 240 Setahun", href: `#${SECTION_IDS.point11}` },
+                { no: 5, label: "RM 1,500 Seumur Hidup", href: "#pakej-1500" },
+              ].map((item) => (
+                <a
+                  key={item.no}
+                  href={item.href}
+                  className="hover-scale inline-flex items-center gap-2 rounded-full px-4 py-2 border bg-white shadow-sm transition-all hover:border-emerald-600 hover:shadow-md cursor-pointer"
+                  style={{ borderColor: "var(--color-brand-border)" }}
+                >
+                  <span
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black"
+                    style={{ background: "var(--color-brand-sage-soft)", color: "var(--color-brand-green)" }}
+                  >
+                    {item.no}
+                  </span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-800">
+                    {item.label}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         </ResponsiveContainer>
       </div>
