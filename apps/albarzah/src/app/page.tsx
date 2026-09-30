@@ -26,9 +26,6 @@ export default function Home() {
       {/* ── Point 5: 8 Perkhidmatan Lengkap & Kami Pelengkap ─────────────── */}
       <PamphletServicesSection />
 
-      {/* ── Point 7: Jom Kita Berdakwah ──────────────────────────────────── */}
-      <JomBerdakwahSection />
-
       {/* ── Points 8–11: Pakej Cards (each opens its package form modal) ──── */}
       <PackageSection />
 
@@ -40,6 +37,9 @@ export default function Home() {
 
       {/* ── Point 6: Nasihat Ustaz, Pantun & Mutiara Kata ────────────────── */}
       <PamphletNasihatSection />
+
+      {/* ── Point 7: Jom Kita Berdakwah ──────────────────────────────────── */}
+      <JomBerdakwahSection />
 
       {/* ── FAQ / Soalan Lazim ───────────────────────────────────────────── */}
       {/* <FaqSection /> */}
