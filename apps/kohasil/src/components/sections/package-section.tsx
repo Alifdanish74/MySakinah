@@ -697,7 +697,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
   const handleMemberFieldChange = (tabId: string, field: keyof MemberFormData, value: any) => {
     let finalValue = field === "ic" ? formatMalaysianIC(value) : value;
-    if (typeof finalValue === "string") {
+    // Do NOT uppercase dropdown fields — their values must exactly match the <option> values
+    const dropdownFields: Array<keyof MemberFormData> = ["negeri", "jenisTanggungan"];
+    if (typeof finalValue === "string" && !dropdownFields.includes(field)) {
       finalValue = finalValue.toUpperCase();
     }
 

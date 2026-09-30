@@ -249,6 +249,9 @@ body::before {
   border-bottom: 1px solid rgba(255,255,255,0.04);
   vertical-align: middle;
 }
+.admin-table td:not(:last-child) {
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
 .admin-table tr:last-child td { border-bottom: none; }
 .admin-table tbody tr {
   transition: background 0.15s;

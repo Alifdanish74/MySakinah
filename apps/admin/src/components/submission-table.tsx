@@ -20,11 +20,71 @@ interface SubmissionTableProps {
 
 const PAGE_SIZE = 20;
 
+// Column definitions — no hardcoded widths; browser measures on first render
+const COLS = [
+  { label: "NO",                  center: true  },
+  { label: "NAMA",                center: false },
+  { label: "NO KP",               center: false },
+  { label: "UMUR",                center: true  },
+  { label: "KATEGORI",            center: false },
+  { label: "NO AHLI / ANGGOTA",   center: false },
+  { label: "NO TELEFON",          center: false },
+  { label: "NAMA WARIS",          center: false },
+  { label: "TELEFON WARIS",       center: false },
+  { label: "ALAMAT",              center: false },
+  { label: "POSKOD",              center: false },
+  { label: "NEGERI",              center: false },
+  { label: "PAKEJ",               center: false },
+  { label: "TARIKH DAFTAR",       center: false },
+  { label: "UTAMA",               center: false },
+  { label: "STATUS",              center: false },
+] as const;
+
 export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }: SubmissionTableProps) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [editingItem, setEditingItem] = useState<Submission | null>(null);
   const [deletingItem, setDeletingItem] = useState<Submission | null>(null);
+
+  // ── Column resize ──────────────────────────────────────────
+  // null = not yet measured (renders with tableLayout:auto to get natural widths)
+  const [colWidths, setColWidths] = useState<number[] | null>(null);
+  const theadRowRef = useRef<HTMLTableRowElement>(null);
+  const dragState = useRef<{ colIdx: number; startX: number; startW: number } | null>(null);
+
+  // Measure each th's natural width after first render, then lock to fixed layout
+  useEffect(() => {
+    if (colWidths !== null || !theadRowRef.current) return;
+    const ths = Array.from(theadRowRef.current.querySelectorAll("th")).slice(0, COLS.length);
+    setColWidths(ths.map((th) => Math.ceil(th.getBoundingClientRect().width)));
+  }, [colWidths]);
+
+  function onResizeStart(colIdx: number, e: React.MouseEvent) {
+    if (!colWidths) return;
+    e.preventDefault();
+    dragState.current = { colIdx, startX: e.clientX, startW: colWidths[colIdx] };
+
+    function onMouseMove(ev: MouseEvent) {
+      if (!dragState.current) return;
+      const { colIdx, startX, startW } = dragState.current;
+      const delta = ev.clientX - startX;
+      const newW = Math.max(40, startW + delta);
+      setColWidths((prev) => {
+        if (!prev) return prev;
+        const next = [...prev];
+        next[colIdx] = newW;
+        return next;
+      });
+    }
+    function onMouseUp() {
+      dragState.current = null;
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+    }
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  }
+  // ──────────────────────────────────────────────────────────
 
   // Refs for syncing top & bottom scrollbars
   const tableWrapperRef = useRef<HTMLDivElement>(null);
@@ -110,6 +170,8 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       "NO AHLI",
       "BUKAN ANGGOTA",
       "NO TELEFON",
+      "NAMA WARIS",
+      "TELEFON WARIS",
       "ALAMAT 1",
       "ALAMAT 2",
       "POSKOD",
@@ -120,16 +182,18 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       const fd = s.form_data || {};
       const no = fd.no || (index + 1).toString();
       const nama = fd.nama || s.submitted_by || "";
-      const no_kp = fd.no_kp || "";
+      const no_kp = fd.no_kp || fd.ic || fd.no_ic || "";
       const umur = getUmurDisplay(fd);
-      const kategori = fd.kategori || "AHLI";
+      const kategori = fd.kategori || fd.statusKeahlian || "AHLI";
       const pakej = fd.pakej || "";
       const utama = fd.utama || nama;
       const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
       const status = s.status;
       const no_ahli = fd.no_ahli || "";
       const bukan_anggota = fd.bukan_anggota || (no_ahli ? "" : "BUKAN ANGGOTA");
-      const no_telefon = fd.no_telefon || "";
+      const no_telefon = fd.no_telefon || fd.telefon || fd.phone || "";
+      const nama_waris = fd.namaWaris || fd.nama_waris || "";
+      const telefon_waris = fd.telefonWaris || fd.telefon_waris || "";
       const alamat1 = fd.alamat1 || fd.alamat || "";
       const alamat2 = fd.alamat2 || "";
       const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
@@ -138,7 +202,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       return [
         no,
         `"${nama.replace(/"/g, '""')}"`,
-        `"${no_kp}"`,
+        `="${no_kp}"`,   // ="..." forces Excel to treat as text, prevents 9.00E+11 notation
         `"${umur === "—" ? "" : umur}"`,
         `"${kategori}"`,
         `"${pakej}"`,
@@ -148,6 +212,8 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
         `"${no_ahli}"`,
         `"${bukan_anggota}"`,
         `"${no_telefon}"`,
+        `"${nama_waris.replace(/"/g, '""')}"`,
+        `"${telefon_waris}"`,
         `"${alamat1.replace(/"/g, '""')}"`,
         `"${alamat2.replace(/"/g, '""')}"`,
         `"${poskod}"`,
@@ -242,23 +308,74 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
           border: "1px solid var(--color-admin-border)",
         }}
       >
-        <table className="admin-table" style={{ fontSize: "0.8125rem", width: "100%", borderCollapse: "collapse", minWidth: 1000 }}>
+        <table
+          className="admin-table"
+          style={{
+            fontSize: "0.8125rem",
+            width: colWidths ? undefined : "100%",
+            borderCollapse: "collapse",
+            minWidth: 1000,
+            tableLayout: colWidths ? "fixed" : "auto",
+          }}
+        >
+          {/* colgroup — only rendered after widths are measured */}
+          {colWidths && (
+            <colgroup>
+              {COLS.map((_, i) => (
+                <col key={i} style={{ width: colWidths[i] }} />
+              ))}
+              {canEdit && <col style={{ width: 90 }} />}
+            </colgroup>
+          )}
           <thead>
-            <tr style={{ background: "rgba(15, 23, 42, 0.8)", borderBottom: "1px solid var(--color-admin-border)" }}>
-              <th style={{ width: 40, textAlign: "center" }}>NO</th>
-              <th>NAMA</th>
-              <th>NO KP</th>
-              <th>UMUR</th>
-              <th>KATEGORI</th>
-              <th>NO AHLI / ANGGOTA</th>
-              <th>NO TELEFON</th>
-              <th>ALAMAT</th>
-              <th>POSKOD</th>
-              <th>NEGERI</th>
-              <th>PAKEJ</th>
-              <th>TARIKH DAFTAR</th>
-              <th>UTAMA</th>
-              <th>STATUS</th>
+            <tr
+              ref={theadRowRef}
+              style={{ background: "rgba(15, 23, 42, 0.8)", borderBottom: "1px solid var(--color-admin-border)" }}
+            >
+              {COLS.map((col, i) => (
+                <th
+                  key={col.label}
+                  style={{
+                    position: "relative",
+                    userSelect: "none",
+                    textAlign: col.center ? "center" : undefined,
+                    ...(colWidths ? {
+                      width: colWidths[i],
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis",
+                    } : {
+                      whiteSpace: "nowrap", // prevent wrapping during measurement
+                    }),
+                  }}
+                >
+                  {col.label}
+                  {/* Resize handle — only shown after layout is locked */}
+                  {colWidths && (
+                    <span
+                      onMouseDown={(e) => onResizeStart(i, e)}
+                      title="Drag to resize"
+                      style={{
+                        position: "absolute",
+                        right: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 6,
+                        cursor: "col-resize",
+                        background: "transparent",
+                        transition: "background 0.15s",
+                        zIndex: 1,
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.5)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.currentTarget as HTMLElement).style.background = "transparent";
+                      }}
+                    />
+                  )}
+                </th>
+              ))}
               {canEdit && <th style={{ textAlign: "right" }}>ACTIONS</th>}
             </tr>
           </thead>
@@ -267,7 +384,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
               {paginated.length === 0 && (
                 <tr>
                   <td
-                    colSpan={15 + (canEdit ? 1 : 0)}
+                    colSpan={16 + (canEdit ? 1 : 0)}
                     style={{ textAlign: "center", padding: "3rem", color: "var(--color-admin-text-muted)" }}
                   >
                     No matching records found.
@@ -278,11 +395,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                 const fd = s.form_data || {};
                 const rowNo = fd.no || ((page - 1) * PAGE_SIZE + i + 1).toString();
                 const nama = fd.nama || s.submitted_by || "—";
-                const no_kp = fd.no_kp || "—";
+                const no_kp = fd.no_kp || fd.ic || fd.no_ic || "—";
                 const umur = getUmurDisplay(fd);
-                const kategori = fd.kategori || "AHLI";
+                const kategori = fd.kategori || fd.statusKeahlian || "AHLI";
                 const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "—");
-                const no_telefon = fd.no_telefon || fd.phone || "—";
+                const no_telefon = fd.no_telefon || fd.telefon || fd.phone || "—";
+                const nama_waris = fd.namaWaris || fd.nama_waris || "—";
+                const telefon_waris = fd.telefonWaris || fd.telefon_waris || "—";
                 const alamatStr = getAlamatDisplay(fd);
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
@@ -346,7 +465,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                       {no_ahli}
                     </td>
                     <td>{no_telefon}</td>
-                    <td style={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--color-admin-text-muted)" }}>
+                    <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                      {nama_waris}
+                    </td>
+                    <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
+                      {telefon_waris}
+                    </td>
+                    <td style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--color-admin-text-muted)" }}>
                       {alamatStr}
                     </td>
                     <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
@@ -361,7 +486,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                     <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
                       {tarikh_daftar}
                     </td>
-                    <td style={{ fontWeight: 500, maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    <td style={{ fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {utama}
                     </td>
                     <td>
