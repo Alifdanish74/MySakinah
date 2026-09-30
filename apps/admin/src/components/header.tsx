@@ -52,7 +52,7 @@ export function Header({
         {/* Mobile Hamburger Menu Toggle */}
         <button
           onClick={onToggleMobileMenu}
-          className="md:hidden btn-ghost"
+          className="show-mobile-only btn-ghost"
           style={{ padding: "0.5rem", minHeight: "auto", color: "var(--color-admin-text)" }}
           aria-label="Open navigation menu"
         >
@@ -63,7 +63,7 @@ export function Header({
         {onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
-            className="hidden md:flex btn-ghost"
+            className="show-desktop-only btn-ghost"
             style={{ padding: "0.5rem", minHeight: "auto", color: "var(--color-admin-text-muted)" }}
             aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}

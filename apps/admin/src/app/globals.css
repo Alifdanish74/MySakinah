@@ -425,6 +425,22 @@ body::before {
   overflow-x: hidden;
 }
 
+/* Responsive visibility helpers */
+.show-mobile-only {
+  display: flex !important;
+}
+.show-desktop-only {
+  display: none !important;
+}
+@media (min-width: 768px) {
+  .show-mobile-only {
+    display: none !important;
+  }
+  .show-desktop-only {
+    display: flex !important;
+  }
+}
+
 input[type="text"],
 input[type="tel"],
 input[type="email"],

@@ -2,7 +2,7 @@
 // File: src/components/submission-table.tsx
 // Data table for listing module submissions aligned with CONTOH EXCEL JEMPUTAN (1).xlsx
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Submission } from "@/lib/types";
 import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay } from "@/lib/utils";
 import { EditModal } from "./edit-modal";
@@ -25,6 +25,39 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
   const [page, setPage] = useState(1);
   const [editingItem, setEditingItem] = useState<Submission | null>(null);
   const [deletingItem, setDeletingItem] = useState<Submission | null>(null);
+
+  // Refs for syncing top & bottom scrollbars
+  const tableWrapperRef = useRef<HTMLDivElement>(null);
+  const topScrollRef = useRef<HTMLDivElement>(null);
+  const innerDummyRef = useRef<HTMLDivElement>(null);
+
+  // Keep inner dummy width in sync with actual table width
+  useEffect(() => {
+    const wrapper = tableWrapperRef.current;
+    const dummy = innerDummyRef.current;
+    if (!wrapper || !dummy) return;
+    const syncWidth = () => {
+      const table = wrapper.querySelector("table");
+      dummy.style.width = table ? `${table.scrollWidth}px` : "100%";
+    };
+    syncWidth();
+    const ro = new ResizeObserver(syncWidth);
+    ro.observe(wrapper);
+    return () => ro.disconnect();
+  }, []);
+
+  // Sync scroll: top bar → table wrapper
+  function onTopScroll() {
+    if (tableWrapperRef.current && topScrollRef.current) {
+      tableWrapperRef.current.scrollLeft = topScrollRef.current.scrollLeft;
+    }
+  }
+  // Sync scroll: table wrapper → top bar
+  function onBottomScroll() {
+    if (tableWrapperRef.current && topScrollRef.current) {
+      topScrollRef.current.scrollLeft = tableWrapperRef.current.scrollLeft;
+    }
+  }
 
   // Filter logic across all Excel template fields
   const filtered = submissions.filter((s) => {
@@ -70,6 +103,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       "NO KP",
       "UMUR",
       "KATEGORI",
+      "PAKEJ",
+      "UTAMA",
+      "TARIKH DAFTAR",
+      "STATUS",
       "NO AHLI",
       "BUKAN ANGGOTA",
       "NO TELEFON",
@@ -77,10 +114,6 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       "ALAMAT 2",
       "POSKOD",
       "NEGERI",
-      "PAKEJ",
-      "TARIKH DAFTAR",
-      "UTAMA",
-      "STATUS",
     ];
 
     const rows = filtered.map((s, index) => {
@@ -90,6 +123,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       const no_kp = fd.no_kp || "";
       const umur = getUmurDisplay(fd);
       const kategori = fd.kategori || "AHLI";
+      const pakej = fd.pakej || "";
+      const utama = fd.utama || nama;
+      const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
+      const status = s.status;
       const no_ahli = fd.no_ahli || "";
       const bukan_anggota = fd.bukan_anggota || (no_ahli ? "" : "BUKAN ANGGOTA");
       const no_telefon = fd.no_telefon || "";
@@ -97,10 +134,6 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
       const alamat2 = fd.alamat2 || "";
       const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
       const negeri = getNegeriDisplay(fd) === "—" ? "" : getNegeriDisplay(fd);
-      const pakej = fd.pakej || "";
-      const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
-      const utama = fd.utama || nama;
-      const status = s.status;
 
       return [
         no,
@@ -108,6 +141,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
         `"${no_kp}"`,
         `"${umur === "—" ? "" : umur}"`,
         `"${kategori}"`,
+        `"${pakej}"`,
+        `"${utama.replace(/"/g, '""')}"`,
+        `"${tarikh_daftar}"`,
+        `"${status}"`,
         `"${no_ahli}"`,
         `"${bukan_anggota}"`,
         `"${no_telefon}"`,
@@ -115,10 +152,6 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
         `"${alamat2.replace(/"/g, '""')}"`,
         `"${poskod}"`,
         `"${negeri}"`,
-        `"${pakej}"`,
-        `"${tarikh_daftar}"`,
-        `"${utama.replace(/"/g, '""')}"`,
-        `"${status}"`,
       ].join(",");
     });
 
@@ -182,13 +215,30 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
         </div>
       </div>
 
+      {/* Top Mirror Scrollbar */}
+      <div
+        ref={topScrollRef}
+        onScroll={onTopScroll}
+        style={{
+          overflowX: "auto",
+          overflowY: "hidden",
+          height: 12,
+          borderRadius: "var(--radius-md) var(--radius-md) 0 0",
+          marginBottom: -1,
+        }}
+      >
+        <div ref={innerDummyRef} style={{ height: 1 }} />
+      </div>
+
       {/* Excel Structure Data Table */}
       <div
+        ref={tableWrapperRef}
+        onScroll={onBottomScroll}
         className="surface"
         style={{
           overflowX: "auto",
           WebkitOverflowScrolling: "touch",
-          borderRadius: "var(--radius-lg)",
+          borderRadius: "0 0 var(--radius-lg) var(--radius-lg)",
           border: "1px solid var(--color-admin-border)",
         }}
       >
