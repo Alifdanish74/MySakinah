@@ -650,7 +650,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                           <img
                             src="/albarzah/images/albarzah-qr.jpeg"
                             alt="QR Code Pembayaran Albarzah"
-                            className="w-44 h-44 object-contain rounded-xl"
+                            className="w-44 h-44 object-cover rounded-xl"
                           />
                         </div>
                         <a
