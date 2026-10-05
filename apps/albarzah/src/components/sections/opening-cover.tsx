@@ -194,7 +194,7 @@ export function OpeningCover() {
                 BANTUAN PERKHIDMATAN 24 JAM
               </p>
               <p className="text-sm xs:text-base sm:text-lg md:text-xl font-black italic tracking-widest text-amber-300 drop-shadow-md">
-                “ INGAT MATI ITU TUNTUTAN ”
+                “INGAT MATI 1 TUNTUTAN”
               </p>
             </motion.div>
           </div>

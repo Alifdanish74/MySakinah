@@ -63,7 +63,7 @@ export async function POST(request: Request) {
         let roleLabel = "AHLI";
         if (key === "pasangan") roleLabel = "PASANGAN";
         else if (key.startsWith("anak")) roleLabel = "ANAK";
-        else if (key.startsWith("tanggungan")) roleLabel = "tanggungan";
+        else if (key.startsWith("tanggungan")) roleLabel = m.jenisTanggungan ? `TAMBAHAN (${m.jenisTanggungan.toUpperCase()})` : "TAMBAHAN";
 
         submissionsToPost.push({
           submitted_by: mainName,

@@ -581,9 +581,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
     const depTabs: MemberTab[] = additionalDependents.map((depId, idx) => ({
       id: depId,
-      label: `Tanggungan ${idx + 1}`,
+      label: `Tambahan ${idx + 1}`,
       role: "anak",
-      description: `Maklumat Tanggungan ${idx + 1} (+RM10/sebulan)`,
+      description: `Maklumat Tambahan ${idx + 1} (+RM10/sebulan)`,
     }));
 
     return [...baseTabs, ...depTabs];
@@ -596,7 +596,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
   const handleAddDependent = () => {
     if (additionalDependents.length >= 5) {
-      setErrorMessage("Maksimum 5 orang tanggungan tambahan sahaja dibenarkan.");
+      setErrorMessage("Maksimum 5 orang tambahan sahaja dibenarkan.");
       return;
     }
 
@@ -1436,7 +1436,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     </span>
                     {additionalDependents.length > 0 && (
                       <span className="text-[11px] text-amber-300 font-semibold bg-black/20 px-2.5 py-0.5 rounded-full border border-amber-300/30">
-                        (RM{selectedFormPackage.monthlyFee} + {additionalDependents.length} Tanggungan x RM10)
+                        (RM{selectedFormPackage.monthlyFee} + {additionalDependents.length} Tambahan x RM10)
                       </span>
                     )}
                     <span className="text-xs text-white/80 font-medium">
@@ -1549,7 +1549,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                           <div className="p-4 rounded-2xl bg-red-50 border border-red-200 text-xs sm:text-sm text-red-700 space-y-2">
                             {additionalDependents.length > 0 && (
                               <p className="font-bold text-amber-900 leading-snug pb-1 border-b border-amber-200">
-                                Nota Tanggungan Tambahan: Setiap tambahan 1 orang tanggungan dikenakan caj RM10/sebulan (Maksimum 5 orang). Jumlah tanggungan tambahan: {additionalDependents.length} orang (+RM{additionalDependents.length * 10}/sebulan).
+                                Nota Tambahan: Setiap tambahan 1 orang dikenakan caj RM10/sebulan (Maksimum 5 orang). Jumlah tambahan: {additionalDependents.length} orang (+RM{additionalDependents.length * 10}/sebulan).
                               </p>
                             )}
                             <p className="font-semibold text-red-700 leading-snug">
@@ -1647,7 +1647,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                         handleRemoveDependent(tab.id);
                                       }}
                                       className="ml-1 p-1 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
-                                      title="Buang tanggungan ini"
+                                      title="Buang tambahan ini"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
@@ -1656,15 +1656,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               );
                             })}
 
-                            {/* (+) Tambah Tanggungan Button for Individu & Keluarga Packages */}
+                            {/* (+) Tambah Tambahan Button for Individu & Keluarga Packages */}
                             <button
                               type="button"
                               onClick={handleAddDependent}
                               disabled={additionalDependents.length >= 5}
                               className="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-amber-400 text-green-950 hover:bg-amber-300 transition-all flex items-center gap-1 cursor-pointer whitespace-nowrap shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Tambah tanggungan (Maksimum 5 orang - RM10/sebulan per tanggungan)"
+                              title="Tambah tambahan (Maksimum 5 orang - RM10/sebulan per tambahan)"
                             >
-                              <span>+ Tambah Tanggungan (+RM10)</span>
+                              <span>+ Tambah Tambahan (+RM10)</span>
                             </button>
                           </div>
                         </div>
@@ -1686,11 +1686,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                           </div>
                         )}
 
-                        {/* Jenis Tanggungan Dropdown (For dependent / tanggungan tabs) */}
+                        {/* Jenis Tambahan Dropdown (For dependent / tambahan tabs) */}
                         {activeMemberTab !== "ahli" && activeMemberTab !== "pasangan" && (
                           <div>
                             <label htmlFor={`modal-jenisTanggungan-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                              Jenis Tanggungan <span className="text-red-500">*</span>
+                              Jenis Tambahan <span className="text-red-500">*</span>
                             </label>
                             <select
                               id={`modal-jenisTanggungan-${activeMemberTab}`}
@@ -1699,7 +1699,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               onChange={(e) => handleMemberFieldChange(activeMemberTab, "jenisTanggungan", e.target.value)}
                               className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 bg-white font-medium"
                             >
-                              <option value="">-- Pilih Jenis Tanggungan --</option>
+                              <option value="">-- Pilih Jenis Tambahan --</option>
                               {JENIS_TANGGUNGAN_OPTIONS.map((option) => (
                                 <option key={option} value={option}>
                                   {option}
