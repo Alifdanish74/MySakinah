@@ -13,7 +13,7 @@ const ROLES = [
   { title: "PENGERUSI", org: "Koperasi Darul Jenazah (KODARUL)", icon: ShieldCheck },
   { title: "PENGERUSI", org: "Maahad Tahfiz Al-Quran Al-Ikhwaniah", icon: BookOpen },
   { title: "PENGERUSI", org: "United Institute Arakan Malaysia (UAIM)", icon: Award },
-  { title: "PENGERUSI", org: "Pertubuhan Amal Barzah", icon: Heart },
+  { title: "PENGERUSI", org: "Pertubuhan Amal Barzah (Puchong)", icon: Heart },
 ];
 
 export function PamphletProfileSection() {

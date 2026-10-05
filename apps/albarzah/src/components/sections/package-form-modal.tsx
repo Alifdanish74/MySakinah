@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, Loader2, AlertCircle, Upload, Phone, ShieldCheck } from "lucide-react";
+import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download } from "lucide-react";
 
 // ── Dropdown options ──────────────────────────────────────────────────────
 const HUBUNGAN_OPTIONS = [
@@ -126,7 +126,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
   const [namaKawan, setNamaKawan] = useState("");
   const [telKawan, setTelKawan] = useState("");
   const [jenisKawan, setJenisKawan] = useState("");
-  const [slipFile, setSlipFile] = useState<File | null>(null);
+
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errMsg, setErrMsg] = useState("");
 
@@ -141,11 +141,14 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
     }
   }, [status, onClose]);
 
-  // Reset form state when opened
+  // Reset form state when opened; hide/show audio player button
   useEffect(() => {
     if (isOpen) {
       setStatus("idle");
       setErrMsg("");
+      window.dispatchEvent(new Event("hide_audio_player"));
+    } else {
+      window.dispatchEvent(new Event("show_audio_player"));
     }
   }, [isOpen, packageName]);
 
@@ -612,36 +615,106 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                     </div>
                   </div>
 
-                  {/* SLIP UPLOAD */}
-                  <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3">
-                    <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green)" }}>
-                      HANTAR SLIP BAYARAN (JIKA ADA)
-                    </p>
-                    <label
-                      className="flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed p-4 cursor-pointer transition-all bg-slate-50/50 hover:bg-slate-50"
-                      style={{ borderColor: slipFile ? "var(--color-brand-green)" : "var(--color-brand-border)" }}
-                    >
-                      <input
-                        type="file"
-                        accept="image/*,.pdf"
-                        className="sr-only"
-                        onChange={(e) => setSlipFile(e.target.files?.[0] ?? null)}
-                      />
-                      {slipFile ? (
-                        <div className="flex items-center gap-2">
-                          <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                          <span className="text-xs font-bold truncate max-w-[200px]" style={{ color: "var(--color-brand-green-dark)" }}>
-                            {slipFile.name}
+                  {/* MAKLUMAT PEMBAYARAN */}
+                  <div
+                    className="rounded-2xl border-2 shadow-sm overflow-hidden"
+                    style={{ borderColor: "var(--color-brand-border)", background: "linear-gradient(135deg, #f0fdf4 0%, #fefce8 100%)" }}
+                  >
+                    <div className="px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--color-brand-border)" }}>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green)" }}>
+                        MAKLUMAT PEMBAYARAN
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Sila buat bayaran ke akaun berikut sebelum menghantar slip.
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-4 px-5 py-5">
+                      {/* QR Code + Download */}
+                      <div className="flex flex-col items-center gap-2">
+                        <div
+                          className="rounded-2xl overflow-hidden shadow-md border-4 p-1 bg-white"
+                          style={{ borderColor: "var(--color-brand-green)" }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/images/albarzah-qr.jpeg"
+                            alt="QR Code Pembayaran Albarzah"
+                            className="w-44 h-44 object-contain rounded-xl"
+                          />
+                        </div>
+                        <a
+                          href="/images/albarzah-qr.jpeg"
+                          download="albarzah-qr.jpeg"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all hover:shadow-sm"
+                          style={{ borderColor: "var(--color-brand-green)", color: "var(--color-brand-green)", background: "var(--color-brand-sage-soft)" }}
+                        >
+                          <Download className="h-3 w-3" />
+                          Muat Turun QR
+                        </a>
+                      </div>
+                      {/* Bank Account Info */}
+                      <div className="text-center space-y-1">
+                        <div
+                          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-sm"
+                          style={{ background: "var(--color-brand-green)" }}
+                        >
+                          Maybank
+                        </div>
+                        <p className="text-2xl font-black tracking-widest text-slate-800 mt-1">
+                          562777204081
+                        </p>
+                        <p className="text-sm font-bold text-slate-600 uppercase tracking-wide">
+                          Albarzah Enterprise
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* HANTAR SLIP BAYARAN */}
+                  <div className="p-5 rounded-2xl bg-white border-2 shadow-sm space-y-4" style={{ borderColor: "var(--color-brand-border)" }}>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green)" }}>
+                        HANTAR SLIP BAYARAN
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Sila hantar bukti pembayaran ke nombor berikut:
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      {[
+                        { label: "Talian 1", number: "017-338 3884" },
+                        { label: "Talian 2", number: "012-600 3884" },
+                        { label: "Talian 3", number: "011-5550 3884" },
+                      ].map(({ label, number }) => (
+                        <a
+                          key={label}
+                          href={`https://wa.me/60${number.replace(/[^0-9]/g, "").slice(1)}?text=Salam%20Albarzah,%20saya%20ingin%20menghantar%20slip%20bayaran.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between gap-2 w-full px-3 py-2 rounded-lg border transition-all hover:shadow-sm"
+                          style={{ borderColor: "var(--color-brand-border)", background: "var(--color-brand-sage-soft)" }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="flex h-6 w-6 items-center justify-center rounded-full flex-shrink-0"
+                              style={{ background: "var(--color-brand-green)", color: "white" }}
+                            >
+                              <Phone className="h-3 w-3" />
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-wide text-slate-400 leading-none">{label}</p>
+                              <p className="text-xs font-black text-slate-800">{number}</p>
+                            </div>
+                          </div>
+                          <span
+                            className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full text-white flex-shrink-0"
+                            style={{ background: "#25D366" }}
+                          >
+                            WA
                           </span>
-                        </div>
-                      ) : (
-                        <div className="text-center">
-                          <Upload className="h-5 w-5 mx-auto mb-1 text-slate-400" />
-                          <p className="text-xs font-bold text-slate-700">PILIH FAIL SLIP BAYARAN</p>
-                          <p className="text-[10px] text-slate-400">Imej atau PDF</p>
-                        </div>
-                      )}
-                    </label>
+                        </a>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Error Alert */}

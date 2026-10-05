@@ -26,6 +26,7 @@ export function AudioPlayer({
   className,
 }: AudioPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [currentSrc, setCurrentSrc] = useState(src);
   const audioRef = useRef<HTMLAudioElement>(null);
   const fallbackIndexRef = useRef(0);
@@ -102,6 +103,18 @@ export function AudioPlayer({
     };
   }, [currentSrc]);
 
+  // Hide/show based on custom events (e.g. form modal open/close)
+  useEffect(() => {
+    const hide = () => setIsHidden(true);
+    const show = () => setIsHidden(false);
+    window.addEventListener("hide_audio_player", hide);
+    window.addEventListener("show_audio_player", show);
+    return () => {
+      window.removeEventListener("hide_audio_player", hide);
+      window.removeEventListener("show_audio_player", show);
+    };
+  }, []);
+
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (!audioRef.current) return;
@@ -130,6 +143,9 @@ export function AudioPlayer({
       style={{
         position: "fixed",
         zIndex: 999999,
+        opacity: isHidden ? 0 : 1,
+        pointerEvents: isHidden ? "none" : "auto",
+        transition: "opacity 0.2s ease",
       }}
     >
       <style>{`
