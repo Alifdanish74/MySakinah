@@ -10,11 +10,11 @@ export interface NavItem {
 export const desktopNavItems: NavItem[] = [
   { label: "Hubungi", href: "/#hubungi", icon: "PhoneCall" },
   { label: "Laman Utama", href: "/#utama", icon: "Home" },
-  { label: "Langgan", href: "/#pakej", icon: "Star" },
+  { label: "Pakej", href: "/#pakej", icon: "Star" },
 ];
 
 export const mobileNavItems: NavItem[] = [
   { label: "Hubungi", href: "/#hubungi", icon: "PhoneCall" },
   { label: "Laman Utama", href: "/#utama", icon: "Home" },
-  { label: "Langgan", href: "/#pakej", icon: "Star" },
+  { label: "Pakej", href: "/#pakej", icon: "Star" },
 ];
