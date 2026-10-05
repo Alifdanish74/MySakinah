@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download } from "lucide-react";
+import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download, Copy, Check } from "lucide-react";
 
 // ── Dropdown options ──────────────────────────────────────────────────────
 const HUBUNGAN_OPTIONS = [
@@ -129,6 +129,17 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errMsg, setErrMsg] = useState("");
+  const [accCopied, setAccCopied] = useState(false);
+
+  const handleCopyAcc = async () => {
+    try {
+      await navigator.clipboard.writeText("562777204081");
+      setAccCopied(true);
+      setTimeout(() => setAccCopied(false), 2000);
+    } catch {
+      // fallback silent fail
+    }
+  };
 
   // Auto close timer on success
   useEffect(() => {
@@ -637,13 +648,13 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
-                            src="/images/albarzah-qr.jpeg"
+                            src="/albarzah/images/albarzah-qr.jpeg"
                             alt="QR Code Pembayaran Albarzah"
                             className="w-44 h-44 object-contain rounded-xl"
                           />
                         </div>
                         <a
-                          href="/images/albarzah-qr.jpeg"
+                          href="/albarzah/images/albarzah-qr.jpeg"
                           download="albarzah-qr.jpeg"
                           className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all hover:shadow-sm"
                           style={{ borderColor: "var(--color-brand-green)", color: "var(--color-brand-green)", background: "var(--color-brand-sage-soft)" }}
@@ -660,9 +671,24 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                         >
                           Maybank
                         </div>
-                        <p className="text-2xl font-black tracking-widest text-slate-800 mt-1">
-                          562777204081
-                        </p>
+                        <button
+                          type="button"
+                          onClick={handleCopyAcc}
+                          className="flex items-center justify-center gap-2 mt-1 group cursor-pointer"
+                          title="Klik untuk salin nombor akaun"
+                        >
+                          <span className="text-2xl font-black tracking-widest text-slate-800 group-hover:text-emerald-700 transition-colors">
+                            562777204081
+                          </span>
+                          {accCopied ? (
+                            <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          ) : (
+                            <Copy className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors flex-shrink-0" />
+                          )}
+                        </button>
+                        {accCopied && (
+                          <p className="text-[10px] font-bold text-emerald-600 -mt-0.5">Disalin!</p>
+                        )}
                         <p className="text-sm font-bold text-slate-600 uppercase tracking-wide">
                           Albarzah Enterprise
                         </p>
@@ -707,10 +733,13 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                             </div>
                           </div>
                           <span
-                            className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full text-white flex-shrink-0"
+                            className="flex h-6 w-6 items-center justify-center rounded-full flex-shrink-0"
                             style={{ background: "#25D366" }}
                           >
-                            WA
+                            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-white" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.523 5.845L.057 23.617a.75.75 0 0 0 .92.92l5.824-1.473A11.954 11.954 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.943-1.334l-.354-.21-3.668.928.957-3.595-.23-.368A9.818 9.818 0 1 1 12 21.818z"/>
+                            </svg>
                           </span>
                         </a>
                       ))}
