@@ -173,9 +173,9 @@ export function OpeningCover() {
                 type="button"
                 aria-label="Terokai Sekarang"
               >
-                <div className="flex items-center justify-center gap-2 text-base xs:text-sm sm:text-base md:text-base font-black uppercase tracking-wider">
+                <div className="flex items-center justify-center gap-2 text-xs xs:text-xs sm:text-xs md:text-xs font-black uppercase tracking-wider">
                   {/* <span>TEROKI SEKARANG</span> */}
-                  <span>Tekan Untuk Mengetahui <br /> Lebih Lanjut</span>
+                  <span>TEKAN UNTUK MENGETAHUI <br />LEBIH LANJUT</span>
                   <ChevronDown className="h-5 w-5 xs:h-6 xs:w-6 animate-bounce stroke-[3]" aria-hidden="true" />
                 </div>
                 {/* <span className="text-xs xs:text-sm font-semibold italic normal-case tracking-normal opacity-90">
@@ -199,8 +199,9 @@ export function OpeningCover() {
               </p>
             </motion.div>
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </motion.div >
+      )
+      }
+    </AnimatePresence >
   );
 }
