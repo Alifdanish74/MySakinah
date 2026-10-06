@@ -173,13 +173,14 @@ export function OpeningCover() {
                 type="button"
                 aria-label="Terokai Sekarang"
               >
-                <div className="flex items-center justify-center gap-2 text-base xs:text-lg sm:text-xl font-black uppercase tracking-wider">
-                  <span>TEROKI SEKARANG</span>
+                <div className="flex items-center justify-center gap-2 text-base xs:text-sm sm:text-base md:text-base font-black uppercase tracking-wider">
+                  {/* <span>TEROKI SEKARANG</span> */}
+                  <span>Tekan Untuk Mengetahui <br /> Lebih Lanjut</span>
                   <ChevronDown className="h-5 w-5 xs:h-6 xs:w-6 animate-bounce stroke-[3]" aria-hidden="true" />
                 </div>
-                <span className="text-xs xs:text-sm font-semibold italic normal-case tracking-normal opacity-90">
+                {/* <span className="text-xs xs:text-sm font-semibold italic normal-case tracking-normal opacity-90">
                   (tekan untuk mengetahui lebih lanjut)
-                </span>
+                </span> */}
               </motion.button>
             </motion.div>
 

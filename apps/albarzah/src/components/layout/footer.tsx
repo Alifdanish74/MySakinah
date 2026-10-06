@@ -3,13 +3,10 @@
 // Weddingcard-matched footer: ornamental divider before footer, large display brand name,
 // whileInView entrance for footer content
 
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { Phone, Shield, Heart } from "lucide-react";
-import { BRAND, SECTION_IDS } from "@/lib/constants";
-import { ResponsiveContainer } from "@sakinah/ui";
-import { OrnamentalDivider } from "@sakinah/ui";
-import { staggerContainer, cardReveal, viewportOnce } from "@sakinah/ui";
+import { Phone } from "lucide-react";
+import { BRAND } from "@/lib/constants";
+import { ResponsiveContainer, OrnamentalDivider, viewportOnce } from "@sakinah/ui";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -99,112 +96,6 @@ export function Footer() {
               </div>
             </a>
           </div>
-        </motion.div>
-
-        <OrnamentalDivider className="mb-10" variant="white" />
-
-        {/* Grid links */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={viewportOnce}
-          className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4"
-        >
-          {/* Perlindungan links */}
-          <motion.div variants={cardReveal}>
-            <h3
-              className="eyebrow-cinzel mb-4 text-[0.625rem]"
-              style={{ color: "var(--color-brand-gold)", letterSpacing: "0.18em" }}
-            >
-              Perlindungan
-            </h3>
-            <ul className="space-y-2.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
-              {[
-               { label: "Manfaat", href: `#${SECTION_IDS.manfaat}` },
-                { label: "Pakej", href: `#${SECTION_IDS.pakej}` },
-                { label: "Cara Mendaftar", href: `#${SECTION_IDS.proses}` },
-                { label: "Tuntutan", href: `#${SECTION_IDS.tuntutan}` },
-              ].map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="transition-colors hover:text-white"
-                    style={{ color: "inherit" }}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Maklumat links */}
-          <motion.div variants={cardReveal}>
-            <h3
-              className="eyebrow-cinzel mb-4 text-[0.625rem]"
-              style={{ color: "var(--color-brand-gold)", letterSpacing: "0.18em" }}
-            >
-              Maklumat
-            </h3>
-            <ul className="space-y-2.5 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
-              {[
-                { label: "Mengapa Albarzah", href: `#${SECTION_IDS.utama}` },
-                { label: "Impak Kami", href: `#${SECTION_IDS.impak}` },
-                { label: "Soalan Lazim", href: `#${SECTION_IDS.soalan}` },
-                { label: "Hubungi Kami", href: `#${SECTION_IDS.hubungi}` },
-              ].map((link) => (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    className="transition-colors hover:text-white"
-                    style={{ color: "inherit" }}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </motion.div>
-
-          {/* Principles */}
-          <motion.div variants={cardReveal}>
-            <h3
-              className="eyebrow-cinzel mb-4 text-[0.625rem]"
-              style={{ color: "var(--color-brand-gold)", letterSpacing: "0.18em" }}
-            >
-              Prinsip
-            </h3>
-            <ul className="mb-5 space-y-3 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
-              <li className="flex items-start gap-2">
-                <Shield className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                <div>
-                  <span className="font-semibold text-white">Tabarru&apos;</span>
-                  <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.50)" }}>
-                    Sumbangan peserta ke dalam dana bersama
-                  </p>
-                </div>
-              </li>
-              <li className="flex items-start gap-2">
-                <Heart className="mt-0.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
-                <div>
-                  <span className="font-semibold text-white">Wakalah</span>
-                  <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.50)" }}>
-                    Pelantikan pengendali untuk mengurus skim
-                  </p>
-                </div>
-              </li>
-            </ul>
-            <div className="space-y-2 text-xs" style={{ color: "rgba(255,255,255,0.40)" }}>
-              {/* TODO: Replace # with actual URLs */}
-              <a href="#" className="block transition-colors hover:text-white">
-                Dasar Privasi
-              </a>
-              <Link href="/syarat" className="block transition-colors hover:text-white">
-                Terma &amp; Syarat
-              </Link>
-            </div>
-          </motion.div>
         </motion.div>
 
         {/* Bottom bar */}

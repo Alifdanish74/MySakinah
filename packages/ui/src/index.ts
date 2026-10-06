@@ -15,6 +15,7 @@ export { SectionHeading } from "./components/section-heading";
 export { TimelineStep } from "./components/timeline-step";
 export { SopProcessFlow, type SopStepItem } from "./components/sop-process-flow";
 export { TestimonialCarousel, type TestimonyItem, type TestimonialCarouselProps } from "./components/testimonial-carousel";
+export { ShariahSection, type ShariahSectionProps } from "./components/shariah-section";
 
 // Lib utilities (re-exported so apps import from one place)
 export { cn, scrollToSection } from "./lib/utils";
