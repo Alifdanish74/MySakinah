@@ -12,20 +12,16 @@ import { ParticleComponent } from "@sakinah/ui";
 
 // Primary Heading font — Playfair Display (full-height lining numbers, elegant high-contrast serif)
 const playfair = Playfair_Display({
-  weight: ["400", "500", "600", "700", "800"],
   subsets: ["latin"],
   display: "swap",
   variable: "--font-playfair",
-  preload: true,
 });
 
 // Secondary Heading font — Cormorant Garamond
 const cormorant = Cormorant_Garamond({
-  weight: ["400", "500", "600", "700"],
   subsets: ["latin"],
   display: "swap",
   variable: "--font-cormorant",
-  preload: true,
 });
 
 // Body font — Inter (variable font)
