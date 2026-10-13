@@ -104,7 +104,7 @@ export function FaqSection() {
         <SectionHeading
           eyebrow="Soalan Lazim"
           title="Soalan Yang Sering Ditanya"
-          subtitle="Tidak jumpa jawapan yang anda cari? Hubungi kami terus dan pasukan kami sedia membantu."
+          subtitle=""
           className="mb-10"
         />
 

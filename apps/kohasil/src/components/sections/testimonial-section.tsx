@@ -37,10 +37,10 @@ export function TestimonialSection() {
     <TestimonialCarousel
       sectionId={SECTION_IDS.testimoni}
       items={TESTIMONY_ITEMS}
-      eyebrow="Testimoni & Maklum Balas"
-      title="Apa Kata Peserta & Waris Kami"
-      subtitle="Dengar pengalaman dan maklum balas sebenar daripada peserta serta ahli keluarga yang dilindungi bawah skim KOHASiL Raudhah."
-      dividerLabel="Testimoni Kohasil"
+      eyebrow="Antara Khidmat Dari Kami"
+    // title="Apa Kata Peserta & Waris Kami"
+    // subtitle="Dengar pengalaman dan maklum balas sebenar daripada peserta serta ahli keluarga yang dilindungi bawah skim KOHASiL Raudhah."
+    // dividerLabel="Testimoni Kohasil"
     />
   );
 }

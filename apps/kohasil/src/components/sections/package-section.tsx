@@ -191,7 +191,7 @@ const keluargaPackages: PackageDetail[] = [
       accidentAhli: "5000",
       accidentPasangan: "5000",
       totalAccident: "Ahli: 5000 + 5000 : 10000 | Pasangan: 5000 + 5000 : 10000",
-      childBenefit: "Manfaat Pengurusan Jenazah / Tunai RM 1,200 seorang untuk 2 orang anak berdaftar (1 - 17 tahun)",
+      childBenefit: "Tunai RM 1,200 seorang untuk 2 orang anak berdaftar (1 - 17 tahun)",
     },
     modalData_nonmuslim: {
       totalNormalDeath: "RM 5,000 (Ahli) + RM 5,000 (Pasangan)",
@@ -205,7 +205,7 @@ const keluargaPackages: PackageDetail[] = [
       accidentAhli: "5000",
       accidentPasangan: "5000",
       totalAccident: "Ahli: 5000 + 5000 : 10000 | Pasangan: 5000 + 5000 : 10000",
-      childBenefit: "Manfaat Pengurusan Jenazah / Tunai RM 1,200 seorang untuk 2 orang anak berdaftar (1 - 17 tahun)",
+      childBenefit: " Tunai RM 1,200 seorang untuk 2 orang anak berdaftar (1 - 17 tahun)",
     },
   },
   {
@@ -235,7 +235,7 @@ const keluargaPackages: PackageDetail[] = [
       accidentAhli: "10000",
       accidentPasangan: "10000",
       totalAccident: "Ahli: 7000 + 10000 : 17000 | Pasangan: 7000 + 10000 : 17000",
-      childBenefit: "Manfaat Pengurusan Jenazah / Tunai RM 1,200 seorang untuk 3 orang anak berdaftar (1 - 17 tahun)",
+      childBenefit: " Tunai RM 1,200 seorang untuk 3 orang anak berdaftar (1 - 17 tahun)",
     },
     modalData_nonmuslim: {
       totalNormalDeath: "RM 7,000 (Ahli) + RM 7,000 (Pasangan)",
@@ -249,7 +249,7 @@ const keluargaPackages: PackageDetail[] = [
       accidentAhli: "10000",
       accidentPasangan: "10000",
       totalAccident: "Ahli: 7000 + 10000 : 17000 | Pasangan: 7000 + 10000 : 17000",
-      childBenefit: "Manfaat Pengurusan Jenazah / Tunai RM 1,200 seorang untuk 3 orang anak berdaftar (1 - 17 tahun)",
+      childBenefit: " Tunai RM 1,200 seorang untuk 3 orang anak berdaftar (1 - 17 tahun)",
     }
   },
   {
@@ -279,7 +279,7 @@ const keluargaPackages: PackageDetail[] = [
       accidentAhli: "15000",
       accidentPasangan: "15000",
       totalAccident: "Ahli: 9000 + 15000 : 24000 | Pasangan: 9000 + 15000 : 24000",
-      childBenefit: "Manfaat Pengurusan Jenazah / Tunai RM 1,200 seorang untuk 5 orang anak berdaftar (1 - 17 tahun)",
+      childBenefit: " Tunai RM 1,200 seorang untuk 5 orang anak berdaftar (1 - 17 tahun)",
     },
     modalData_nonmuslim: {
       totalNormalDeath: "RM 9,000 (Ahli) + RM 9,000 (Pasangan)",
@@ -293,7 +293,7 @@ const keluargaPackages: PackageDetail[] = [
       accidentAhli: "15000",
       accidentPasangan: "15000",
       totalAccident: "Ahli: 9000 + 15000 : 24000 | Pasangan: 9000 + 15000 : 24000",
-      childBenefit: "Manfaat Pengurusan Jenazah / Tunai RM 1,200 seorang untuk 5 orang anak berdaftar (1 - 17 tahun)",
+      childBenefit: " Tunai RM 1,200 seorang untuk 5 orang anak berdaftar (1 - 17 tahun)",
     }
   }
 ];
@@ -908,14 +908,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   return (
     <section
       id={SECTION_IDS.pakej}
-      aria-label="Pakej Mampu Milik Bulanan"
+      aria-label=" Pakej Mampu Milik"
       className="py-16 lg:py-24"
       style={{ background: "var(--color-brand-sage-soft)" }}
     >
       <ResponsiveContainer>
         <SectionHeading
           eyebrow="Pilihan Pakej Bulanan"
-          title="Pakej Mampu Milik Bulanan Yang Ditawarkan"
+          title=" Pakej Mampu Milik Yang Ditawarkan"
           subtitle="Potongan gaji bulanan yang fleksibel mengikut keperluan perlindungan individu dan keluarga anda."
           className="mb-12"
         />
@@ -940,9 +940,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
               {/* <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-extrabold"></span> */}
               3 Pakej Individu
             </h3>
-            <span className="text-xs text-slate-500 font-medium mt-1">
-              Klik &quot;Pecahan&quot; untuk manfaat lanjut atau <br /> &quot;Pilih Pakej Ini&quot; untuk membuat permohonan
-            </span>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1337,19 +1335,20 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         1. Meninggal / Kecacatan Kekal Akibat Kemalangan : <strong>Maksimum Tertakluk Kepada Kelulusan Pengendali Takaful </strong>(Selepas 180 Hari)
                         <br />
                         <br />
-                        2. Untuk Non Muslim : Bantuan Tunai Kebajikan akan diberikan kepada waris dalam tempoh 24 Jam setelah laporan kematian diterima dan disahkan
+                        {/* Child Benefit Box if present */}
+                        {
+                          currentModalData.childBenefit && (
+                            <div>
+                              <p>2. Manfaat Pakej Anak: <br /> </p>
+                              <p>{currentModalData.childBenefit}</p>
+                            </div>
+                          )
+                        }
+
                       </p>
                     </div>
 
-                    {/* Child Benefit Box if present */}
-                    {
-                      currentModalData.childBenefit && (
-                        <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs sm:text-sm">
-                          <p className="font-bold text-emerald-900">Manfaat Pakej Anak:</p>
-                          <p className="text-slate-700 mt-1">{currentModalData.childBenefit}</p>
-                        </div>
-                      )
-                    }
+
                   </div>
                 );
               })()}
@@ -1898,7 +1897,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                             <div className="pt-2 border-t border-slate-200">
                               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Ahli / Bukan Ahli <span className="text-red-500">*</span>
+                                Ahli / Bukan Ahli KOHASIL <span className="text-red-500">*</span>
                               </label>
                               <div className="grid grid-cols-2 gap-3">
                                 <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "ahli" ? "border-green-800 bg-green-50 text-green-900" : "border-slate-200 text-slate-600"}`}>

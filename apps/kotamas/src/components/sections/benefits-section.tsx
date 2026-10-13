@@ -23,11 +23,7 @@ import { OrnamentalDivider } from "@sakinah/ui";
 import { staggerContainer, cardReveal, viewportOnce } from "@sakinah/ui";
 
 const keistimewaanSkim = [
-  {
-    icon: ShieldCheck,
-    title: "Patuh Syariah",
-    description: "Khidmat Patuh Syariah Dengan Sokongan Jabatan Mufti Negeri Selangor.",
-  },
+
   {
     icon: Heart,
     title: "Harga Mampu Milik",
@@ -38,11 +34,7 @@ const keistimewaanSkim = [
     title: "Perlindungan Panjang",
     description: "Tempoh Perlindungan Yang Panjang, Sehingga Umur 70 Tahun.",
   },
-  {
-    icon: FileCheck2,
-    title: "Tanpa Laporan Kesihatan",
-    description: "Tiada Pemeriksaan Kesihatan Diperlukan Untuk Mendaftar.",
-  },
+
   {
     icon: Wallet,
     title: "Pilihan Fleksibel 24 Jam",
@@ -69,13 +61,13 @@ const carouselItems = [
   {
     id: "ibu-bapa",
     tabLabel: "1. Ibu Bapa",
-    badge: "Peserta Tambahan",
+    badge: "",
     title: "Keistimewaan Untuk Ibu Bapa Tercinta",
     image: "/images/elderly_parents.png",
     imageSubtitle: "Kasih Sayang Ibu Bapa",
     imageTitle: "Pastikan Kebajikan Jenazah Ibu Bapa Terjaga",
     price: "Hanya RM10.00 Sebulan Seorang",
-    priceDaily: "0.33 Sen Sehari",
+    priceDaily: "",
     description: (
       <>
         Dengan potongan gaji tambahan, anda boleh melindungi ibu bapa anda di kampung untuk memastikan kebajikan pengurusan jenazah mereka terjaga pada hari kejadian. Perlindungan adalah <strong>sehingga umur 70 tahun</strong>.
@@ -90,13 +82,13 @@ const carouselItems = [
   {
     id: "ibu-bapa-mentua",
     tabLabel: "2. Ibu Bapa Mentua",
-    badge: "Peserta Tambahan",
+    badge: "",
     title: "Keistimewaan Untuk Ibu Bapa Mentua",
     image: "/images/parent_in_law_carousel.jpeg",
     imageSubtitle: "Penghormatan Ibu Bapa Mentua",
     imageTitle: "Perlindungan Sempurna Buat Ibu Bapa Mentua",
     price: "Hanya RM10.00 Sebulan Seorang",
-    priceDaily: "0.33 Sen Sehari",
+    priceDaily: "",
     description: (
       <>
         Berikan ketenangan fikiran buat pasangan anda dengan mendaftarkan ibu bapa mentua ke dalam skim perlindungan ini. Kebajikan dan pengurusan jenazah diuruskan dengan sempurna <strong>sehingga umur 70 tahun</strong>.
@@ -111,13 +103,13 @@ const carouselItems = [
   {
     id: "anak-universiti",
     tabLabel: "3. Anak 18 Tahun Keatas",
-    badge: "Peserta Tambahan",
+    badge: "",
     title: "Keistimewaan Untuk Anak Lebih 18 Tahun",
     image: "/images/graduate_carousel.png",
     imageSubtitle: "Masa Depan & Pengajian",
     imageTitle: "Perlindungan Berterusan Anak Di IPT",
     price: "Hanya RM10.00 Sebulan Seorang",
-    priceDaily: "0.33 Sen Sehari",
+    priceDaily: "",
     description: (
       <>
         Perlindungan terus disambung bagi anak-anak berumur 18 tahun keatas
@@ -359,9 +351,7 @@ export function BenefitsSection() {
                       <span className="text-lg sm:text-xl font-extrabold text-green-900">
                         {currentItem.price}
                       </span>
-                      <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-400 text-green-950">
-                        {currentItem.priceDaily}
-                      </span>
+
                     </div>
 
                     <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-6">

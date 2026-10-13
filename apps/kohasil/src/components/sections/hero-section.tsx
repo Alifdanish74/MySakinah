@@ -15,7 +15,7 @@ const trustIndicators = [
   { icon: Clock, label: "Pengurusan 24 Jam" },
   { icon: Wallet, label: "Serendah RM10" },
   { icon: CreditCard, label: "Potongan Gaji" },
-  { icon: ShieldCheck, label: "Tiada Pemeriksaan" },
+  { icon: ShieldCheck, label: "Mudah Daftar" },
 ];
 
 export function HeroSection() {
@@ -143,19 +143,6 @@ export function HeroSection() {
               >
                 Lihat Pilihan Pakej
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </a>
-              <a
-                href={BRAND.hotlineTel}
-                className="hover-scale flex flex-1 items-center justify-center gap-2 rounded-full border py-3.5 px-6 text-sm font-bold transition-all shadow-sm"
-                style={{
-                  background: "#fff",
-                  borderColor: "var(--color-brand-green)",
-                  color: "var(--color-brand-green)",
-                }}
-                aria-label={`Hubungi bantuan 24 jam: ${BRAND.hotline}`}
-              >
-                <Phone className="h-4 w-4" aria-hidden="true" />
-                Hubungi 24 Jam
               </a>
             </motion.div>
 

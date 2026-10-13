@@ -25,7 +25,7 @@ const syaratTuntutan = [
   "Semua kes kematian (biasa / kemalangan) hendaklah dilaporkan melalui talian Hotline 24 Jam: 011-1300 1999.",
   "Segala tuntutan kematian / kemalangan tidak dapat dituntut jika terjadi akibat daripada perbuatan membunuh diri, mabuk, dadah dan penglibatan dalam semua aktiviti yang menyalahi undang-undang.",
   "Salinan Permit pengebumian dan Kad Pengenalan si mati perlu dikemukakan kepada BJSB sebagai bukti sah kematian untuk tuntutan manfaat.",
-  "Bantuan Pengurusan Jenazah Lengkap (Muslim) akan diberikan mengikut lokasi (rumah / hospital) yang diminta waris. \n \n - Untuk Non Muslim: Bantuan Tunai Kebajikan RM 1500 akan diberikan kepada waris dalam tempoh 24 jam setelah laporan kematian diterima dan disahkan.",
+  "Bantuan Pengurusan Jenazah Lengkap (Muslim) akan diberikan mengikut lokasi (rumah / hospital) yang diminta waris.",
   "Peruntukan wang khairat akan digunakan jika kos pengurusan jenazah melebihi RM 1500 pada hari kejadian.",
   "Bantuan Tunai RM 1500 akan diberikan dalam masa 24 jam jika waris memilih untuk menguruskan sendiri bersama keluarga / khairat tempatan.",
   "Laporan Hospital dan Laporan Polis perlu disertakan untuk tuntutan kematian / kecacatan kekal akibat kemalangan (semua tuntutan kemalangan tertakluk kelulusan pihak Takaful).",

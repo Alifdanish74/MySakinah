@@ -64,16 +64,6 @@ export function ShariahSection({
           transition={{ duration: 0.8 }}
           className="flex flex-col items-center gap-6 lg:flex-row lg:justify-center"
         >
-          <div
-            className="flex items-center gap-2 rounded-full px-4 py-2 shadow-sm"
-            style={{
-              background: "var(--color-brand-gold)",
-              color: isDark ? "var(--color-brand-green-dark)" : "var(--color-white)",
-            }}
-          >
-            <BookOpen className="h-4 w-4" aria-hidden="true" />
-            <span className="text-sm font-bold">Elemen Syariah Dipatuhi</span>
-          </div>
           <div className="flex flex-wrap justify-center gap-3">
             {shariahPoints.map((point, idx) => (
               <div
@@ -82,15 +72,15 @@ export function ShariahSection({
                 style={
                   isDark
                     ? {
-                        background: "rgba(255,255,255,0.10)",
-                        border: "1px solid rgba(255,255,255,0.15)",
-                        color: "#fff",
-                      }
+                      background: "rgba(255,255,255,0.10)",
+                      border: "1px solid rgba(255,255,255,0.15)",
+                      color: "#fff",
+                    }
                     : {
-                        background: "rgba(255, 255, 255, 0.90)",
-                        border: "1px solid var(--color-brand-border)",
-                        color: "var(--color-brand-text)",
-                      }
+                      background: "rgba(255, 255, 255, 0.90)",
+                      border: "1px solid var(--color-brand-border)",
+                      color: "var(--color-brand-text)",
+                    }
                 }
               >
                 <Star
@@ -108,17 +98,6 @@ export function ShariahSection({
           </div>
         </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={viewportOnce}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mt-8 text-center text-xs font-medium leading-relaxed"
-          style={{ color: isDark ? "rgba(255,255,255,0.45)" : "var(--color-brand-text-muted)" }}
-        >
-          * Maklumat pematuhan syariah ini adalah berdasarkan prinsip am. Sila rujuk pihak{" "}
-          {moduleName} atau jawatankuasa syariah yang dilantik untuk pengesahan rasmi.
-        </motion.p>
       </ResponsiveContainer>
     </section>
   );

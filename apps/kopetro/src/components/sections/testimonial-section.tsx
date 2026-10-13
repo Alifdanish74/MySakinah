@@ -21,8 +21,8 @@ export function TestimonialSection() {
     <TestimonialCarousel
       sectionId={SECTION_IDS.testimoni}
       items={TESTIMONY_ITEMS}
-      eyebrow="Testimoni & Maklum Balas"
-      title="Apa Kata Peserta & Waris Kami"
+      eyebrow="Antara Khidmat Dari Kami"
+
       subtitle="Dengar pengalaman dan maklum balas sebenar daripada peserta serta ahli keluarga yang dilindungi bawah skim KOPETRO."
       dividerLabel="Testimoni KOPETRO"
     />

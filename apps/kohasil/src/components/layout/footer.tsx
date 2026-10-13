@@ -4,7 +4,7 @@
 // whileInView entrance for footer content
 
 import { motion } from "framer-motion";
-import { Phone } from "lucide-react";
+import { CreditCard } from "lucide-react";
 import { BRAND } from "@/lib/constants";
 import { ResponsiveContainer, OrnamentalDivider, viewportOnce } from "@sakinah/ui";
 
@@ -35,6 +35,34 @@ export function Footer() {
           transition={{ duration: 1.0 }}
           className="mb-10 text-center"
         >
+
+          {/* Digital Card CTA */}
+          <div className="mb-5 flex justify-center">
+            <a
+              href="https://www.mysakinahpro.com.my/membership-card"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover-scale inline-flex items-center gap-3 rounded-full px-6 py-3"
+              style={{
+                background: "rgba(191,168,0,0.20)",
+                border: "1px solid rgba(191,168,0,0.35)",
+              }}
+              aria-label="Semak Kad Digital Ahli"
+            >
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-full"
+                style={{ background: "var(--color-brand-gold)" }}
+              >
+                <CreditCard className="h-4 w-4 text-green-900" aria-hidden="true" />
+              </div>
+              <p
+                className="text-sm font-bold tracking-widest uppercase"
+                style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-gold-light)" }}
+              >
+                SEMAK KAD DIGITAL
+              </p>
+            </a>
+          </div>
           <div className="mb-3 flex items-center justify-center gap-3">
             <div
               className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg text-xs font-bold"
@@ -63,39 +91,7 @@ export function Footer() {
             {BRAND.description}
           </p>
 
-          {/* Hotline CTA */}
-          <div className="mt-5 flex justify-center">
-            <a
-              href={BRAND.hotlineTel}
-              className="hover-scale inline-flex items-center gap-3 rounded-full px-6 py-3"
-              style={{
-                background: "rgba(191,168,0,0.20)",
-                border: "1px solid rgba(191,168,0,0.35)",
-              }}
-              aria-label={`Telefon hotline: ${BRAND.hotline}`}
-            >
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-full"
-                style={{ background: "var(--color-brand-gold)" }}
-              >
-                <Phone className="h-4 w-4 text-green-900" aria-hidden="true" />
-              </div>
-              <div className="text-left">
-                <p
-                  className="text-[10px] uppercase tracking-wider"
-                  style={{ color: "rgba(255,255,255,0.55)" }}
-                >
-                  Hotline 24 Jam
-                </p>
-                <p
-                  className="text-lg font-bold"
-                  style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-gold-light)" }}
-                >
-                  {BRAND.hotline}
-                </p>
-              </div>
-            </a>
-          </div>
+
         </motion.div>
 
         {/* Bottom bar */}

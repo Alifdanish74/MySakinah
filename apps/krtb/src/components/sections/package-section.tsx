@@ -905,14 +905,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   return (
     <section
       id={SECTION_IDS.pakej}
-      aria-label="Pakej Mampu Milik Bulanan"
+      aria-label=" Pakej Mampu Milik"
       className="py-16 lg:py-24"
       style={{ background: "var(--color-brand-sage-soft)" }}
     >
       <ResponsiveContainer>
         <SectionHeading
           eyebrow="Pilihan Pakej Bulanan"
-          title="Pakej Mampu Milik Bulanan Yang Ditawarkan"
+          title=" Pakej Mampu Milik Yang Ditawarkan"
           subtitle="Potongan gaji bulanan yang fleksibel mengikut keperluan perlindungan individu dan keluarga anda."
           className="mb-12"
         />
@@ -937,9 +937,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
               {/* <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-extrabold"></span> */}
               3 Pakej Individu
             </h3>
-            <span className="text-xs text-slate-500 font-medium mt-1">
-              Klik &quot;Pecahan&quot; untuk manfaat lanjut atau <br /> &quot;Pilih Pakej Ini&quot; untuk membuat permohonan
-            </span>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -907,14 +907,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   return (
     <section
       id={SECTION_IDS.pakej}
-      aria-label="Pakej Mampu Milik Bulanan"
+      aria-label=" Pakej Mampu Milik"
       className="py-16 lg:py-24"
       style={{ background: "var(--color-brand-sage-soft)" }}
     >
       <ResponsiveContainer>
         <SectionHeading
           eyebrow="Pilihan Pakej Bulanan"
-          title="Pakej Mampu Milik Bulanan Yang Ditawarkan"
+          title=" Pakej Mampu Milik Yang Ditawarkan"
           subtitle="Potongan gaji bulanan yang fleksibel mengikut keperluan perlindungan individu dan keluarga anda."
           className="mb-12"
         />
@@ -939,9 +939,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
               {/* <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-800 text-sm font-extrabold"></span> */}
               3 Pakej Individu
             </h3>
-            <span className="text-xs text-slate-500 font-medium mt-1">
-              Klik &quot;Pecahan&quot; untuk manfaat lanjut atau <br /> &quot;Pilih Pakej Ini&quot; untuk membuat permohonan
-            </span>
+
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -1335,8 +1333,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                       <p className="font-bold text-amber-900 leading-snug">
                         1. Meninggal / Kecacatan Kekal Akibat Kemalangan : <strong>Maksimum Tertakluk Kepada Kelulusan Pengendali Takaful </strong>(Selepas 180 Hari)
                         <br />
-                        <br />
-                        2. Untuk Non Muslim : Bantuan Tunai Kebajikan akan diberikan kepada waris dalam tempoh 24 Jam setelah laporan kematian diterima dan disahkan
+
                       </p>
                     </div>
 
@@ -1894,7 +1891,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                             <div className="pt-2 border-t border-slate-200">
                               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                Ahli / Bukan Ahli <span className="text-red-500">*</span>
+                                Ahli / Bukan Ahli KOHASIL <span className="text-red-500">*</span>
                               </label>
                               <div className="grid grid-cols-2 gap-3">
                                 <label className={`flex items-center justify-center gap-2 p-2.5 rounded-xl border cursor-pointer text-xs font-semibold transition-all ${warisData.statusKeahlian === "ahli" ? "border-green-800 bg-green-50 text-green-900" : "border-slate-200 text-slate-600"}`}>

@@ -26,7 +26,7 @@ export interface TestimonialCarouselProps {
   /** Section anchor ID (maps to your SECTION_IDS.testimoni) */
   sectionId: string;
 
-  /** Eyebrow text above the title (e.g. "Testimoni & Maklum Balas") */
+  /** Eyebrow text above the title (e.g. "Antara Khidmat Dari Kami") */
   eyebrow?: string;
 
   /** Main heading title */
@@ -210,8 +210,8 @@ function LightboxModal({
 export function TestimonialCarousel({
   items,
   sectionId,
-  eyebrow = "Testimoni & Maklum Balas",
-  title = "Apa Kata Peserta & Waris Kami",
+  // eyebrow = "Antara Khidmat Dari Kami",
+  // title = "Apa Kata Peserta & Waris Kami",
   subtitle,
   dividerLabel = "Testimoni",
 }: TestimonialCarouselProps) {
@@ -255,9 +255,9 @@ export function TestimonialCarousel({
     >
       <ResponsiveContainer>
         <SectionHeading
-          eyebrow={eyebrow}
-          title={title}
-          subtitle={subtitle}
+          eyebrow="Antara Khidmat Dari Kami"
+          title=""
+          subtitle=""
           className="mb-12"
         />
 
@@ -269,7 +269,7 @@ export function TestimonialCarousel({
           transition={{ duration: 0.65 }}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
-          className="relative max-w-xl mx-auto"
+          className="group relative max-w-xl mx-auto"
         >
           {/* Card shell */}
           <div
@@ -337,23 +337,6 @@ export function TestimonialCarousel({
                 {currentIndex + 1} / {items.length}
               </div>
 
-              {/* Left / Right nav */}
-              <button
-                onClick={(e) => { e.stopPropagation(); handlePrev(); }}
-                aria-label="Testimoni sebelumnya"
-                className="absolute left-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-110 focus:outline-none shadow-lg"
-                style={{ background: "rgba(0,0,0,0.5)" }}
-              >
-                <ChevronLeft className="h-5 w-5" />
-              </button>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleNext(); }}
-                aria-label="Testimoni seterusnya"
-                className="absolute right-2 top-1/2 -translate-y-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-110 focus:outline-none shadow-lg"
-                style={{ background: "rgba(0,0,0,0.5)" }}
-              >
-                <ChevronRight className="h-5 w-5" />
-              </button>
             </div>
 
             {/* ── Caption ── */}
@@ -384,52 +367,25 @@ export function TestimonialCarousel({
                 )}
               </AnimatePresence>
             </div>
-
-            {/* ── Thumbnail strip ── */}
-            <div className="px-4 pb-4 pt-2 bg-white border-t border-slate-100">
-              {/* Label */}
-              <div className="flex items-center gap-2 mb-3">
-                <Images className="h-4 w-4 flex-shrink-0" style={{ color: "var(--color-brand-gold, #bf8800)" }} />
-                <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
-                  Galeri Testimoni
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                {items.map((item, idx) => {
-                  const isActive = idx === currentIndex;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentIndex(idx)}
-                      aria-label={item.caption ?? `Gambar ${idx + 1}`}
-                      className="relative flex-shrink-0 rounded-lg overflow-hidden transition-all duration-200 focus:outline-none"
-                      style={{
-                        width: 56,
-                        height: 44,
-                        border: isActive
-                          ? "2.5px solid var(--color-brand-gold, #bf8800)"
-                          : "2px solid transparent",
-                        boxShadow: isActive
-                          ? "0 0 0 3px rgba(191,136,0,0.18)"
-                          : undefined,
-                        opacity: isActive ? 1 : 0.55,
-                        transform: isActive ? "scale(1.07)" : "scale(1)",
-                      }}
-                    >
-                      <Image
-                        src={item.src}
-                        alt={item.caption ?? `Kecil ${idx + 1}`}
-                        fill
-                        className="object-cover"
-                        sizes="60px"
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
+
+          {/* ── Left / Right nav — outside overflow-hidden card, relative to motion.div ── */}
+          <button
+            onClick={handlePrev}
+            aria-label="Testimoni sebelumnya"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-110 focus:outline-none shadow-lg"
+            style={{ background: "rgba(0,0,0,0.5)" }}
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            onClick={handleNext}
+            aria-label="Testimoni seterusnya"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-white/25 text-white opacity-0 group-hover:opacity-100 transition-all hover:scale-110 focus:outline-none shadow-lg"
+            style={{ background: "rgba(0,0,0,0.5)" }}
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
 
           {/* ── Dot indicators below card ── */}
           <div className="flex items-center justify-center gap-1.5 mt-5">

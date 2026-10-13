@@ -15,7 +15,7 @@ const trustIndicators = [
   { icon: Clock, label: "Pengurusan 24 Jam" },
   { icon: Wallet, label: "Serendah RM10" },
   { icon: CreditCard, label: "Potongan Gaji" },
-  { icon: ShieldCheck, label: "Tiada Pemeriksaan" },
+  { icon: ShieldCheck, label: "Mudah Daftar" },
 ];
 
 export function HeroSection() {
