@@ -87,6 +87,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
         canEdit={canEdit}
         onRefresh={handleRefresh}
         moduleName={currentModule.display_name}
+        moduleSlug={moduleSlug}
       />
     </DashboardShell>
   );

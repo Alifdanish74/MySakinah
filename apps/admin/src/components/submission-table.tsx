@@ -16,11 +16,12 @@ interface SubmissionTableProps {
   canEdit: boolean;
   onRefresh: () => void;
   moduleName?: string;
+  moduleSlug?: string;
 }
 
 const PAGE_SIZE = 20;
 
-// Column definitions — no hardcoded widths; browser measures on first render
+// Column definitions — generic modules (KOHASiL, KOPETRO, KRTB, KOTAMAS)
 const COLS = [
   { label: "NO",                  center: true  },
   { label: "NAMA",                center: false },
@@ -40,7 +41,31 @@ const COLS = [
   { label: "STATUS",              center: false },
 ] as const;
 
-export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }: SubmissionTableProps) {
+// Al-Barzah specific columns
+const ALBARZAH_COLS = [
+  { label: "TARIKH DAFTAR",       center: false },
+  { label: "NAMA",                center: false },
+  { label: "NO KP",               center: false },
+  { label: "UMUR",                center: true  },
+  { label: "PAKEJ",               center: false },
+  { label: "NO TELEFON",          center: false },
+  { label: "NAMA WARIS",          center: false },
+  { label: "HUBUNGAN",            center: false },
+  { label: "TEL WARIS",           center: false },
+  { label: "NAMA KAWAN",          center: false },
+  { label: "KATEGORI KAWAN",      center: false },
+  { label: "DIPERKENALKAN",       center: false },
+  { label: "TEL DIPERKENALKAN",   center: false },
+  { label: "ALAMAT",              center: false },
+  { label: "POSKOD",              center: true  },
+  { label: "DAERAH/BANDAR",       center: false },
+  { label: "NEGERI",              center: false },
+  { label: "STATUS",              center: false },
+] as const;
+
+export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, moduleSlug }: SubmissionTableProps) {
+  const isAlbarzah = moduleSlug === "albarzah";
+  const activeCols = isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [editingItem, setEditingItem] = useState<Submission | null>(null);
@@ -52,12 +77,17 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
   const theadRowRef = useRef<HTMLTableRowElement>(null);
   const dragState = useRef<{ colIdx: number; startX: number; startW: number } | null>(null);
 
+  // Reset measured widths whenever the module (column layout) changes
+  useEffect(() => {
+    setColWidths(null);
+  }, [moduleSlug]);
+
   // Measure each th's natural width after first render, then lock to fixed layout
   useEffect(() => {
     if (colWidths !== null || !theadRowRef.current) return;
-    const ths = Array.from(theadRowRef.current.querySelectorAll("th")).slice(0, COLS.length);
+    const ths = Array.from(theadRowRef.current.querySelectorAll("th")).slice(0, activeCols.length);
     setColWidths(ths.map((th) => Math.ceil(th.getBoundingClientRect().width)));
-  }, [colWidths]);
+  }, [colWidths]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function onResizeStart(colIdx: number, e: React.MouseEvent) {
     if (!colWidths) return;
@@ -321,7 +351,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
           {/* colgroup — only rendered after widths are measured */}
           {colWidths && (
             <colgroup>
-              {COLS.map((_, i) => (
+              {activeCols.map((_, i) => (
                 <col key={i} style={{ width: colWidths[i] }} />
               ))}
               {canEdit && <col style={{ width: 90 }} />}
@@ -332,7 +362,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
               ref={theadRowRef}
               style={{ background: "rgba(15, 23, 42, 0.8)", borderBottom: "1px solid var(--color-admin-border)" }}
             >
-              {COLS.map((col, i) => (
+              {activeCols.map((col, i) => (
                 <th
                   key={col.label}
                   style={{
@@ -345,12 +375,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
                       whiteSpace: "nowrap",
                       textOverflow: "ellipsis",
                     } : {
-                      whiteSpace: "nowrap", // prevent wrapping during measurement
+                      whiteSpace: "nowrap",
                     }),
                   }}
                 >
                   {col.label}
-                  {/* Resize handle — only shown after layout is locked */}
                   {colWidths && (
                     <span
                       onMouseDown={(e) => onResizeStart(i, e)}
@@ -384,7 +413,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
               {paginated.length === 0 && (
                 <tr>
                   <td
-                    colSpan={16 + (canEdit ? 1 : 0)}
+                    colSpan={activeCols.length + (canEdit ? 1 : 0)}
                     style={{ textAlign: "center", padding: "3rem", color: "var(--color-admin-text-muted)" }}
                   >
                     No matching records found.
@@ -393,20 +422,145 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName }:
               )}
               {paginated.map((s, i) => {
                 const fd = s.form_data || {};
-                const rowNo = fd.no || ((page - 1) * PAGE_SIZE + i + 1).toString();
                 const nama = fd.nama || s.submitted_by || "—";
                 const no_kp = fd.no_kp || fd.ic || fd.no_ic || "—";
                 const umur = getUmurDisplay(fd);
-                const kategori = fd.kategori || fd.statusKeahlian || "AHLI";
-                const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "—");
                 const no_telefon = fd.no_telefon || fd.telefon || fd.phone || "—";
-                const nama_waris = fd.namaWaris || fd.nama_waris || "—";
-                const telefon_waris = fd.telefonWaris || fd.telefon_waris || "—";
                 const alamatStr = getAlamatDisplay(fd);
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
                 const pakej = fd.pakej || "—";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
+
+                // ── Al-Barzah specific row ────────────────────────────────
+                if (isAlbarzah) {
+                  const nama_waris = fd.namaWaris || fd.nama_waris || "—";
+                  const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "—";
+                  const telefon_waris = fd.telefonWaris || fd.telefon_waris || "—";
+                  const nama_kawan = fd.namaKawan || fd.nama_kawan || "—";
+                  const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "—";
+                  const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "—";
+                  const tel_perkenalkan = fd.telefonPerkenalkan || fd.telefon_perkenalkan || "—";
+                  const tel_kawan = fd.telefonKawan || fd.telefon_kawan || "—";
+                  const daerah = fd.alamat3 || fd.daerah || "—";
+
+                  return (
+                    <motion.tr
+                      key={s.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ delay: i * 0.02 }}
+                      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                    >
+                      {/* 1. Tarikh Daftar */}
+                      <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
+                        {tarikh_daftar}
+                      </td>
+                      {/* 2. Nama */}
+                      <td style={{ fontWeight: 600, color: "#ffffff" }}>{nama}</td>
+                      {/* 3. No KP */}
+                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-primary)", fontSize: "0.75rem" }}>
+                        {no_kp}
+                      </td>
+                      {/* 4. Umur */}
+                      <td style={{ textAlign: "center", fontWeight: 600, color: "var(--color-admin-text)" }}>
+                        {umur}
+                      </td>
+                      {/* 5. Pakej */}
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-accent)", whiteSpace: "nowrap" }}>
+                        {pakej}
+                      </td>
+                      {/* 6. No Telefon */}
+                      <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>{no_telefon}</td>
+                      {/* 7. Nama Waris */}
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                        {nama_waris}
+                      </td>
+                      {/* 8. Hubungan */}
+                      <td style={{ color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                        {hubungan_waris}
+                      </td>
+                      {/* 9. Tel Waris */}
+                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
+                        {telefon_waris}
+                      </td>
+                      {/* 10. Nama Kawan */}
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                        {nama_kawan}
+                      </td>
+                      {/* 11. Kategori Kawan */}
+                      <td style={{ color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                        {jenis_kawan}
+                      </td>
+                      {/* 12. Diperkenalkan */}
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                        {nama_perkenalkan}
+                      </td>
+                      {/* 13. Tel Diperkenalkan */}
+                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
+                        {tel_perkenalkan}
+                      </td>
+                      {/* 14. Alamat */}
+                      <td style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--color-admin-text-muted)" }}>
+                        {alamatStr}
+                      </td>
+                      {/* 15. Poskod */}
+                      <td style={{ textAlign: "center", fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
+                        {poskodStr}
+                      </td>
+                      {/* 16. Daerah/Bandar */}
+                      <td style={{ color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                        {daerah}
+                      </td>
+                      {/* 17. Negeri */}
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>{negeriStr}</td>
+                      {/* 18. Status */}
+                      <td>
+                        <span className={clsx("badge", {
+                          "badge-new": s.status === "pending",
+                          "badge-reviewed": s.status === "reviewed" || s.status === "contacted",
+                          "badge-completed": s.status === "completed",
+                          "badge-archived": s.status === "archived",
+                        })}>
+                          {s.status}
+                        </span>
+                      </td>
+                      {/* 19. Actions */}
+                      {canEdit && (
+                        <td style={{ textAlign: "right" }}>
+                          <div style={{ display: "flex", gap: "0.375rem", justifyContent: "flex-end" }}>
+                            <button
+                              id={`edit-${s.id}`}
+                              onClick={() => setEditingItem(s)}
+                              className="btn-ghost"
+                              style={{ padding: "0.375rem 0.5rem", minHeight: 30 }}
+                              aria-label="Edit record"
+                            >
+                              <Pencil size={13} />
+                            </button>
+                            <button
+                              id={`delete-${s.id}`}
+                              onClick={() => setDeletingItem(s)}
+                              className="btn-danger"
+                              style={{ padding: "0.375rem 0.5rem", minHeight: 30 }}
+                              aria-label="Delete record"
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+                        </td>
+                      )}
+                    </motion.tr>
+                  );
+                }
+
+                // ── Generic modules row ───────────────────────────────────
+                const rowNo = fd.no || ((page - 1) * PAGE_SIZE + i + 1).toString();
+                const kategori = fd.kategori || fd.statusKeahlian || "AHLI";
+                const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "—");
+                const nama_waris = fd.namaWaris || fd.nama_waris || "—";
+                const telefon_waris = fd.telefonWaris || fd.telefon_waris || "—";
                 const utama = fd.utama || nama;
 
                 return (

@@ -100,9 +100,18 @@ export const enquirySchema = z.object({
   // Legacy fields (kept for compat)
   alamat1: z.string().optional(),
   alamat2: z.string().optional(),
+  alamat3: z.string().optional(), // Daerah/Bandar
+  poskod: z.string().optional(),
   negeri: z.string().optional(),
   statusKeahlian: z.string().optional(),
   noAhli: z.string().optional(),
+
+  // Diperkenalkan oleh
+  namaPerkenalkan: z.string().optional(),
+  telefonPerkenalkan: z.preprocess(
+    (val) => (typeof val === "string" ? val.replace(/[\s-]/g, "") : val),
+    z.string().optional()
+  ),
 });
 
 export type EnquiryFormData = z.infer<typeof enquirySchema>;

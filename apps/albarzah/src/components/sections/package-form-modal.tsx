@@ -126,6 +126,8 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
   const [namaKawan, setNamaKawan] = useState("");
   const [telKawan, setTelKawan] = useState("");
   const [jenisKawan, setJenisKawan] = useState("");
+  const [namaPerkenalkan, setNamaPerkenalkan] = useState("");
+  const [telPerkenalkan, setTelPerkenalkan] = useState("");
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errMsg, setErrMsg] = useState("");
@@ -205,6 +207,8 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
           namaKawan: namaKawan || undefined,
           telefonKawan: sanitizedTelKawan,
           jenisKawan: jenisKawan || undefined,
+          namaPerkenalkan: namaPerkenalkan || undefined,
+          telefonPerkenalkan: telPerkenalkan ? telPerkenalkan.replace(/[\s-]/g, "") : undefined,
           pakej: packageName,
           kaedahHubungi: "whatsapp",
           persetujuan: true,
@@ -623,6 +627,52 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                           <option key={o} value={o}>{o}</option>
                         ))}
                       </select>
+                    </div>
+                  </div>
+
+                  {/* DI PERKENALKAN OLEH */}
+                  <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: "rgba(99,102,241,0.05)", borderColor: "rgba(99,102,241,0.2)" }}>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "#4f46e5" }}>
+                        Di perkenalkan oleh (jika ada)
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Orang yang memberitahu untuk membeli pakej ini.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalNamaPerkenalkan" className={labelClass}>
+                          NAMA
+                        </label>
+                        <input
+                          id="modalNamaPerkenalkan"
+                          type="text"
+                          value={namaPerkenalkan}
+                          onChange={(e) => setNamaPerkenalkan(e.target.value.toUpperCase())}
+                          placeholder="NAMA PENUH"
+                          className="form-input w-full"
+                          style={{ textTransform: "uppercase" }}
+                          autoComplete="off"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalTelPerkenalkan" className={labelClass}>
+                          NO TEL
+                        </label>
+                        <input
+                          id="modalTelPerkenalkan"
+                          type="tel"
+                          value={telPerkenalkan}
+                          onChange={(e) => setTelPerkenalkan(e.target.value)}
+                          placeholder="01X-XXX XXXX"
+                          className="form-input w-full"
+                          autoComplete="off"
+                          inputMode="tel"
+                        />
+                      </div>
                     </div>
                   </div>
 
