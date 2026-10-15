@@ -82,7 +82,7 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
           >
             <SectionHeading
               eyebrow="Hubungi Kami"
-              title="Kami Sedia Membantu Anda"
+              title="Kami Sedia Membantu"
               subtitle="Untuk bantuan dan pertanyaan, sila hubungi kami"
               align="left"
               className="mb-8"
@@ -100,21 +100,21 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
                 {
                   icon: MessageCircle,
                   label: "WhatsApp 24 Jam",
-                  value: BRAND.hotline_whatsapp,
+                  value: `${BRAND.hotline_whatsapp} / www.bjsbinfo@bumijez.com.my`,
                   href: `https://wa.me/601114977733`,
                   sublabel: "Talian perkhidmatan & sokongan",
                 },
-                {
-                  icon: Phone,
-                  label: "Hotline 24 Jam (BJSB)",
-                  value: BRAND.hotline,
-                  href: BRAND.hotlineTel,
-                  sublabel: "Bumijez Sdn Bhd - Bantuan kecemasan 24 jam",
-                },
+                // {
+                //   icon: Phone,
+                //   label: "Hotline 24 Jam (BJSB)",
+                //   value: BRAND.hotline,
+                //   href: BRAND.hotlineTel,
+                //   sublabel: "Bumijez Sdn Bhd - Bantuan kecemasan 24 jam",
+                // },
                 {
                   icon: Mail,
                   label: "E-mel BJSB",
-                  value: "bjsbinfo@bumijez",
+                  value: "www.bjsbinfo@bumijez.com.my",
                   href: "mailto:bjsbinfo@bumijez",
                   sublabel: "Pertanyaan am & keahlian",
                 },

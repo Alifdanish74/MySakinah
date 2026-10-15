@@ -75,7 +75,7 @@ const carouselItems = [
     ),
     note: (
       <>
-        <strong>Syarat Umur Pendaftaran:</strong> Umur pendaftaran mestilah di bawah 66 tahun / 60 tahun mengikut kelayakan pakej.
+        <strong>Syarat Umur Pendaftaran:</strong> Umur pendaftaran mestilah di bawah 66 tahun. Ahli wajib mendaftar diri sendiri terlebih dahulu.
       </>
     ),
   },
@@ -96,7 +96,7 @@ const carouselItems = [
     ),
     note: (
       <>
-        <strong>Syarat Umur Pendaftaran:</strong> Umur pendaftaran mestilah di bawah 66 tahun / 60 tahun mengikut kelayakan pakej.
+        <strong>Syarat Umur Pendaftaran:</strong> Umur pendaftaran mestilah di bawah 66 tahun. Ahli wajib mendaftar diri sendiri terlebih dahulu.
       </>
     ),
   },
@@ -150,8 +150,8 @@ export function BenefitsSection() {
       <ResponsiveContainer>
         <SectionHeading
           eyebrow="Keistimewaan Skim"
-          title="Satu Caruman, Perlindungan Menyeluruh"
-          subtitle="Nikmati keistimewaan skim khairat kematian yang direka khas untuk memudahkan urusan anda dan keluarga tercinta."
+          title="Satu Caruman, Perlindungan Penuh"
+          subtitle="Nikmati keistimewaan yang direka khas untuk memudahkan urusan anda dan keluarga tercinta."
           className="mb-12"
         />
 
@@ -177,22 +177,24 @@ export function BenefitsSection() {
                   borderColor: "var(--color-brand-border)",
                 }}
               >
-                <div
-                  className="flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-sm"
-                  style={{ background: "var(--color-brand-green)" }}
-                >
-                  <IconComp className="h-6 w-6" />
-                </div>
-                <div>
-                  <h3
-                    className="text-base font-bold mb-1.5 leading-snug"
-                    style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green)" }}
+                <div className="flex items-center gap-3">
+                  <div
+                    className="flex h-12 w-12 items-center justify-center rounded-xl text-white shadow-sm"
+                    style={{ background: "var(--color-brand-green)" }}
                   >
-                    {item.title}
-                  </h3>
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
-                    {item.description}
-                  </p>
+                    <IconComp className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3
+                      className="text-base font-bold mb-1.5 leading-snug"
+                      style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green)" }}
+                    >
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             );

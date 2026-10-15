@@ -14,7 +14,7 @@ import {
 const trustIndicators = [
   { icon: Clock, label: "Pengurusan 24 Jam" },
   { icon: Wallet, label: "Serendah RM10" },
-  { icon: CreditCard, label: "Potongan Gaji" },
+  { icon: CreditCard, label: "Patuh Syariah" },
   { icon: ShieldCheck, label: "Mudah Daftar" },
 ];
 

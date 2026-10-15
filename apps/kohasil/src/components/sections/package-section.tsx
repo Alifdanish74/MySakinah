@@ -129,7 +129,7 @@ const individuPackages: PackageDetail[] = [
     monthlyFee: 20,
     dailyRate: "0.66 Sen Sehari",
     coverage: "Ahli Sahaja",
-    ageRestriction: "Bawah 60 Tahun Sahaja",
+    ageRestriction: "",
     summaryBenefits: [
       "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) RM1,500",
       "Wang Khairat Kepada Waris: RM6,760",
@@ -259,7 +259,7 @@ const keluargaPackages: PackageDetail[] = [
     monthlyFee: 40,
     dailyRate: "1.32 Sen Sehari",
     coverage: "Ahli & Pasangan + 5 Anak (1-17 thn)",
-    ageRestriction: "Bawah 60 Tahun Sahaja",
+    ageRestriction: "",
     summaryBenefits: [
       "Caruman: Nilai Pakej 20 (Ahli) + Nilai Pakej 20 (Pasangan)",
       "Pengurusan Jenazah Lengkap / Tunai (24 Jam bersyarat) Ahli RM1,500 & Pasangan RM1,500",

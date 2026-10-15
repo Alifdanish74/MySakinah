@@ -194,7 +194,7 @@ export function IntroductionSection() {
                   Pelengkap Kepada Khairat Kematian
                 </h4>
               </div>
-              <p className="text-sm text-slate-700 leading-relaxed">
+              <p className="text-sm text-slate-700 leading-relaxed text-justify">
                 Khidmat ini <strong>tidak mengganggu / menggantikan 100%</strong> khidmat khairat tempatan di surau / masjid / jabatan (jika ada) tetapi membantu menambah manfaat (pelengkap) dan meringankan beban tanggungjawab kepada waris terutamanya dari segi kos serta memastikan pengurusan berjalan lancar. Pihak waris <strong>boleh menerima semua manfaat khairat</strong> yang terlibat.
               </p>
             </div>

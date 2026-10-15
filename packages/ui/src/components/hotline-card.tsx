@@ -60,7 +60,7 @@ export function HotlineCard({
       </p>
       <a
         href={hotlineTel}
-        className="font-heading text-3xl font-bold tracking-wide transition-opacity hover:opacity-80"
+        className="font-heading text-2xl font-bold tracking-wide transition-opacity hover:opacity-80"
         style={{
           fontFamily: "var(--font-body)",
           color: isDark || isGlass ? "#fff" : "var(--color-brand-green)",
