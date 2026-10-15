@@ -949,7 +949,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                 key={pkg.id}
                 className="relative flex flex-col justify-between rounded-2xl border p-6 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 style={{
-                  borderColor: pkg.recommended ? "var(--color-brand-gold)" : "var(--color-brand-border)",
+                  borderColor: pkg.recommended ? "var(--color-brand-gold)" : "var(--color-brand-green)",
                   borderWidth: pkg.recommended ? "2px" : "1px",
                 }}
               >
@@ -963,7 +963,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                 )}
 
                 <div>
-                  <div className="text-center pb-4 mb-4 border-b">
+                  <div className="text-center py-4 mb-4 border-b rounded-t-xl bg-emerald-50">
                     <h4
                       className="text-xl font-bold"
                       style={{ fontFamily: "var(--font-body)", color: "var(--color-brand-green)" }}
@@ -983,7 +983,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         RM{pkg.monthlyFee}
                       </span>
                       <span className="text-xs font-semibold text-slate-500"> / sebulan</span>
-                      <div className="mt-1 text-xs font-bold text-amber-700 bg-amber-50 rounded-full px-3 py-0.5 inline-block">
+                      <div className="mt-1 text-xs font-bold text-amber-700 bg-amber-50 rounded-full mx-2 px-2  py-0.5 inline-block">
                         ({pkg.dailyRate})
                       </div>
                     </div>
@@ -1077,7 +1077,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                 )}
 
                 <div>
-                  <div className="text-center pb-4 mb-4 border-b">
+                  <div className="text-center py-4 mb-0 border-b rounded-t-xl bg-sky-50">
                     <h4
                       className="text-xl font-bold"
                       style={{ fontFamily: "var(--font-body)", color: "var(--color-brand-green)" }}
@@ -1093,11 +1093,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     )}
 
                     <div className="mt-3">
-                      <span className="text-3xl font-extrabold text-green-900">
+                      <span className="text-3xl mx-2 font-extrabold text-green-900">
                         RM{pkg.monthlyFee}
                       </span>
                       <span className="text-xs font-semibold text-slate-500"> / sebulan</span>
-                      <div className="mt-1 text-xs font-bold text-amber-700 bg-amber-50 rounded-full px-3 py-0.5 inline-block">
+                      <div className="mt-1 text-xs font-bold text-amber-700 bg-amber-50 rounded-full mx-2 px-2 py-0.5 inline-block">
                         ({pkg.dailyRate})
                       </div>
                     </div>

@@ -12,8 +12,8 @@ const syaratPenyertaan: React.ReactNode[] = [
   "Keahlian adalah terbuka kepada semua ahli Koperasi Hasil Dalam Negeri Malaysia Berhad / Kohasil dan kakitangan Lembaga Hasil Dalam Negeri (LHDN) yang berkhidmat di seluruh Malaysia (semua bangsa & agama).",
   "Tiada pemeriksaan / laporan kesihatan diperlukan untuk mendaftar pakej ini.",
   "Terdapat 3 Pakej Individu dan 3 Pakej Keluarga yang boleh didaftarkan untuk mereka yang berumur 18 tahun ke atas. Pakej Keluarga meliputi perlindungan kepada ahli, pasangan dan anak-anak (jumlah anak mengikut kategori pakej).",
-  "Pihak peserta juga boleh menambah pendaftaran untuk anak (luar dari pakej keluarga) yang berumur 18 tahun ke atas dan juga ibu bapa / mertua / adik / kakak / abang / ibu @ bapa saudara sebagai peserta tambahan. Ahli wajib mendaftar diri sendiri terlebih dahulu.",
-  "Hanya pakej individu 10 (RM10 sebulan) terbuka kepada peserta tambahan yang berumur 18 tahun hingga 65 tahun. Mereka yang berumur 66 tahun pada tarikh / hari pendaftaran tidak boleh didaftarkan. Perlindungan maksimum adalah sehingga 70 tahun. (contoh : anak kedua (4 tahun)  dan ketiga (11 tahun) telah sedia didaftarkan didalam pakej keluarga 20. anak sulung (berumur 21 tahun) yang sedang belajar di universiti didaftarkan sebagai peserta tambahan pakej 10 sebulan. Manfaat adalah mengikut pakej.",
+  <>Pihak peserta juga boleh menambah pendaftaran untuk anak (luar dari pakej keluarga) yang berumur 18 tahun ke atas dan juga ibu bapa / mertua / adik / kakak / abang / ibu @ bapa saudara sebagai peserta tambahan. <span className="text-red-600">Ahli wajib mendaftar diri sendiri terlebih dahulu.</span></>,
+  "Hanya pakej individu 10 (RM10 sebulan) terbuka kepada peserta tambahan yang berumur 18 tahun hingga 65 tahun. Mereka yang berumur 66 tahun pada tarikh / hari pendaftaran tidak boleh didaftarkan. Perlindungan maksimum adalah sehingga 70 tahun. \n \n (contoh daftar : anak kedua (4 tahun)  dan ketiga (11 tahun) telah sedia didaftarkan didalam pakej keluarga 20. anak sulung (berumur 21 tahun) yang sedang belajar di universiti didaftarkan sebagai peserta tambahan pakej 10 sebulan. Manfaat adalah mengikut pakej.",
   "Untuk bukan ahli Kohasil: tambahan caj proses pentadbiran RM1 sebulan akan dikenakan pada pemotong gaji utama. Contoh: En Ali mendaftar pakej keluarga 20 sebulan dan pakej Individu 10 untuk Ibu. Jumlah potongan gaji adalah RM20 + RM10 + RM1 = RM31 sebulan.",
   "Tempoh perlindungan untuk peserta dewasa pakej Individu dan keluarga adalah sehingga tamat perkhidmatan / berhenti mencarum manakala untuk peserta tambahan / ibu bapa adalah bersama tempoh perkhidmatan peserta utama / berhenti mencarum / sehingga berumur 70 tahun.",
   "Tempoh perlindungan untuk anak-anak (dalam pakej keluarga sahaja) pula adalah pada ketika mereka berumur 1 tahun sehingga 17 tahun. Perlindungan adalah untuk anak-anak yang telah didaftarkan sahaja. (Penting : sila hubungi kami untuk mendaftar keahlian anak apabila mendapat anak baharu (Tertakluk kepada kuota jumlah anak setiap pakej keluarga)",
@@ -43,7 +43,7 @@ const syaratTuntutan = [
   "Laporan Hospital dan Laporan Polis perlu disertakan untuk tuntutan kematian / kecacatan kekal akibat kemalangan (semua tuntutan kemalangan tertakluk kelulusan pihak Takaful).",
   "Untuk kematian akibat kemalangan, semua manfaat kematian biasa dan manfaat kematian / kemalangan boleh dituntut (mengikut terma syarat tuntutan).",
   "Untuk Tuntutan Kecacatan Kekal Akibat Kemalangan, bayaran maksimum tuntutan adalah bergantung kepada peratus (%) kecacatan kekal yang dialami dan disahkan oleh laporan Hospital. (Tertakluk kepada kelulusan pihak Takaful)",
-  "Semua jenis tuntutan perlu dibuat dalam tempoh setahun dari tarikh kematian / kemalangan.",
+
   "Lain-lain manfaat akan disempurnakan mengikut tempoh pakej setelah BJSB menerima salinan Sijil Kematian (JPN) arwah si mati."
 ];
 

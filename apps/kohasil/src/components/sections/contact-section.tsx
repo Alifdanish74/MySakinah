@@ -100,7 +100,7 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
                 {
                   icon: MessageCircle,
                   label: "WhatsApp 24 Jam",
-                  value: `${BRAND.hotline_whatsapp} / www.bjsbinfo@bumijez.com.my`,
+                  value: `${BRAND.hotline_whatsapp} / bjsbinfo@bumijez.com.my`,
                   href: `https://wa.me/601114977733`,
                   sublabel: "Talian perkhidmatan & sokongan",
                 },
@@ -111,13 +111,13 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
                 //   href: BRAND.hotlineTel,
                 //   sublabel: "Bumijez Sdn Bhd - Bantuan kecemasan 24 jam",
                 // },
-                {
-                  icon: Mail,
-                  label: "E-mel BJSB",
-                  value: "www.bjsbinfo@bumijez.com.my",
-                  href: "mailto:bjsbinfo@bumijez",
-                  sublabel: "Pertanyaan am & keahlian",
-                },
+                // {
+                //   icon: Mail,
+                //   label: "E-mel BJSB",
+                //   value: "www.bjsbinfo@bumijez.com.my",
+                //   href: "mailto:bjsbinfo@bumijez",
+                //   sublabel: "Pertanyaan am & keahlian",
+                // },
               ].map(({ icon: Icon, label, value, href, sublabel }) => (
                 <motion.a
                   key={href}

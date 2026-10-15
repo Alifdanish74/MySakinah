@@ -16,7 +16,6 @@
     "dev:albarzah": "turbo run dev --filter=@sakinah/albarzah",
     "dev:admin": "turbo run dev --filter=@sakinah/admin",
     "dev:membership_card": "turbo run dev --filter=@sakinah/membership-card",
-
     "lint": "turbo run lint",
     "type-check": "turbo run type-check"
   },
@@ -26,5 +25,8 @@
   "packageManager": "npm@10.9.2",
   "engines": {
     "node": ">=20"
+  },
+  "dependencies": {
+    "jspdf": "^4.2.1"
   }
 }

@@ -114,6 +114,7 @@ export function SectionHeading({
           style={{
             color: isWhite ? "rgba(255,255,255,0.80)" : "var(--color-brand-text-muted)",
             fontFamily: "var(--font-body)",
+            whiteSpace: "pre-line",
           }}
         >
           {subtitle2}

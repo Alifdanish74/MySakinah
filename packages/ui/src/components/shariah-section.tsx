@@ -8,11 +8,10 @@ import { OrnamentalDivider } from "./ornamental-divider";
 import { viewportOnce } from "../lib/motion";
 
 const shariahPoints = [
-  "Tiada unsur riba (faedah berganda)",
+  "Pengurusan dana mengikut prinsip syariah",
+  "Berasaskan tolong-menolong (ta'awun)",
   "Tiada unsur gharar (ketidaktentuan melampau)",
   "Tiada unsur maisir (perjudian)",
-  "Berasaskan tolong-menolong (ta'awun)",
-  "Pengurusan dana mengikut prinsip syariah",
 ];
 
 export interface ShariahSectionProps {
@@ -49,7 +48,7 @@ export function ShariahSection({
         <SectionHeading
           eyebrow="Patuh Syariah"
           title="Skim Berteraskan Prinsip Islam"
-          subtitle={`${moduleName} dibangunkan berdasarkan nilai-nilai Islam — patuh syariah dengan sokongan Jabatan Mufti Negeri Selangor.`}
+          subtitle={`Khidmat kami dibangunkan berdasarkan nilai-nilai Islam — patuh syariah dengan sokongan Jabatan Mufti Negeri Selangor.`}
           className={`mb-12${isDark ? " [&_h2]:text-white [&_p]:!text-white/80" : ""}`}
           variant="white"
         />

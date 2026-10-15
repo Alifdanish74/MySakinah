@@ -62,10 +62,10 @@ const carouselItems = [
     id: "ibu-bapa",
     tabLabel: "1. Ibu Bapa",
     badge: "",
-    title: "Keistimewaan Untuk Ibu Bapa Tercinta",
+    title: "",
     image: "/images/elderly_parents.png",
-    imageSubtitle: "Kasih Sayang Ibu Bapa",
-    imageTitle: "Pastikan Kebajikan Jenazah Ibu Bapa Terjaga",
+    imageSubtitle: "Keistimewaan Untuk Ibu Bapa Tercinta",
+    imageTitle: "",
     price: "Hanya RM10.00 Sebulan Seorang",
     priceDaily: "",
     description: (
@@ -83,10 +83,10 @@ const carouselItems = [
     id: "ibu-bapa-mentua",
     tabLabel: "2. Ibu Bapa Mentua",
     badge: "",
-    title: "Keistimewaan Untuk Ibu Bapa Mentua",
+    title: "",
     image: "/images/parent_in_law_carousel.jpeg",
-    imageSubtitle: "Penghormatan Ibu Bapa Mentua",
-    imageTitle: "Perlindungan Sempurna Buat Ibu Bapa Mentua",
+    imageSubtitle: "Keistimewaan Untuk Ibu Bapa Mentua",
+    imageTitle: "",
     price: "Hanya RM10.00 Sebulan Seorang",
     priceDaily: "",
     description: (
@@ -104,15 +104,15 @@ const carouselItems = [
     id: "anak-universiti",
     tabLabel: "3. Anak 18 Tahun Keatas",
     badge: "",
-    title: "Keistimewaan Untuk Anak Lebih 18 Tahun",
+    title: "",
     image: "/images/graduate_carousel.png",
-    imageSubtitle: "Masa Depan & Pengajian",
-    imageTitle: "Perlindungan Berterusan Anak Di IPT",
+    imageSubtitle: "Keistimewaan Untuk Anak Lebih 18 Tahun",
+    imageTitle: "",
     price: "Hanya RM10.00 Sebulan Seorang",
     priceDaily: "",
     description: (
       <>
-        Perlindungan terus disambung bagi anak-anak berumur 18 tahun keatas
+        Perlindungan terus disambung bagi anak-anak berumur 18 tahun keatas. Juga terbuka untuk ahli keluarga seperti adik/abang/kakak.
       </>
     )
   },
@@ -330,12 +330,12 @@ export function BenefitsSection() {
                   className="flex flex-col justify-between h-full"
                 >
                   <div>
-                    <span
+                    {/* <span
                       className="inline-block rounded-full px-3.5 py-1 text-xs font-bold uppercase tracking-wider mb-3"
                       style={{ background: "rgba(191,168,0,0.15)", color: "var(--color-brand-green)" }}
                     >
                       {currentItem.badge}
-                    </span>
+                    </span> */}
                     <h3
                       className="text-2xl sm:text-3xl font-bold mb-4"
                       style={{ fontFamily: "var(--font-heading)", color: "var(--color-brand-green)" }}

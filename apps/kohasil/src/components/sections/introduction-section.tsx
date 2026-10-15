@@ -226,7 +226,7 @@ export function IntroductionSection() {
                 Serendah RM10.00 Sebulan (Individu) & RM20.00 (Keluarga)
               </h4>
               <p className="text-sm leading-relaxed text-white/85">
-                Terbuka kepada semua ahli Kohasil dan juga Kakitangan Lembaga Hasil Dalam Negeri (LHDN) di seluruh Malaysia melalui potongan gaji bulanan (semua bangsa dan agama).
+                Terbuka kepada semua ahli KKOHASIL dan juga Kakitangan Lembaga Hasil Dalam Negeri (LHDN) di seluruh Malaysia melalui potongan gaji bulanan (semua bangsa dan agama).
               </p>
             </div>
           </motion.div>
