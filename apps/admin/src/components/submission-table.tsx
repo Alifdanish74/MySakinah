@@ -4,7 +4,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import type { Submission } from "@/lib/types";
-import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay } from "@/lib/utils";
+import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay, formatIC, formatPhone } from "@/lib/utils";
 import { EditModal } from "./edit-modal";
 import { DeleteDialog } from "./delete-dialog";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,44 +23,44 @@ const PAGE_SIZE = 20;
 
 // Column definitions — generic modules (KOHASiL, KOPETRO, KRTB, KOTAMAS)
 const COLS = [
-  { label: "NO",                  center: true  },
-  { label: "NAMA",                center: false },
-  { label: "NO KP",               center: false },
-  { label: "UMUR",                center: true  },
-  { label: "KATEGORI",            center: false },
-  { label: "NO AHLI / ANGGOTA",   center: false },
-  { label: "NO TELEFON",          center: false },
-  { label: "NAMA WARIS",          center: false },
-  { label: "TELEFON WARIS",       center: false },
-  { label: "ALAMAT",              center: false },
-  { label: "POSKOD",              center: false },
-  { label: "NEGERI",              center: false },
-  { label: "PAKEJ",               center: false },
-  { label: "TARIKH DAFTAR",       center: false },
-  { label: "UTAMA",               center: false },
-  { label: "STATUS",              center: false },
+  { label: "NO", center: true },
+  { label: "NAMA", center: false },
+  { label: "NO KP", center: false },
+  { label: "UMUR", center: true },
+  { label: "KATEGORI", center: false },
+  { label: "NO AHLI / ANGGOTA", center: false },
+  { label: "NO TELEFON", center: false },
+  { label: "NAMA WARIS", center: false },
+  { label: "TELEFON WARIS", center: false },
+  { label: "ALAMAT", center: false },
+  { label: "POSKOD", center: false },
+  { label: "NEGERI", center: false },
+  { label: "PAKEJ", center: false },
+  { label: "TARIKH DAFTAR", center: false },
+  { label: "UTAMA", center: false },
+  { label: "STATUS", center: false },
 ] as const;
 
 // Al-Barzah specific columns
 const ALBARZAH_COLS = [
-  { label: "TARIKH DAFTAR",       center: false },
-  { label: "NAMA",                center: false },
-  { label: "NO KP",               center: false },
-  { label: "UMUR",                center: true  },
-  { label: "PAKEJ",               center: false },
-  { label: "NO TELEFON",          center: false },
-  { label: "NAMA WARIS",          center: false },
-  { label: "HUBUNGAN",            center: false },
-  { label: "TEL WARIS",           center: false },
-  { label: "NAMA KAWAN",          center: false },
-  { label: "KATEGORI KAWAN",      center: false },
-  { label: "DIPERKENALKAN",       center: false },
-  { label: "TEL DIPERKENALKAN",   center: false },
-  { label: "ALAMAT",              center: false },
-  { label: "POSKOD",              center: true  },
-  { label: "DAERAH/BANDAR",       center: false },
-  { label: "NEGERI",              center: false },
-  { label: "STATUS",              center: false },
+  { label: "TARIKH DAFTAR", center: false },
+  { label: "NAMA", center: false },
+  { label: "NO KP", center: false },
+  { label: "UMUR", center: true },
+  { label: "PAKEJ", center: false },
+  { label: "NO TELEFON", center: false },
+  { label: "NAMA WARIS", center: false },
+  { label: "HUBUNGAN", center: false },
+  { label: "TEL WARIS", center: false },
+  { label: "NAMA KAWAN", center: false },
+  { label: "KATEGORI KAWAN", center: false },
+  { label: "DIPERKENALKAN OLEH", center: false },
+  { label: "NO TEL", center: false },
+  { label: "ALAMAT", center: false },
+  { label: "POSKOD", center: true },
+  { label: "DAERAH/BANDAR", center: false },
+  { label: "NEGERI", center: false },
+  { label: "STATUS", center: false },
 ] as const;
 
 export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, moduleSlug }: SubmissionTableProps) {
@@ -333,6 +333,8 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         className="surface"
         style={{
           overflowX: "auto",
+          overflowY: "auto",
+          maxHeight: "calc(100vh - 280px)",
           WebkitOverflowScrolling: "touch",
           borderRadius: "0 0 var(--radius-lg) var(--radius-lg)",
           border: "1px solid var(--color-admin-border)",
@@ -360,7 +362,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
           <thead>
             <tr
               ref={theadRowRef}
-              style={{ background: "rgba(15, 23, 42, 0.8)", borderBottom: "1px solid var(--color-admin-border)" }}
+              style={{
+                background: "rgba(15, 23, 42, 0.95)",
+                borderBottom: "1px solid var(--color-admin-border)",
+                position: "sticky",
+                top: 0,
+                zIndex: 2,
+              }}
             >
               {activeCols.map((col, i) => (
                 <th
@@ -423,9 +431,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               {paginated.map((s, i) => {
                 const fd = s.form_data || {};
                 const nama = fd.nama || s.submitted_by || "—";
-                const no_kp = fd.no_kp || fd.ic || fd.no_ic || "—";
+                const no_kp = formatIC(fd.no_kp || fd.ic || fd.no_ic);
                 const umur = getUmurDisplay(fd);
-                const no_telefon = fd.no_telefon || fd.telefon || fd.phone || "—";
+                const no_telefon = formatPhone(fd.no_telefon || fd.telefon || fd.phone);
                 const alamatStr = getAlamatDisplay(fd);
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
@@ -436,12 +444,12 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 if (isAlbarzah) {
                   const nama_waris = fd.namaWaris || fd.nama_waris || "—";
                   const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "—";
-                  const telefon_waris = fd.telefonWaris || fd.telefon_waris || "—";
+                  const telefon_waris = formatPhone(fd.telefonWaris || fd.telefon_waris);
                   const nama_kawan = fd.namaKawan || fd.nama_kawan || "—";
                   const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "—";
                   const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "—";
-                  const tel_perkenalkan = fd.telefonPerkenalkan || fd.telefon_perkenalkan || "—";
-                  const tel_kawan = fd.telefonKawan || fd.telefon_kawan || "—";
+                  const tel_perkenalkan = formatPhone(fd.telefonPerkenalkan || fd.telefon_perkenalkan);
+                  const tel_kawan = formatPhone(fd.telefonKawan || fd.telefon_kawan);
                   const daerah = fd.alamat3 || fd.daerah || "—";
 
                   return (
@@ -560,7 +568,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const kategori = fd.kategori || fd.statusKeahlian || "AHLI";
                 const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "—");
                 const nama_waris = fd.namaWaris || fd.nama_waris || "—";
-                const telefon_waris = fd.telefonWaris || fd.telefon_waris || "—";
+                const telefon_waris = formatPhone(fd.telefonWaris || fd.telefon_waris);
                 const utama = fd.utama || nama;
 
                 return (
@@ -721,6 +729,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         {editingItem && (
           <EditModal
             submission={editingItem}
+            moduleSlug={moduleSlug}
             onClose={() => setEditingItem(null)}
             onSaved={() => { setEditingItem(null); onRefresh(); }}
           />

@@ -3,12 +3,13 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, Star, X, Info, Phone, Send, Loader2, Sparkles, UserCheck, ArrowLeft } from "lucide-react";
+import { CheckCircle2, Star, X, Info, Phone, Send, Loader2, Sparkles, UserCheck, ArrowLeft, FileText } from "lucide-react";
 import { BiMaleFemale } from "react-icons/bi";
 import { FaMale, FaFemale } from "react-icons/fa";
 import { SECTION_IDS, BRAND } from "@/lib/constants";
 import { ResponsiveContainer } from "@sakinah/ui";
 import { SectionHeading } from "@sakinah/ui";
+import { generateReceiptPdf } from "@/lib/generateReceipt";
 
 export interface PackageDetail {
   id: string;
@@ -563,14 +564,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   const [errorMessage, setErrorMessage] = useState("");
 
   // Auto-close form modal 5 seconds after successful submission
-  useEffect(() => {
-    if (formStatus === "success") {
-      const timer = setTimeout(() => {
-        setSelectedFormPackage(null);
-      }, 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [formStatus]);
+  // useEffect(() => {
+  //   if (formStatus === "success") {
+  //     const timer = setTimeout(() => {
+  //       setSelectedFormPackage(null);
+  //     }, 5000);
+  //     return () => clearTimeout(timer);
+  //   }
+  // }, [formStatus]);
 
   const getTabsForCurrentPackage = (): MemberTab[] => {
     if (!selectedFormPackage) return [{ id: "ahli", label: "Ahli", role: "ahli", description: "Maklumat Pemohon Utama (Ahli)" }];
@@ -896,6 +897,28 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         const errData = await response.json().catch(() => null);
         throw new Error(errData?.error || "Ralat menghantar permohonan");
       }
+
+      // Auto-generate and download confirmation PDF
+      generateReceiptPdf({
+        packageName: selectedFormPackage?.name || "",
+        packageCategory: selectedFormPackage?.category || "",
+        monthlyFee: getCalculatedMonthlyFee(),
+        coverage: selectedFormPackage?.coverage || "",
+        ahli: {
+          nama: ahli.nama,
+          telefon: sanitizedAhliTelefon,
+          ic: sanitizedAhliIC,
+          alamat1: ahli.alamat1,
+          alamat2: ahli.alamat2,
+          alamat3: ahli.alamat3,
+          negeri: ahli.negeri,
+        },
+        namaWaris: warisData.namaWaris,
+        telefonWaris: sanitizedWarisTelefon,
+        statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
+        members: sanitizedMembers,
+        submittedAt: new Date(),
+      });
 
       setFormStatus("success");
     } catch (err: any) {
@@ -1476,6 +1499,36 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                           </div>
 
                           <div className="pt-3 space-y-2">
+                            <p className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2 flex items-center gap-2">
+                              <FileText className="h-4 w-4 flex-shrink-0" />
+                              Surat pengesahan PDF telah dimuat turun secara automatik.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const ahli = membersData["ahli"] || { nama: "", telefon: "", ic: "", alamat1: "", alamat2: "", alamat3: "", negeri: "" };
+                                generateReceiptPdf({
+                                  packageName: selectedFormPackage.name,
+                                  packageCategory: selectedFormPackage.category,
+                                  monthlyFee: getCalculatedMonthlyFee(),
+                                  coverage: selectedFormPackage.coverage,
+                                  ahli: {
+                                    nama: ahli.nama, telefon: ahli.telefon, ic: ahli.ic,
+                                    alamat1: ahli.alamat1, alamat2: ahli.alamat2, alamat3: ahli.alamat3, negeri: ahli.negeri,
+                                  },
+                                  namaWaris: warisData.namaWaris,
+                                  telefonWaris: warisData.telefonWaris,
+                                  statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
+                                  members: membersData,
+                                  submittedAt: new Date(),
+                                });
+                              }}
+                              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-95"
+                              style={{ background: "var(--color-brand-green)" }}
+                            >
+                              <FileText className="h-4 w-4" />
+                              Muat Turun Surat Pengesahan (PDF)
+                            </button>
                             <a
                               href={`https://wa.me/601113001999?text=Salam%20Kohasil,%20saya%20telah%20menghantar%20permohonan%20pakej%20${encodeURIComponent(selectedFormPackage.name)}.%20Boleh%20bantu%20pengesahan?`}
                               target="_blank"
@@ -1494,9 +1547,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             >
                               Tutup Borang
                             </button>
-                            <p className="text-[11px] text-slate-400 italic text-center">
-                              (Borang ini akan ditutup secara automatik dalam masa 5 saat)
-                            </p>
+
                           </div>
                         </div>
                       );

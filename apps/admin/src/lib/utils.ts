@@ -100,3 +100,31 @@ export function getNegeriDisplay(fd: Record<string, any>): string {
   }
   return "—";
 }
+
+/**
+ * Formats a Malaysian IC / MyKad number as xxxxxx-xx-xxxx.
+ * Strips any existing non-digits before formatting.
+ * Returns the original value untouched if it doesn't have 12 digits.
+ */
+export function formatIC(value?: string): string {
+  if (!value) return "—";
+  const digits = value.replace(/\D/g, "");
+  if (digits.length !== 12) return value; // leave unrecognised values as-is
+  return `${digits.slice(0, 6)}-${digits.slice(6, 8)}-${digits.slice(8)}`;
+}
+
+/**
+ * Formats a Malaysian phone number as xxx-xxxxxxxx.
+ * Strips any existing non-digits before formatting.
+ */
+export function formatPhone(value?: string): string {
+  if (!value) return "—";
+  const digits = value.replace(/\D/g, "");
+  // 11-digit: xxx-xxxxxxxx  (e.g. 011-12345678)
+  if (digits.length === 11) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  // 10-digit: xxx-xxxxxxx   (e.g. 012-3456789)
+  if (digits.length === 10) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+  // 9-digit landline: xx-xxxxxxx
+  if (digits.length === 9) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+  return value; // leave unrecognised values as-is
+}
