@@ -221,6 +221,13 @@ export default function MembershipCardPage() {
                   <p className="font-mono font-semibold text-slate-300">{activeMember.tarikhDaftar}</p>
                 </div>
 
+                <div className="space-y-1">
+                  <span className="text-xs text-slate-500 font-medium block">Tempoh Keahlian</span>
+                  <p className="font-semibold text-amber-300 uppercase">
+                    {activeMember.tempohKeahlian || activeMember.tarikhDaftar}
+                  </p>
+                </div>
+
                 <div className="space-y-1 sm:col-span-2 pt-2 border-t border-slate-800">
                   <span className="text-xs text-slate-500 font-medium block">Penama Waris Berdaftar</span>
                   <p className="font-semibold text-slate-200">

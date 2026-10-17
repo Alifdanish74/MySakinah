@@ -1,5 +1,6 @@
 // File: src/app/api/enquiry/route.ts — Albarzah
 import { enquirySchema } from "@/lib/validations";
+import { toAlbarzahStoragePakej } from "@/lib/pakej";
 import { saveSubmissionToDatabase } from "@sakinah/ui";
 
 const MODULE_SLUG = "albarzah";
@@ -48,6 +49,7 @@ export async function POST(request: Request) {
     }
 
     const data = parsed.data as any;
+    const pakej = toAlbarzahStoragePakej(data.pakej);
     const membersData = body.members || {};
     const memberKeys = Object.keys(membersData);
 
@@ -82,7 +84,7 @@ export async function POST(request: Request) {
             alamat3: m.alamat3 || data.alamat3 || "-",
             poskod: data.poskod || "-",
             negeri: m.negeri || data.negeri || "-",
-            pakej: data.pakej,
+            pakej,
             tarikh_daftar: new Date().toLocaleDateString("en-GB"),
             utama: mainName,
             namaWaris: data.namaWaris || "-",
@@ -115,7 +117,7 @@ export async function POST(request: Request) {
         alamat3: data.alamat3 || "-",
         poskod: data.poskod || "-",
         negeri: data.negeri || "-",
-        pakej: data.pakej,
+        pakej,
         tarikh_daftar: new Date().toLocaleDateString("en-GB"),
         utama: data.nama,
         namaWaris: data.namaWaris || "-",
@@ -165,7 +167,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         success: true,
-        message: `Permohonan pakej ${data.pakej} telah berjaya diterima dan direkodkan.`,
+        message: `Permohonan pakej ${pakej} telah berjaya diterima dan direkodkan.`,
         count: submissionsToPost.length,
       },
       { status: 200 }

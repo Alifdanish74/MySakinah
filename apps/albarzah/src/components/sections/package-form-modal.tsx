@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download, Copy, Check } from "lucide-react";
+import { toAlbarzahStoragePakej } from "@/lib/pakej";
 
 // ── Dropdown options ──────────────────────────────────────────────────────
 const HUBUNGAN_OPTIONS = [
@@ -209,7 +210,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
           jenisKawan: jenisKawan || undefined,
           namaPerkenalkan: namaPerkenalkan || undefined,
           telefonPerkenalkan: telPerkenalkan ? telPerkenalkan.replace(/[\s-]/g, "") : undefined,
-          pakej: packageName,
+          pakej: toAlbarzahStoragePakej(packageName),
           kaedahHubungi: "whatsapp",
           persetujuan: true,
         }),

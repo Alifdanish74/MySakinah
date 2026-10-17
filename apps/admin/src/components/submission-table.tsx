@@ -2,13 +2,14 @@
 // File: src/components/submission-table.tsx
 // Data table for listing module submissions aligned with CONTOH EXCEL JEMPUTAN (1).xlsx
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import type { Submission } from "@/lib/types";
 import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay, formatIC, formatPhone } from "@/lib/utils";
 import { EditModal } from "./edit-modal";
 import { DeleteDialog } from "./delete-dialog";
+import { FilterModal, type FilterState, EMPTY_FILTER, countActiveFilters } from "./filter-modal";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, ChevronLeft, ChevronRight, Search, Download, FileSpreadsheet } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, Search, Download, FileSpreadsheet, SlidersHorizontal, X as XIcon } from "lucide-react";
 import { clsx } from "clsx";
 
 interface SubmissionTableProps {
@@ -49,8 +50,8 @@ const ALBARZAH_COLS = [
   { label: "NAMA", center: false },
   { label: "NO KP", center: false },
   { label: "UMUR", center: true },
-  { label: "PAKEJ", center: false },
   { label: "NO TELEFON", center: false },
+  { label: "PAKEJ", center: false },
   { label: "NAMA WARIS", center: false },
   { label: "HUBUNGAN", center: false },
   { label: "TEL WARIS", center: false },
@@ -71,9 +72,39 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const isAlbarzah = moduleSlug === "albarzah";
   const activeCols = isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
+  const [filters, setFilters] = useState<FilterState>(EMPTY_FILTER);
+  const [filterOpen, setFilterOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [editingItem, setEditingItem] = useState<Submission | null>(null);
   const [deletingItem, setDeletingItem] = useState<Submission | null>(null);
+
+  // Derive unique option lists from data for the filter dropdowns
+  const pakejOptions = useMemo(() => {
+    const set = new Set<string>();
+    submissions.forEach((s) => { const p = s.form_data?.pakej; if (p) set.add(p); });
+    return Array.from(set).sort();
+  }, [submissions]);
+
+  const negeriOptions = useMemo(() => {
+    const set = new Set<string>();
+    submissions.forEach((s) => {
+      const n = getNegeriDisplay(s.form_data || {});
+      if (n && n !== "—") set.add(n);
+    });
+    return Array.from(set).sort();
+  }, [submissions]);
+
+  function handleApplyFilter(f: FilterState) {
+    setFilters({ ...f, search });
+    setPage(1);
+  }
+
+  function clearOneFilter(key: keyof FilterState) {
+    const next = { ...filters, [key]: "" };
+    setFilters(next);
+    if (key === "search") setSearch("");
+    setPage(1);
+  }
 
   // ── Column resize ──────────────────────────────────────────
   // null = not yet measured (renders with tableLayout:auto to get natural widths)
@@ -153,30 +184,128 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     }
   }
 
-  // Filter logic across all Excel template fields
-  const filtered = submissions.filter((s) => {
-    const q = search.toLowerCase();
-    const fd = s.form_data || {};
-    const umurStr = getUmurDisplay(fd);
-    const alamatStr = getAlamatDisplay(fd);
-    const poskodStr = getPoskodDisplay(fd);
-    const negeriStr = getNegeriDisplay(fd);
+  // ── Helper: parse "DD/MM/YYYY" or "DD/MM/YYYY - ..." → Date | null ───────
+  function parseDMY(dmy: string): Date | null {
+    if (!dmy) return null;
+    const [d, m, y] = dmy.split("/");
+    if (!d || !m || !y) return null;
+    const dt = new Date(`${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`);
+    return isNaN(dt.getTime()) ? null : dt;
+  }
+  function startDateOfTempoh(raw?: string): Date | null {
+    if (!raw) return null;
+    return parseDMY(raw.split(" - ")[0].trim());
+  }
 
-    return (
-      (fd.nama ?? s.submitted_by ?? "").toLowerCase().includes(q) ||
-      (fd.no_kp ?? "").toLowerCase().includes(q) ||
-      umurStr.toLowerCase().includes(q) ||
-      (fd.kategori ?? "").toLowerCase().includes(q) ||
-      (fd.no_ahli ?? "").toLowerCase().includes(q) ||
-      (fd.no_telefon ?? "").toLowerCase().includes(q) ||
-      alamatStr.toLowerCase().includes(q) ||
-      poskodStr.toLowerCase().includes(q) ||
-      negeriStr.toLowerCase().includes(q) ||
-      (fd.pakej ?? "").toLowerCase().includes(q) ||
-      (fd.utama ?? "").toLowerCase().includes(q) ||
-      s.status.toLowerCase().includes(q)
-    );
-  });
+  // ── Combined filter logic ────────────────────────────────────────────────
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    const f = filters;
+    return submissions.filter((s) => {
+      const fd = s.form_data || {};
+      const umurStr = getUmurDisplay(fd);
+      const negeriStr = getNegeriDisplay(fd);
+
+      // ── Text search (across key fields) ──────────────────────────────
+      if (q) {
+        const haystack = [
+          fd.nama ?? s.submitted_by ?? "",
+          fd.no_kp ?? "",
+          umurStr,
+          fd.kategori ?? "",
+          fd.no_ahli ?? "",
+          fd.no_telefon ?? "",
+          getAlamatDisplay(fd),
+          getPoskodDisplay(fd),
+          negeriStr,
+          fd.pakej ?? "",
+          fd.utama ?? "",
+          s.status,
+          s.tempoh_keahlian ?? "",
+          s.tempoh_manfaat ?? "",
+        ].join(" ").toLowerCase();
+        if (!haystack.includes(q)) return false;
+      }
+
+      // ── Nama ─────────────────────────────────────────────────────────
+      if (f.nama) {
+        const nama = (fd.nama ?? s.submitted_by ?? "").toLowerCase();
+        if (!nama.includes(f.nama.toLowerCase())) return false;
+      }
+
+      // ── No KP ────────────────────────────────────────────────────────
+      if (f.no_kp) {
+        const kp = (fd.no_kp ?? fd.ic ?? "").replace(/\D/g, "");
+        if (!kp.startsWith(f.no_kp.replace(/\D/g, ""))) return false;
+      }
+
+      // ── Status ───────────────────────────────────────────────────────
+      if (f.status && s.status !== f.status) return false;
+
+      // ── Pakej ────────────────────────────────────────────────────────
+      if (f.pakej && !(fd.pakej ?? "").toLowerCase().includes(f.pakej.toLowerCase())) return false;
+
+      // ── Negeri ───────────────────────────────────────────────────────
+      if (f.negeri && !negeriStr.toLowerCase().includes(f.negeri.toLowerCase())) return false;
+
+      // ── Umur range ───────────────────────────────────────────────────
+      const umurNum = parseInt(umurStr, 10);
+      if (f.umurMin && !isNaN(umurNum) && umurNum < parseInt(f.umurMin, 10)) return false;
+      if (f.umurMax && !isNaN(umurNum) && umurNum > parseInt(f.umurMax, 10)) return false;
+
+      // ── Tarikh Daftar range ──────────────────────────────────────────
+      if (f.tarikhFrom || f.tarikhTo) {
+        const rawTarikh = fd.tarikh_daftar || s.created_at;
+        // parse both DD/MM/YYYY and ISO
+        let tarikhDate: Date | null = parseDMY(rawTarikh);
+        if (!tarikhDate) {
+          const d = new Date(rawTarikh);
+          tarikhDate = isNaN(d.getTime()) ? null : d;
+        }
+        if (tarikhDate) {
+          if (f.tarikhFrom && tarikhDate < new Date(f.tarikhFrom)) return false;
+          if (f.tarikhTo) {
+            const toEnd = new Date(f.tarikhTo);
+            toEnd.setDate(toEnd.getDate() + 1);
+            if (tarikhDate >= toEnd) return false;
+          }
+        }
+      }
+
+      // ── Tempoh Keahlian start range ───────────────────────────────────
+      if (f.tkFrom || f.tkTo) {
+        const dt = startDateOfTempoh(s.tempoh_keahlian);
+        if (dt) {
+          if (f.tkFrom && dt < new Date(f.tkFrom)) return false;
+          if (f.tkTo) {
+            const toEnd = new Date(f.tkTo);
+            toEnd.setDate(toEnd.getDate() + 1);
+            if (dt >= toEnd) return false;
+          }
+        } else {
+          // no tempoh set → exclude if filter is active
+          if (f.tkFrom || f.tkTo) return false;
+        }
+      }
+
+      // ── Tempoh Manfaat start range ────────────────────────────────────
+      if (f.tmFrom || f.tmTo) {
+        const dt = startDateOfTempoh(s.tempoh_manfaat);
+        if (dt) {
+          if (f.tmFrom && dt < new Date(f.tmFrom)) return false;
+          if (f.tmTo) {
+            const toEnd = new Date(f.tmTo);
+            toEnd.setDate(toEnd.getDate() + 1);
+            if (dt >= toEnd) return false;
+          }
+        } else {
+          if (f.tmFrom || f.tmTo) return false;
+        }
+      }
+
+      return true;
+    });
+  }, [submissions, search, filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -270,50 +399,134 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
       {/* Top Search & Actions Bar */}
-      <div className="search-action-bar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" }}>
-        <div style={{ position: "relative", width: "100%", maxWidth: 380 }}>
-          <Search
-            size={15}
-            style={{
-              position: "absolute",
-              left: "0.875rem",
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "var(--color-admin-text-muted)",
-              pointerEvents: "none",
-            }}
-          />
+      <div className="search-action-bar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
+        {/* Search input */}
+        {/* <div style={{ position: "relative", flex: 1, minWidth: 220, maxWidth: 420 }}>
+          <Search size={15} style={{
+            position: "absolute", left: "0.875rem", top: "50%",
+            transform: "translateY(-50%)",
+            color: "var(--color-admin-text-muted)", pointerEvents: "none",
+          }} />
           <input
             id="submission-search"
             type="search"
-            placeholder="Search by Nama, IC, Umur, Alamat, Poskod, Negeri..."
+            placeholder="Search by nama, IC, negeri, pakej..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="form-input"
             style={{ paddingLeft: "2.5rem" }}
           />
-        </div>
+        </div> */}
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+          {/* Filter button */}
+          <button
+            id="open-filter-btn"
+            onClick={() => setFilterOpen(true)}
+            className={clsx("btn-ghost", countActiveFilters(filters) > 0 && "btn-primary")}
+            style={{
+              display: "flex", alignItems: "center", gap: "0.5rem",
+              padding: "0.5rem 1rem",
+              position: "relative",
+              ...(countActiveFilters(filters) > 0 ? {} : {
+                borderColor: "var(--color-admin-border-bright)",
+                color: "var(--color-admin-text)",
+              }),
+            }}
+          >
+            <SlidersHorizontal size={15} />
+            <span>Filter</span>
+            {countActiveFilters(filters) > 0 && (
+              <span style={{
+                background: "rgba(255,255,255,0.25)", borderRadius: "999px",
+                fontSize: "0.6875rem", fontWeight: 700, padding: "0.05rem 0.45rem",
+              }}>{countActiveFilters(filters)}</span>
+            )}
+          </button>
+
+          {/* Export */}
           <button
             id="export-csv-btn"
             onClick={exportToCSV}
             className="btn-ghost"
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
+              display: "flex", alignItems: "center", gap: "0.5rem",
               padding: "0.5rem 1rem",
               borderColor: "var(--color-admin-border-bright)",
               color: "var(--color-admin-text)",
             }}
           >
             <FileSpreadsheet size={16} style={{ color: "var(--color-admin-accent)" }} />
-            <span>Export Excel / CSV</span>
+            <span>Export CSV</span>
             <Download size={14} style={{ opacity: 0.7 }} />
           </button>
         </div>
       </div>
+
+      {/* Active filter chips */}
+      {(() => {
+        const chips: { key: keyof FilterState; label: string }[] = [];
+        if (filters.nama)       chips.push({ key: "nama",       label: `Nama: ${filters.nama}` });
+        if (filters.no_kp)      chips.push({ key: "no_kp",      label: `No KP: ${filters.no_kp}` });
+        if (filters.status)     chips.push({ key: "status",     label: `Status: ${filters.status}` });
+        if (filters.pakej)      chips.push({ key: "pakej",      label: `Pakej: ${filters.pakej}` });
+        if (filters.negeri)     chips.push({ key: "negeri",     label: `Negeri: ${filters.negeri}` });
+        if (filters.umurMin)    chips.push({ key: "umurMin",    label: `Umur ≥ ${filters.umurMin}` });
+        if (filters.umurMax)    chips.push({ key: "umurMax",    label: `Umur ≤ ${filters.umurMax}` });
+        if (filters.tarikhFrom) chips.push({ key: "tarikhFrom", label: `Tarikh ≥ ${filters.tarikhFrom}` });
+        if (filters.tarikhTo)   chips.push({ key: "tarikhTo",   label: `Tarikh ≤ ${filters.tarikhTo}` });
+        if (filters.tkFrom)     chips.push({ key: "tkFrom",     label: `T.Keahlian ≥ ${filters.tkFrom}` });
+        if (filters.tkTo)       chips.push({ key: "tkTo",       label: `T.Keahlian ≤ ${filters.tkTo}` });
+        if (filters.tmFrom)     chips.push({ key: "tmFrom",     label: `T.Manfaat ≥ ${filters.tmFrom}` });
+        if (filters.tmTo)       chips.push({ key: "tmTo",       label: `T.Manfaat ≤ ${filters.tmTo}` });
+        if (chips.length === 0) return null;
+        return (
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem", alignItems: "center" }}>
+            <span style={{ fontSize: "0.75rem", color: "var(--color-admin-text-muted)", marginRight: 2 }}>
+              Active filters:
+            </span>
+            {chips.map(({ key, label }) => (
+              <motion.span
+                key={key}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.85 }}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: "0.25rem",
+                  background: "rgba(99,102,241,0.15)",
+                  border: "1px solid rgba(99,102,241,0.4)",
+                  color: "var(--color-admin-primary)",
+                  borderRadius: "999px",
+                  fontSize: "0.7rem", fontWeight: 600,
+                  padding: "0.2rem 0.5rem 0.2rem 0.625rem",
+                }}
+              >
+                {label}
+                <button
+                  onClick={() => clearOneFilter(key)}
+                  style={{
+                    background: "none", border: "none", cursor: "pointer",
+                    padding: 0, lineHeight: 1, color: "inherit", opacity: 0.7,
+                  }}
+                  aria-label={`Remove ${label} filter`}
+                >
+                  <XIcon size={11} />
+                </button>
+              </motion.span>
+            ))}
+            <button
+              onClick={() => { setFilters(EMPTY_FILTER); setSearch(""); setPage(1); }}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontSize: "0.7rem", color: "var(--color-admin-text-muted)",
+                textDecoration: "underline", padding: "0.1rem 0.25rem",
+              }}
+            >
+              Clear all
+            </button>
+          </div>
+        );
+      })()}
 
       {/* Top Mirror Scrollbar */}
       <div
@@ -479,12 +692,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       <td style={{ textAlign: "center", fontWeight: 600, color: "var(--color-admin-text)" }}>
                         {umur}
                       </td>
-                      {/* 5. Pakej */}
-                      <td style={{ fontWeight: 500, color: "var(--color-admin-accent)", whiteSpace: "nowrap" }}>
-                        {pakej}
-                      </td>
+
                       {/* 6. No Telefon */}
                       <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>{no_telefon}</td>
+                                            {/* 5. Pakej */}
+                                            <td style={{ fontWeight: 500, color: "var(--color-admin-accent)", whiteSpace: "nowrap" }}>
+                        {pakej}
+                      </td>
                       {/* 7. Nama Waris */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
                         {nama_waris}
@@ -743,6 +957,15 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
           </div>
         </div>
       )}
+
+      <FilterModal
+        isOpen={filterOpen}
+        onClose={() => setFilterOpen(false)}
+        current={filters}
+        onApply={handleApplyFilter}
+        negeriOptions={negeriOptions}
+        pakejOptions={pakejOptions}
+      />
 
       {/* Modals */}
       <AnimatePresence>
