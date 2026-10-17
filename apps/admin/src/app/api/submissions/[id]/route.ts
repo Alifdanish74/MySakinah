@@ -73,15 +73,17 @@ export async function PATCH(req: NextRequest, { params }: RouteParams) {
     }
 
     const body = await req.json();
-    const { status, notes, form_data } = body;
+    const { status, notes, form_data, tempoh_keahlian, tempoh_manfaat } = body;
 
     const updates: Record<string, any> = {
       updated_at: new Date().toISOString(),
     };
 
-    if (status !== undefined) updates.status = status;
-    if (notes !== undefined) updates.notes = notes;
-    if (form_data !== undefined) updates.form_data = form_data;
+    if (status           !== undefined) updates.status           = status;
+    if (notes            !== undefined) updates.notes            = notes;
+    if (form_data        !== undefined) updates.form_data        = form_data;
+    if (tempoh_keahlian  !== undefined) updates.tempoh_keahlian  = tempoh_keahlian;
+    if (tempoh_manfaat   !== undefined) updates.tempoh_manfaat   = tempoh_manfaat;
 
     const { data: updated, error: updateErr } = await supabase
       .from("submissions")

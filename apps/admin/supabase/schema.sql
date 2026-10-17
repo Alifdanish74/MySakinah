@@ -28,15 +28,17 @@ create table if not exists public.modules (
 --    Single table for all modules. form_data holds the payload.
 -- ============================================================
 create table if not exists public.submissions (
-  id           uuid primary key default gen_random_uuid(),
-  module_id    uuid not null references public.modules(id) on delete cascade,
-  form_data    jsonb not null default '{}',       -- flexible per-module payload
-  submitted_by text,                              -- name or identifier from form
-  status       text not null default 'pending'    -- 'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'
-                check (status in ('pending', 'new', 'reviewed', 'contacted', 'completed', 'archived')),
-  notes        text,                              -- admin notes field
-  created_at   timestamptz not null default now(),
-  updated_at   timestamptz not null default now()
+  id               uuid primary key default gen_random_uuid(),
+  module_id        uuid not null references public.modules(id) on delete cascade,
+  form_data        jsonb not null default '{}',       -- flexible per-module payload
+  submitted_by     text,                              -- name or identifier from form
+  status           text not null default 'pending'    -- 'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'
+                    check (status in ('pending', 'new', 'reviewed', 'contacted', 'completed', 'archived')),
+  notes            text,                              -- admin notes field
+  tempoh_keahlian  text,                              -- e.g. '1 Tahun', '2 Tahun' — to be calculated
+  tempoh_manfaat   text,                              -- e.g. '1 Tahun', '2 Tahun' — to be calculated
+  created_at       timestamptz not null default now(),
+  updated_at       timestamptz not null default now()
 );
 
 -- Ensure check constraint allows all status values if table was previously created
@@ -44,6 +46,9 @@ alter table public.submissions drop constraint if exists submissions_status_chec
 alter table public.submissions add constraint submissions_status_check
   check (status in ('pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'));
 
+-- Migration: add tempoh columns if they don't exist yet (safe for existing databases)
+alter table public.submissions add column if not exists tempoh_keahlian text;
+alter table public.submissions add column if not exists tempoh_manfaat  text;
 
 -- Auto-update updated_at on row modification
 create or replace function public.set_updated_at()

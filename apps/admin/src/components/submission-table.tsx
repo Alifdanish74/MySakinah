@@ -38,6 +38,8 @@ const COLS = [
   { label: "PAKEJ", center: false },
   { label: "TARIKH DAFTAR", center: false },
   { label: "UTAMA", center: false },
+  { label: "TEMPOH KEAHLIAN", center: true },
+  { label: "TEMPOH MANFAAT", center: true },
   { label: "STATUS", center: false },
 ] as const;
 
@@ -60,6 +62,8 @@ const ALBARZAH_COLS = [
   { label: "POSKOD", center: true },
   { label: "DAERAH/BANDAR", center: false },
   { label: "NEGERI", center: false },
+  { label: "TEMPOH KEAHLIAN", center: true },
+  { label: "TEMPOH MANFAAT", center: true },
   { label: "STATUS", center: false },
 ] as const;
 
@@ -523,7 +527,15 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
                       {/* 17. Negeri */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>{negeriStr}</td>
-                      {/* 18. Status */}
+                      {/* 18. Tempoh Keahlian */}
+                      <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                        {s.tempoh_keahlian || "—"}
+                      </td>
+                      {/* 19. Tempoh Manfaat */}
+                      <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                        {s.tempoh_manfaat || "—"}
+                      </td>
+                      {/* 20. Status */}
                       <td>
                         <span className={clsx("badge", {
                           "badge-new": s.status === "pending",
@@ -650,6 +662,14 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     </td>
                     <td style={{ fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {utama}
+                    </td>
+                    {/* Tempoh Keahlian */}
+                    <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                      {s.tempoh_keahlian || "—"}
+                    </td>
+                    {/* Tempoh Manfaat */}
+                    <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                      {s.tempoh_manfaat || "—"}
                     </td>
                     <td>
                       <span className={clsx("badge", {

@@ -45,6 +45,37 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
 
   const [status, setStatus] = useState<Submission["status"]>(submission.status || "pending");
   const [notes, setNotes]   = useState<string>(submission.notes || "");
+
+  // Parse "DD/MM/YYYY - DD/MM/YYYY" → [start, end] where end may be ""
+  function parseTempoh(raw?: string): [string, string] {
+    if (!raw) return ["", ""];
+    const parts = raw.split(" - ").map((s) => s.trim());
+    return [parts[0] || "", parts[1] || ""];
+  }
+  // "DD/MM/YYYY" → "YYYY-MM-DD" for <input type="date">
+  function toInputDate(dmy: string): string {
+    if (!dmy) return "";
+    const [d, m, y] = dmy.split("/");
+    if (!d || !m || !y) return "";
+    return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+  }
+  // "YYYY-MM-DD" → "DD/MM/YYYY"
+  function fromInputDate(ymd: string): string {
+    if (!ymd) return "";
+    const [y, m, d] = ymd.split("-");
+    if (!y || !m || !d) return "";
+    return `${d}/${m}/${y}`;
+  }
+  // Combine start + optional end back into stored string
+  function buildTempoh(start: string, end: string): string | null {
+    if (!start) return null;
+    return end ? `${start} - ${end}` : start;
+  }
+
+  const [tkStart, setTkStart] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[0]));
+  const [tkEnd,   setTkEnd]   = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[1]));
+  const [tmStart, setTmStart] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[0]));
+  const [tmEnd,   setTmEnd]   = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[1]));
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const rawFd = { ...(submission.form_data || {}) };
     if (!rawFd.umur || rawFd.umur === "-" || rawFd.umur === "—") {
@@ -122,6 +153,8 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
         body: JSON.stringify({
           status,
           notes,
+          tempoh_keahlian: buildTempoh(fromInputDate(tkStart), fromInputDate(tkEnd)),
+          tempoh_manfaat:  buildTempoh(fromInputDate(tmStart), fromInputDate(tmEnd)),
           submitted_by: formData.nama || submission.submitted_by,
           form_data: formData,
         }),
@@ -222,6 +255,97 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
             <Field label="Tarikh Daftar">
               {inp("form-input-tarikh_daftar", "tarikh_daftar", "e.g. 01/01/2025")}
             </Field>
+          </div>
+
+          {/* ── Section: Tempoh ──────────────────────────────────────────── */}
+          <SectionTitle>Tempoh Keahlian &amp; Manfaat</SectionTitle>
+
+          {/* Tempoh Keahlian */}
+          <div>
+            <Label>Tempoh Keahlian</Label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
+              <input
+                id="form-input-tk-start"
+                type="date"
+                value={tkStart}
+                onChange={(e) => setTkStart(e.target.value)}
+                className="form-input"
+              />
+              <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>hingga</span>
+              <div style={{ position: "relative" }}>
+                <input
+                  id="form-input-tk-end"
+                  type="date"
+                  value={tkEnd}
+                  min={tkStart || undefined}
+                  onChange={(e) => setTkEnd(e.target.value)}
+                  className="form-input"
+                  placeholder="Tiada tarikh tamat"
+                />
+                {tkEnd && (
+                  <button
+                    type="button"
+                    onClick={() => setTkEnd("")}
+                    title="Kosongkan tarikh tamat"
+                    style={{
+                      position: "absolute", right: "0.5rem", top: "50%",
+                      transform: "translateY(-50%)", background: "none",
+                      border: "none", cursor: "pointer", fontSize: "0.75rem",
+                      color: "var(--color-admin-text-muted)", lineHeight: 1,
+                    }}
+                  >✕</button>
+                )}
+              </div>
+            </div>
+            {tkStart && (
+              <p style={{ marginTop: 4, fontSize: "0.7rem", color: "var(--color-admin-text-muted)" }}>
+                {fromInputDate(tkStart)}{tkEnd ? ` - ${fromInputDate(tkEnd)}` : " (tiada tarikh tamat)"}
+              </p>
+            )}
+          </div>
+
+          {/* Tempoh Manfaat */}
+          <div>
+            <Label>Tempoh Manfaat</Label>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
+              <input
+                id="form-input-tm-start"
+                type="date"
+                value={tmStart}
+                onChange={(e) => setTmStart(e.target.value)}
+                className="form-input"
+              />
+              <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>hingga</span>
+              <div style={{ position: "relative" }}>
+                <input
+                  id="form-input-tm-end"
+                  type="date"
+                  value={tmEnd}
+                  min={tmStart || undefined}
+                  onChange={(e) => setTmEnd(e.target.value)}
+                  className="form-input"
+                  placeholder="Tiada tarikh tamat"
+                />
+                {tmEnd && (
+                  <button
+                    type="button"
+                    onClick={() => setTmEnd("")}
+                    title="Kosongkan tarikh tamat"
+                    style={{
+                      position: "absolute", right: "0.5rem", top: "50%",
+                      transform: "translateY(-50%)", background: "none",
+                      border: "none", cursor: "pointer", fontSize: "0.75rem",
+                      color: "var(--color-admin-text-muted)", lineHeight: 1,
+                    }}
+                  >✕</button>
+                )}
+              </div>
+            </div>
+            {tmStart && (
+              <p style={{ marginTop: 4, fontSize: "0.7rem", color: "var(--color-admin-text-muted)" }}>
+                {fromInputDate(tmStart)}{tmEnd ? ` - ${fromInputDate(tmEnd)}` : " (tiada tarikh tamat)"}
+              </p>
+            )}
           </div>
 
           {/* ── Section: Personal Info ───────────────────────────────────── */}

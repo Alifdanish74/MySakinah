@@ -25,6 +25,8 @@ export interface Submission {
   status: "pending" | "reviewed" | "contacted" | "completed" | "archived";
   notes?: string;
   submitted_by?: string;
+  tempoh_keahlian?: string;   // duration of membership — to be calculated
+  tempoh_manfaat?: string;    // duration of benefit — to be calculated
   created_at: string;
   updated_at: string;
 }
