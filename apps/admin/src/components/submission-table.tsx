@@ -728,7 +728,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         {tel_perkenalkan}
                       </td>
                       {/* 14. Alamat */}
-                      <td style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", color: "var(--color-admin-text-muted)" }}>
+                      <td style={{ overflow: "hidden", textOverflow: "ellipsis", color: "var(--color-admin-text-muted)" }}>
                         {alamatStr}
                       </td>
                       {/* 15. Poskod */}
