@@ -44,7 +44,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
   const isAlbarzah = moduleSlug === "albarzah";
 
   const [status, setStatus] = useState<Submission["status"]>(submission.status || "pending");
-  const [notes, setNotes]   = useState<string>(submission.notes || "");
+  const [notes, setNotes] = useState<string>(submission.notes || "");
 
   // Parse "DD/MM/YYYY - DD/MM/YYYY" → [start, end] where end may be ""
   function parseTempoh(raw?: string): [string, string] {
@@ -73,9 +73,9 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
   }
 
   const [tkStart, setTkStart] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[0]));
-  const [tkEnd,   setTkEnd]   = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[1]));
+  const [tkEnd, setTkEnd] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[1]));
   const [tmStart, setTmStart] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[0]));
-  const [tmEnd,   setTmEnd]   = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[1]));
+  const [tmEnd, setTmEnd] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[1]));
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const rawFd = { ...(submission.form_data || {}) };
     if (!rawFd.umur || rawFd.umur === "-" || rawFd.umur === "—") {
@@ -85,7 +85,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
     return rawFd;
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   function handleFieldChange(key: string, value: any) {
     setFormData((prev) => {
@@ -154,7 +154,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
           status,
           notes,
           tempoh_keahlian: buildTempoh(fromInputDate(tkStart), fromInputDate(tkEnd)),
-          tempoh_manfaat:  buildTempoh(fromInputDate(tmStart), fromInputDate(tmEnd)),
+          tempoh_manfaat: buildTempoh(fromInputDate(tmStart), fromInputDate(tmEnd)),
           submitted_by: formData.nama || submission.submitted_by,
           form_data: formData,
         }),
@@ -498,9 +498,11 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
             <Field label="Alamat 1">
               {inp("form-input-alamat1", "alamat1")}
             </Field>
-            <Field label="Alamat 2">
-              {inp("form-input-alamat2", "alamat2")}
-            </Field>
+            {!isAlbarzah && (
+              <Field label="Alamat 2">
+                {inp("form-input-alamat2", "alamat2")}
+              </Field>
+            )}
           </div>
 
           {/* Al-Barzah has Daerah/Bandar; generic doesn't */}

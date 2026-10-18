@@ -466,19 +466,19 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       {/* Active filter chips */}
       {(() => {
         const chips: { key: keyof FilterState; label: string }[] = [];
-        if (filters.nama)       chips.push({ key: "nama",       label: `Nama: ${filters.nama}` });
-        if (filters.no_kp)      chips.push({ key: "no_kp",      label: `No KP: ${filters.no_kp}` });
-        if (filters.status)     chips.push({ key: "status",     label: `Status: ${filters.status}` });
-        if (filters.pakej)      chips.push({ key: "pakej",      label: `Pakej: ${filters.pakej}` });
-        if (filters.negeri)     chips.push({ key: "negeri",     label: `Negeri: ${filters.negeri}` });
-        if (filters.umurMin)    chips.push({ key: "umurMin",    label: `Umur ≥ ${filters.umurMin}` });
-        if (filters.umurMax)    chips.push({ key: "umurMax",    label: `Umur ≤ ${filters.umurMax}` });
+        if (filters.nama) chips.push({ key: "nama", label: `Nama: ${filters.nama}` });
+        if (filters.no_kp) chips.push({ key: "no_kp", label: `No KP: ${filters.no_kp}` });
+        if (filters.status) chips.push({ key: "status", label: `Status: ${filters.status}` });
+        if (filters.pakej) chips.push({ key: "pakej", label: `Pakej: ${filters.pakej}` });
+        if (filters.negeri) chips.push({ key: "negeri", label: `Negeri: ${filters.negeri}` });
+        if (filters.umurMin) chips.push({ key: "umurMin", label: `Umur ≥ ${filters.umurMin}` });
+        if (filters.umurMax) chips.push({ key: "umurMax", label: `Umur ≤ ${filters.umurMax}` });
         if (filters.tarikhFrom) chips.push({ key: "tarikhFrom", label: `Tarikh ≥ ${filters.tarikhFrom}` });
-        if (filters.tarikhTo)   chips.push({ key: "tarikhTo",   label: `Tarikh ≤ ${filters.tarikhTo}` });
-        if (filters.tkFrom)     chips.push({ key: "tkFrom",     label: `T.Keahlian ≥ ${filters.tkFrom}` });
-        if (filters.tkTo)       chips.push({ key: "tkTo",       label: `T.Keahlian ≤ ${filters.tkTo}` });
-        if (filters.tmFrom)     chips.push({ key: "tmFrom",     label: `T.Manfaat ≥ ${filters.tmFrom}` });
-        if (filters.tmTo)       chips.push({ key: "tmTo",       label: `T.Manfaat ≤ ${filters.tmTo}` });
+        if (filters.tarikhTo) chips.push({ key: "tarikhTo", label: `Tarikh ≤ ${filters.tarikhTo}` });
+        if (filters.tkFrom) chips.push({ key: "tkFrom", label: `T.Keahlian ≥ ${filters.tkFrom}` });
+        if (filters.tkTo) chips.push({ key: "tkTo", label: `T.Keahlian ≤ ${filters.tkTo}` });
+        if (filters.tmFrom) chips.push({ key: "tmFrom", label: `T.Manfaat ≥ ${filters.tmFrom}` });
+        if (filters.tmTo) chips.push({ key: "tmTo", label: `T.Manfaat ≤ ${filters.tmTo}` });
         if (chips.length === 0) return null;
         return (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.375rem", alignItems: "center" }}>
@@ -695,12 +695,12 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
 
                       {/* 6. No Telefon */}
                       <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>{no_telefon}</td>
-                                            {/* 5. Pakej */}
-                                            <td style={{ fontWeight: 500, color: "var(--color-admin-accent)", whiteSpace: "nowrap" }}>
+                      {/* 5. Pakej */}
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-accent)", whiteSpace: "nowrap" }}>
                         {pakej}
                       </td>
                       {/* 7. Nama Waris */}
-                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
                         {nama_waris}
                       </td>
                       {/* 8. Hubungan */}
