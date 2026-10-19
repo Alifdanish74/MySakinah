@@ -651,7 +651,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const no_kp = formatIC(fd.no_kp || fd.ic || fd.no_ic);
                 const umur = getUmurDisplay(fd);
                 const no_telefon = formatPhone(fd.no_telefon || fd.telefon || fd.phone);
-                const alamatStr = getAlamatDisplay(fd);
+                const alamatStr = fd.alamat1 || fd.alamat || "";
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
                 const pakej = fd.pakej || "—";
@@ -750,15 +750,25 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         {s.tempoh_manfaat || "—"}
                       </td>
                       {/* 20. Status */}
+                      {/* 20. Status */}
                       <td>
-                        <span className={clsx("badge", {
-                          "badge-new": s.status === "pending",
-                          "badge-reviewed": s.status === "reviewed" || s.status === "contacted",
-                          "badge-completed": s.status === "completed",
-                          "badge-archived": s.status === "archived",
-                        })}>
-                          {s.status}
-                        </span>
+                        {/* Map new status values to badge classes */}
+                        {(() => {
+                          const statusMap: Record<string, string> = {
+                            terima: "badge-new",
+                            proses: "badge-reviewed",
+                            aktif: "badge-completed",
+                            "tak layak": "badge-archived",
+                            "lebih umur": "badge-archived",
+                            meninggal: "badge-archived",
+                          };
+                          const badgeClass = statusMap[s.status] || "badge-new";
+                          return (
+                            <span className={clsx("badge", badgeClass)}>
+                              {s.status}
+                            </span>
+                          );
+                        })()}
                       </td>
                       {/* 19. Actions */}
                       {canEdit && (

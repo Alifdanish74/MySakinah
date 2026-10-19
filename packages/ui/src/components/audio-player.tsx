@@ -13,14 +13,14 @@ export interface AudioPlayerProps {
 }
 
 const FALLBACK_SOURCES = [
-  "/assets/Adventurous%20Travel%20Background%20Music%20%231.mp3",
+  "/assets/bg_music.mp3",
   "/assets/Hidupnya_insan.mp3",
   "/assets/backgroundmusic.mp3",
   "/assets/backgroundmusic1.mp3",
 ];
 
 export function AudioPlayer({
-  src = "/assets/Adventurous%20Travel%20Background%20Music%20%231.mp3",
+  src = "/assets/bg_music.mp3",
   songName,
   position = "bottom-left",
   className,

@@ -166,6 +166,8 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.text("Diuruskan oleh BJSB Sdn. Bhd. • www.mysakinahpro.com.my", pageWidth / 2, 10.5, { align: "center" });
 
   // Title block
+  // Add a small top margin before the title to avoid header overlap
+  curY += 8;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(16);
   doc.setTextColor(34, 85, 53);
