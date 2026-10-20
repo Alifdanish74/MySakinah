@@ -896,14 +896,23 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       {s.tempoh_manfaat || "—"}
                     </td>
                     <td>
-                      <span className={clsx("badge", {
-                        "badge-new": s.status === "pending",
-                        "badge-reviewed": s.status === "reviewed" || s.status === "contacted",
-                        "badge-completed": s.status === "completed",
-                        "badge-archived": s.status === "archived",
-                      })}>
-                        {s.status}
-                      </span>
+                      {/* Map new status values to badge classes */}
+                      {(() => {
+                        const statusMap: Record<string, string> = {
+                          terima: "badge-new",
+                          proses: "badge-reviewed",
+                          aktif: "badge-completed",
+                          "tak layak": "badge-archived",
+                          "lebih umur": "badge-archived",
+                          meninggal: "badge-archived",
+                        };
+                        const badgeClass = statusMap[s.status] || "badge-new";
+                        return (
+                          <span className={clsx("badge", badgeClass)}>
+                            {s.status}
+                          </span>
+                        );
+                      })()}
                     </td>
                     {canEdit && (
                       <td style={{ textAlign: "right" }}>
