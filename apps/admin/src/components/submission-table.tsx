@@ -44,9 +44,10 @@ const COLS = [
   { label: "STATUS", center: false },
 ] as const;
 
-// Al-Barzah specific columns
+// Al-Barzah specific columnsS
 const ALBARZAH_COLS = [
-  { label: "TARIKH DAFTAR", center: false },
+  { label: "MOHON", center: false },
+  { label: "DAFTAR", center: false },
   { label: "NAMA", center: false },
   { label: "NO KP", center: false },
   { label: "UMUR", center: true },
@@ -396,8 +397,93 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     document.body.removeChild(link);
   }
 
+  function exportAlbarzahCSV() {
+    const headers = [
+      "TARIKH DAFTAR",
+      "TARIKH MOHON",
+      "NAMA",
+      "NO KP",
+      "UMUR",
+      "NO TELEFON",
+      "PAKEJ",
+      "NAMA WARIS",
+      "HUBUNGAN",
+      "TEL WARIS",
+      "NAMA KAWAN",
+      "KATEGORI KAWAN",
+      "DIPERKENALKAN OLEH",
+      "NO TEL DIPERKENALKAN",
+      "ALAMAT",
+      "POSKOD",
+      "DAERAH/BANDAR",
+      "NEGERI",
+      "TEMPOH KEAHLIAN",
+      "TEMPOH MANFAAT",
+      "STATUS",
+    ];
+
+    const rows = filtered.map((s) => {
+      const fd = s.form_data || {};
+      const nama = fd.nama || s.submitted_by || "";
+      const no_kp = fd.no_kp || fd.ic || fd.no_ic || "";
+      const umur = getUmurDisplay(fd);
+      const no_telefon = fd.no_telefon || fd.telefon || fd.phone || "";
+      const pakej = fd.pakej || "";
+      const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
+      const tarikh_mohon = fd.tarikh_mohon || "";
+      const nama_waris = fd.namaWaris || fd.nama_waris || "";
+      const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "";
+      const telefon_waris = fd.telefonWaris || fd.telefon_waris || "";
+      const nama_kawan = fd.namaKawan || fd.nama_kawan || "";
+      const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "";
+      const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "";
+      const tel_perkenalkan = fd.telefonPerkenalkan || fd.telefon_perkenalkan || "";
+      const alamat = fd.alamat1 || fd.alamat || "";
+      const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
+      const daerah = fd.alamat3 || fd.daerah || "";
+      const negeri = getNegeriDisplay(fd) === "—" ? "" : getNegeriDisplay(fd);
+
+      return [
+        `"${tarikh_daftar}"`,
+        `"${tarikh_mohon}"`,
+        `"${nama.replace(/"/g, '""')}"`,
+        `="${no_kp}"`,
+        `"${umur === "—" ? "" : umur}"`,
+        `"${no_telefon}"`,
+        `"${pakej}"`,
+        `"${nama_waris.replace(/"/g, '""')}"`,
+        `"${hubungan_waris}"`,
+        `"${telefon_waris}"`,
+        `"${nama_kawan.replace(/"/g, '""')}"`,
+        `"${jenis_kawan}"`,
+        `"${nama_perkenalkan.replace(/"/g, '""')}"`,
+        `"${tel_perkenalkan}"`,
+        `"${alamat.replace(/"/g, '""')}"`,
+        `"${poskod}"`,
+        `"${daerah}"`,
+        `"${negeri}"`,
+        `"${s.tempoh_keahlian || ""}"`,
+        `"${s.tempoh_manfaat || ""}"`,
+        `"${s.status}"`,
+      ].join(",");
+    });
+
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    const module_name = moduleName || "AlBarzah";
+    const date = new Date().toISOString().slice(0, 10);
+    link.setAttribute("download", `Export_${module_name}_${date}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+
       {/* Top Search & Actions Bar */}
       <div className="search-action-bar" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap" }}>
         {/* Search input */}
@@ -447,7 +533,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
           {/* Export */}
           <button
             id="export-csv-btn"
-            onClick={exportToCSV}
+            onClick={isAlbarzah ? exportAlbarzahCSV : exportToCSV}
             className="btn-ghost"
             style={{
               display: "flex", alignItems: "center", gap: "0.5rem",
@@ -460,6 +546,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
             <span>Export CSV</span>
             <Download size={14} style={{ opacity: 0.7 }} />
           </button>
+
         </div>
       </div>
 
@@ -668,6 +755,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                   const tel_perkenalkan = formatPhone(fd.telefonPerkenalkan || fd.telefon_perkenalkan);
                   const tel_kawan = formatPhone(fd.telefonKawan || fd.telefon_kawan);
                   const daerah = fd.alamat3 || fd.daerah || "—";
+                  const tarikh_mohon = fd.tarikh_mohon || "";
 
                   return (
                     <motion.tr
@@ -682,13 +770,17 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
                         {tarikh_daftar}
                       </td>
-                      {/* 2. Nama */}
+                      {/* 2. Tarikh Mohon */}
+                      <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
+                        {tarikh_mohon || "—"}
+                      </td>
+                      {/* 3. Nama */}
                       <td style={{ fontWeight: 600, color: "#ffffff" }}>{nama}</td>
-                      {/* 3. No KP */}
+                      {/* 4. No KP */}
                       <td style={{ fontFamily: "monospace", color: "var(--color-admin-primary)", fontSize: "0.75rem" }}>
                         {no_kp}
                       </td>
-                      {/* 4. Umur */}
+                      {/* 5. Umur */}
                       <td style={{ textAlign: "center", fontWeight: 600, color: "var(--color-admin-text)" }}>
                         {umur}
                       </td>

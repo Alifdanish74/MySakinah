@@ -43,7 +43,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModalProps) {
   const isAlbarzah = moduleSlug === "albarzah";
 
-  const [status, setStatus] = useState<Submission["status"]>(submission.status || "pending");
+  const [status, setStatus] = useState<Submission["status"]>(submission.status || "terima");
   const [notes, setNotes] = useState<string>(submission.notes || "");
 
   // Parse "DD/MM/YYYY - DD/MM/YYYY" → [start, end] where end may be ""
@@ -244,20 +244,43 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                 onChange={(e) => setStatus(e.target.value as any)}
                 className="form-input"
               >
-                <option value="pending">Pending</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="contacted">Contacted</option>
-                <option value="completed">Completed</option>
-                <option value="archived">Archived</option>
+                  <option value="terima">Terima</option>
+                  <option value="proses">Proses</option>
+                  <option value="aktif">Aktif</option>
+                  <option value="tak layak">Tak Layak</option>
+                  <option value="lebih umur">Lebih Umur</option>
+                  <option value="meninggal">Meninggal</option>
               </select>
             </Field>
 
-            <Field label="Tarikh Daftar">
-              {inp("form-input-tarikh_daftar", "tarikh_daftar", "e.g. 01/01/2025")}
+            {/* Al-Barzah only: Mohon — calendar date picker */}
+            {isAlbarzah && (
+              <Field label="Mohon">
+                <input
+                  id="form-input-tarikh_mohon"
+                  type="date"
+                  value={toInputDate(fd("tarikh_mohon"))}
+                  onChange={(e) => handleFieldChange("tarikh_mohon", fromInputDate(e.target.value))}
+                  className="form-input"
+                />
+              </Field>
+            )}
+
+            {/* Tarikh Daftar — read-only, set when the form was submitted */}
+            <Field label="Daftar">
+              <input
+                id="form-input-tarikh_daftar"
+                type="text"
+                value={fd("tarikh_daftar")}
+                readOnly
+                className="form-input"
+                style={{ opacity: 0.5, cursor: "not-allowed" }}
+              />
             </Field>
           </div>
 
           {/* ── Section: Tempoh ──────────────────────────────────────────── */}
+
           <SectionTitle>Tempoh Keahlian &amp; Manfaat</SectionTitle>
 
           {/* Tempoh Keahlian */}

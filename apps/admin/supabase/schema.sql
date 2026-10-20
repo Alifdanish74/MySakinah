@@ -32,8 +32,9 @@ create table if not exists public.submissions (
   module_id        uuid not null references public.modules(id) on delete cascade,
   form_data        jsonb not null default '{}',       -- flexible per-module payload
   submitted_by     text,                              -- name or identifier from form
-  status           text not null default 'pending'    -- 'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'
-                    check (status in ('pending', 'new', 'reviewed', 'contacted', 'completed', 'archived')),
+  status           text not null default 'terima'    -- 'terima', 'proses', 'aktif', 'tak layak', 'lebih umur', 'meninggal'
+                    check (status in ('terima', 'proses', 'aktif', 'tak layak', 'lebih umur', 'meninggal',
+                                      'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived')),
   notes            text,                              -- admin notes field
   tempoh_keahlian  text,                              -- e.g. '1 Tahun', '2 Tahun' — to be calculated
   tempoh_manfaat   text,                              -- e.g. '1 Tahun', '2 Tahun' — to be calculated
@@ -41,14 +42,19 @@ create table if not exists public.submissions (
   updated_at       timestamptz not null default now()
 );
 
--- Ensure check constraint allows all status values if table was previously created
+-- Ensure check constraint allows all current status values (migration-safe)
 alter table public.submissions drop constraint if exists submissions_status_check;
 alter table public.submissions add constraint submissions_status_check
-  check (status in ('pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'));
+  check (status in ('terima', 'proses', 'aktif', 'tak layak', 'lebih umur', 'meninggal',
+                    'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'));
 
 -- Migration: add tempoh columns if they don't exist yet (safe for existing databases)
 alter table public.submissions add column if not exists tempoh_keahlian text;
 alter table public.submissions add column if not exists tempoh_manfaat  text;
+
+-- NOTE: 'tarikh_mohon' for the Al-Barzah module is stored inside form_data JSONB
+-- (key: "tarikh_mohon"), following the same pattern as 'tarikh_daftar'.
+-- No separate column is needed; admins enter it via the Edit modal after submission.
 
 -- Auto-update updated_at on row modification
 create or replace function public.set_updated_at()
