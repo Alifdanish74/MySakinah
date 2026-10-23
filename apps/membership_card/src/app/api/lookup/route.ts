@@ -33,6 +33,7 @@ function containsMatchingIC(data: any, targetIC: string): boolean {
 
 // Built-in Demo Records for quick preview & testing
 const DEMO_MEMBERS: Record<string, any[]> = {
+  // Demo: KELUARGA 20 (shows Ahli + Pasangan benefit table + 2 anak child benefit)
   "920315105432": [
     {
       id: "demo-1",
@@ -55,8 +56,8 @@ const DEMO_MEMBERS: Record<string, any[]> = {
       nama: "AHMAD SHAHIR BIN ABDULLAH",
       ic: "920315-10-5432",
       noAhli: "MS-2024-9901",
-      pakej: "Pakej KOPETRO Sakinah Care",
-      skim: "KOPETRO",
+      pakej: "INDIVIDU 10",
+      skim: "KOHASiL Raudhah (Peribadi)",
       status: "AKTIF",
       tarikhDaftar: "10/05/2024",
       tempohKeahlian: "10/05/2024",
@@ -67,42 +68,63 @@ const DEMO_MEMBERS: Record<string, any[]> = {
       kategori: "AHLI UTAMA",
     }
   ],
+  // Demo: INDIVIDU 15
   "880520146789": [
     {
       id: "demo-3",
       nama: "NURUL FATIHAH BINTI ZULKIFLI",
       ic: "880520-14-6789",
       noAhli: "MS-2023-1109",
-      pakej: "Pelan VIP Keahlian Individu",
-      skim: "KOPETRO Sakinah Care",
+      pakej: "INDIVIDU 15",
+      skim: "KOHASiL Raudhah",
       status: "AKTIF",
       tarikhDaftar: "20/05/2023",
-      tempohKeahlian: "20/05/2023",
+      tempohKeahlian: "20/05/2026",
       namaWaris: "ZULKIFLI BIN ISMAIL",
       telefonWaris: "017-3322110",
       telefon: "013-9876543",
       negeri: "Wilayah Persekutuan Kuala Lumpur",
-      kategori: "AHLI VIP",
+      kategori: "AHLI INDIVIDU",
     }
   ],
+  // Demo: INDIVIDU 20
   "951104085521": [
     {
       id: "demo-4",
       nama: "MOHD FIRDAUS BIN ROSLI",
       ic: "951104-08-5521",
       noAhli: "MS-2024-3401",
-      pakej: "Pakej Perlindungan Al-Barzah",
-      skim: "Al-Barzah Ta'awun",
+      pakej: "INDIVIDU 20",
+      skim: "KOHASiL Raudhah",
       status: "AKTIF",
       tarikhDaftar: "04/11/2024",
-      tempohKeahlian: "04/11/2024",
+      tempohKeahlian: "04/11/2026",
       namaWaris: "NORAINI BINTI AHMAD",
       telefonWaris: "011-12345678",
       telefon: "018-9988776",
       negeri: "Perak",
       kategori: "AHLI INDIVIDU",
     }
-  ]
+  ],
+  // Demo: KELUARGA 30 (shows 3 anak child benefit)
+  "960101145523": [
+    {
+      id: "demo-5",
+      nama: "RAZIF BIN MOHD NOOR",
+      ic: "960101-14-5523",
+      noAhli: "MS-2025-7712",
+      pakej: "KELUARGA 30",
+      skim: "KOHASiL Raudhah",
+      status: "AKTIF",
+      tarikhDaftar: "01/01/2025",
+      tempohKeahlian: "01/01/2027",
+      namaWaris: "HASLINDA BINTI RAZAK",
+      telefonWaris: "011-98765432",
+      telefon: "019-1122334",
+      negeri: "Johor",
+      kategori: "AHLI KELUARGA",
+    }
+  ],
 };
 
 export async function POST(req: Request) {

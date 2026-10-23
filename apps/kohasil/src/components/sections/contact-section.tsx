@@ -100,7 +100,7 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
                 {
                   icon: MessageCircle,
                   label: "WhatsApp 24 Jam",
-                  value: `${BRAND.hotline_whatsapp} / bjsbinfo@bumijez.com.my`,
+                  value: `${BRAND.hotline_whatsapp} / info@bumijez.com.my`,
                   href: `https://wa.me/601114977733`,
                   sublabel: "Talian perkhidmatan & sokongan",
                 },

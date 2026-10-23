@@ -22,7 +22,7 @@ export interface Submission {
   module_slug?: string;
   module_name?: string;
   form_data: Record<string, any>;
-  status: "terima" | "proses" | "aktif" | "tak layak" | "lebih umur" | "meninggal";
+  status: "baru" | "terima" | "tangguh" | "proses" | "aktif" | "tamat" | "tak layak" | "lebih umur" | "meninggal";
   notes?: string;
   submitted_by?: string;
   tempoh_keahlian?: string;   // duration of membership — to be calculated

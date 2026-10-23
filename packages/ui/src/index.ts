@@ -19,5 +19,5 @@ export { ShariahSection, type ShariahSectionProps } from "./components/shariah-s
 
 // Lib utilities (re-exported so apps import from one place)
 export { cn, scrollToSection } from "./lib/utils";
-export { saveSubmissionToDatabase, type SubmissionPayload, type SaveSubmissionResult } from "./lib/submission";
+export { saveSubmissionToDatabase, getMalaysiaTimestamp, getMalaysiaDateString, type SubmissionPayload, type SaveSubmissionResult } from "./lib/submission";
 export * from "./lib/motion";

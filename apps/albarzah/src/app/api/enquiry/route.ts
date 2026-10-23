@@ -1,7 +1,7 @@
 // File: src/app/api/enquiry/route.ts — Albarzah
 import { enquirySchema } from "@/lib/validations";
 import { toAlbarzahStoragePakej } from "@/lib/pakej";
-import { saveSubmissionToDatabase } from "@sakinah/ui";
+import { saveSubmissionToDatabase, getMalaysiaDateString } from "@sakinah/ui";
 
 const MODULE_SLUG = "albarzah";
 
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
             poskod: data.poskod || "-",
             negeri: m.negeri || data.negeri || "-",
             pakej,
-            tarikh_daftar: new Date().toLocaleDateString("en-GB"),
+            tarikh_daftar: getMalaysiaDateString(),
             utama: mainName,
             namaWaris: data.namaWaris || "-",
             telefonWaris: data.telefonWaris || "-",
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
         poskod: data.poskod || "-",
         negeri: data.negeri || "-",
         pakej,
-        tarikh_daftar: new Date().toLocaleDateString("en-GB"),
+        tarikh_daftar: getMalaysiaDateString(),
         utama: data.nama,
         namaWaris: data.namaWaris || "-",
         telefonWaris: data.telefonWaris || "-",

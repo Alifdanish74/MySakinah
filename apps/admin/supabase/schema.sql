@@ -45,7 +45,8 @@ create table if not exists public.submissions (
 -- Ensure check constraint allows all current status values (migration-safe)
 alter table public.submissions drop constraint if exists submissions_status_check;
 alter table public.submissions add constraint submissions_status_check
-  check (status in ('terima', 'proses', 'aktif', 'tak layak', 'lebih umur', 'meninggal',
+  check (status in ('baru', 'terima', 'tangguh', 'proses', 'aktif', 'tamat',
+                    'tak layak', 'lebih umur', 'meninggal',
                     'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived'));
 
 -- Migration: add tempoh columns if they don't exist yet (safe for existing databases)

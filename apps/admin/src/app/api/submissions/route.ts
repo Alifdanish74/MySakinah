@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getAccessibleModules, canAccessModule } from "@/lib/auth";
 import { calculateAgeFromIC } from "@/lib/utils";
+import { getMalaysiaTimestamp } from "@sakinah/ui";
 
 export async function OPTIONS() {
   return new Response(null, {
@@ -153,6 +154,7 @@ export async function POST(req: NextRequest) {
         form_data: enrichedFormData,
         submitted_by: submitted_by || enrichedFormData.nama || enrichedFormData.full_name || enrichedFormData.email || "Anonymous",
         status: "pending",
+        created_at: getMalaysiaTimestamp(), // Capture submission time in Malaysia timezone (GMT+8)
       })
       .select()
       .single();

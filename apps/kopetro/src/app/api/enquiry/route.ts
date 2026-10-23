@@ -1,6 +1,6 @@
 // File: src/app/api/enquiry/route.ts — KOPETRO
 import { enquirySchema } from "@/lib/validations";
-import { saveSubmissionToDatabase } from "@sakinah/ui";
+import { saveSubmissionToDatabase, getMalaysiaDateString } from "@sakinah/ui";
 
 const MODULE_SLUG = "kopetro";
 
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
             poskod: data.poskod || "-",
             negeri: m.negeri || data.negeri || "-",
             pakej: data.pakej,
-            tarikh_daftar: new Date().toLocaleDateString("en-GB"),
+            tarikh_daftar: getMalaysiaDateString(),
             utama: mainName,
             namaWaris: data.namaWaris || "-",
             telefonWaris: data.telefonWaris || "-",
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
         poskod: data.poskod || "-",
         negeri: data.negeri || "-",
         pakej: data.pakej,
-        tarikh_daftar: new Date().toLocaleDateString("en-GB"),
+        tarikh_daftar: getMalaysiaDateString(),
         utama: data.nama,
         namaWaris: data.namaWaris || "-",
         telefonWaris: data.telefonWaris || "-",

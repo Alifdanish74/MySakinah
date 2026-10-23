@@ -847,16 +847,19 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         {/* Map new status values to badge classes */}
                         {(() => {
                           const statusMap: Record<string, string> = {
+                            baru: "badge-new",
                             terima: "badge-new",
+                            tangguh: "badge-reviewed",
                             proses: "badge-reviewed",
                             aktif: "badge-completed",
+                            tamat: "badge-archived",
                             "tak layak": "badge-archived",
                             "lebih umur": "badge-archived",
                             meninggal: "badge-archived",
                           };
                           const badgeClass = statusMap[s.status] || "badge-new";
                           return (
-                            <span className={clsx("badge", badgeClass)}>
+                            <span className={clsx("badge", badgeClass)} style={{ textTransform: "capitalize" }}>
                               {s.status}
                             </span>
                           );
@@ -991,9 +994,12 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       {/* Map new status values to badge classes */}
                       {(() => {
                         const statusMap: Record<string, string> = {
+                          baru: "badge-new",
                           terima: "badge-new",
+                          tangguh: "badge-reviewed",
                           proses: "badge-reviewed",
                           aktif: "badge-completed",
+                          tamat: "badge-archived",
                           "tak layak": "badge-archived",
                           "lebih umur": "badge-archived",
                           meninggal: "badge-archived",

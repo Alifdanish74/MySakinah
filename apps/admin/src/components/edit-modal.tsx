@@ -244,18 +244,39 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                 onChange={(e) => setStatus(e.target.value as any)}
                 className="form-input"
               >
-                  <option value="terima">Terima</option>
-                  <option value="proses">Proses</option>
-                  <option value="aktif">Aktif</option>
-                  <option value="tak layak">Tak Layak</option>
-                  <option value="lebih umur">Lebih Umur</option>
-                  <option value="meninggal">Meninggal</option>
+                <option value="baru">Baru</option>
+                <option value="terima">Terima</option>
+                <option value="tangguh">Tangguh</option>
+                <option value="proses">Proses</option>
+                <option value="aktif">Aktif</option>
+                <option value="tamat">Tamat</option>
+                <option value="tak layak">Tak Layak</option>
+                <option value="lebih umur">Lebih Umur</option>
+                <option value="meninggal">Meninggal</option>
               </select>
+            </Field>
+
+
+
+            {/* Tarikh Daftar — read-only, set when the form was submitted */}
+            <Field label="Mohon">
+              <input
+                id="form-input-tarikh_daftar"
+                // type="text"
+                type="date"
+                // value={fd("tarikh_daftar")}
+                value={toInputDate(fd("tarikh_daftar"))}
+                // readOnly
+                onChange={(e) => handleFieldChange("tarikh_daftar", fromInputDate(e.target.value))}
+                className="form-input"
+              // style={{ opacity: 0.5, cursor: "not-allowed" }}
+              // style={{ opacity: 0.5 }}
+              />
             </Field>
 
             {/* Al-Barzah only: Mohon — calendar date picker */}
             {isAlbarzah && (
-              <Field label="Mohon">
+              <Field label="Daftar">
                 <input
                   id="form-input-tarikh_mohon"
                   type="date"
@@ -265,18 +286,6 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                 />
               </Field>
             )}
-
-            {/* Tarikh Daftar — read-only, set when the form was submitted */}
-            <Field label="Daftar">
-              <input
-                id="form-input-tarikh_daftar"
-                type="text"
-                value={fd("tarikh_daftar")}
-                readOnly
-                className="form-input"
-                style={{ opacity: 0.5, cursor: "not-allowed" }}
-              />
-            </Field>
           </div>
 
           {/* ── Section: Tempoh ──────────────────────────────────────────── */}

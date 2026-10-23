@@ -111,7 +111,7 @@ export function ICSearchForm({ onSearch, isLoading, error }: ICSearchFormProps) 
         )}
 
         {/* Quick Demo Test Section */}
-        <div className="mt-6 pt-5 border-t border-slate-800/80">
+        {/* <div className="mt-6 pt-5 border-t border-slate-800/80">
           <p className="text-xs font-semibold text-slate-400 mb-2 flex items-center justify-center gap-1.5">
             <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
             <span>Cuba Contoh Rekod IC Ujian (Klik Untuk Uji):</span>
@@ -139,7 +139,7 @@ export function ICSearchForm({ onSearch, isLoading, error }: ICSearchFormProps) 
               951104-08-5521 (Al-Barzah)
             </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

@@ -74,7 +74,7 @@ const individuPackages: PackageDetail[] = [
       totalNormalDeath: "RM 5,000",
       items: [
         { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500" },
-        { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500" },
+        { no: 2, benefit: "Wang Khairat Kepada Waris (Selepas 60 Hari)", ahli: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 120" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 2,880" },
       ],
@@ -114,7 +114,7 @@ const individuPackages: PackageDetail[] = [
       totalNormalDeath: "RM 7,000",
       items: [
         { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500" },
-        { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500" },
+        { no: 2, benefit: "Wang Khairat Kepada Waris (Selepas 60 Hari)", ahli: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 180" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 4,820" },
       ],
@@ -154,7 +154,7 @@ const individuPackages: PackageDetail[] = [
       totalNormalDeath: "RM 9,000",
       items: [
         { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500" },
-        { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500" },
+        { no: 2, benefit: "Wang Khairat Kepada Waris (Selepas 60 Hari)", ahli: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 240" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 6,760" },
       ],
@@ -184,7 +184,7 @@ const keluargaPackages: PackageDetail[] = [
       totalNormalDeath: "RM 5,000 (Ahli) + RM 5,000 (Pasangan)",
       items: [
         { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
-        { no: 2, benefit: "Tahlil Dan Khatam Al Quran (BJSB)", ahli: "RM 500", pasangan: "RM 500" },
+        { no: 2, benefit: "Tahlil Dan Khatam Al Quran (Diuruskan Pihak BJSB - Selepas 30 Hari)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 120", pasangan: "RM 120" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 2,880", pasangan: "RM 2,880" },
       ],
@@ -198,7 +198,7 @@ const keluargaPackages: PackageDetail[] = [
       totalNormalDeath: "RM 5,000 (Ahli) + RM 5,000 (Pasangan)",
       items: [
         { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
-        { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500", pasangan: "RM 500" },
+        { no: 2, benefit: "Wang Khairat Kepada Waris (Selepas 60 Hari)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 120", pasangan: "RM 120" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 2,880", pasangan: "RM 2,880" },
       ],
@@ -228,7 +228,7 @@ const keluargaPackages: PackageDetail[] = [
       totalNormalDeath: "RM 7,000 (Ahli) + RM 7,000 (Pasangan)",
       items: [
         { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
-        { no: 2, benefit: "Tahlil Dan Khatam Al Quran (BJSB)", ahli: "RM 500", pasangan: "RM 500" },
+        { no: 2, benefit: "Tahlil Dan Khatam Al Quran (Diuruskan Pihak BJSB - Selepas 30 Hari)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 180", pasangan: "RM 180" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 4,820", pasangan: "RM 4,820" },
       ],
@@ -242,7 +242,7 @@ const keluargaPackages: PackageDetail[] = [
       totalNormalDeath: "RM 7,000 (Ahli) + RM 7,000 (Pasangan)",
       items: [
         { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
-        { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500", pasangan: "RM 500" },
+        { no: 2, benefit: "Wang Khairat Kepada Waris (Selepas 60 Hari)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 180", pasangan: "RM 180" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 4,820", pasangan: "RM 4,820" },
       ],
@@ -272,7 +272,7 @@ const keluargaPackages: PackageDetail[] = [
       totalNormalDeath: "RM 9,000 (Ahli) + RM 9,000 (Pasangan)",
       items: [
         { no: 1, benefit: "Pengurusan Jenazah Lengkap Atau Tunai (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
-        { no: 2, benefit: "Tahlil Dan Khatam Al Quran (BJSB)", ahli: "RM 500", pasangan: "RM 500" },
+        { no: 2, benefit: "Tahlil Dan Khatam Al Quran (Diuruskan Pihak BJSB - Selepas 30 Hari)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 240", pasangan: "RM 240" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 6,760", pasangan: "RM 6,760" },
       ],
@@ -286,7 +286,7 @@ const keluargaPackages: PackageDetail[] = [
       totalNormalDeath: "RM 9,000 (Ahli) + RM 9,000 (Pasangan)",
       items: [
         { no: 1, benefit: "Bantuan Tunai Kebajikan (24 jam bersyarat)", ahli: "RM 1,500", pasangan: "RM 1,500" },
-        { no: 2, benefit: "Wang Khairat Kepada Waris", ahli: "RM 500", pasangan: "RM 500" },
+        { no: 2, benefit: "Wang Khairat Kepada Waris (Selepas 60 Hari)", ahli: "RM 500", pasangan: "RM 500" },
         { no: 3, benefit: "Pakej Kepada Waris (Selepas 60 Hari)", ahli: "RM 240", pasangan: "RM 240" },
         { no: 4, benefit: "Wang Khairat Kepada Waris (Selepas 90 Hari)", ahli: "RM 6,760", pasangan: "RM 6,760" },
       ],
@@ -582,9 +582,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
     const depTabs: MemberTab[] = additionalDependents.map((depId, idx) => ({
       id: depId,
-      label: `Tanggungan ${idx + 1}`,
+      label: `Tambahan ${idx + 1}`,
       role: "anak",
-      description: `Maklumat Tanggungan ${idx + 1} (+RM10/sebulan)`,
+      description: `Maklumat Tambahan ${idx + 1} (+RM10/sebulan)`,
     }));
 
     return [...baseTabs, ...depTabs];
@@ -1740,7 +1740,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         )}
 
                         {/* Jenis Tambahan Dropdown (For dependent / tambahan tabs) */}
-                        {activeMemberTab !== "ahli" && activeMemberTab !== "pasangan" && (
+                        {activeMemberTab.startsWith("tanggungan_") && (
                           <div>
                             <label htmlFor={`modal-jenisTanggungan-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                               Jenis Tambahan <span className="text-red-500">*</span>

@@ -1,6 +1,27 @@
 // File: packages/ui/src/lib/submission.ts
 // Resilient Submission Dispatcher for MySakinahPro Modules
 
+/**
+ * Returns the current date-time as an ISO 8601 string offset to Malaysia time (GMT+8).
+ * Example: "2026-10-24T09:35:00.000+08:00"
+ */
+export function getMalaysiaTimestamp(): string {
+  const now = new Date();
+  // Malaysia is UTC+8 (480 minutes ahead)
+  const MY_OFFSET_MS = 8 * 60 * 60 * 1000;
+  const myTime = new Date(now.getTime() + MY_OFFSET_MS);
+  // Build ISO string and replace the trailing 'Z' with '+08:00'
+  return myTime.toISOString().replace("Z", "+08:00");
+}
+
+/**
+ * Returns the current date as a DD/MM/YYYY string in Malaysia timezone (GMT+8).
+ * Example: "24/10/2026"
+ */
+export function getMalaysiaDateString(): string {
+  return new Date().toLocaleDateString("en-GB", { timeZone: "Asia/Kuala_Lumpur" });
+}
+
 export interface SubmissionPayload {
   module_slug: string;
   submitted_by: string;
@@ -147,6 +168,7 @@ export async function saveSubmissionToDatabase({
             form_data,
             submitted_by: submitted_by || form_data.nama || form_data.full_name || "Anonymous",
             status: "pending",
+            created_at: getMalaysiaTimestamp(), // Capture submission time in Malaysia timezone (GMT+8)
           }),
         });
 
