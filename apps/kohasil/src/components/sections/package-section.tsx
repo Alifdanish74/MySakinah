@@ -785,8 +785,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     });
   };
 
-  const handleProceedToDeclaration = (e: React.FormEvent) => {
-    e.preventDefault();
+  const proceedToDeclaration = () => {
     const ahli = membersData["ahli"];
     if (
       !ahli ||
@@ -902,6 +901,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       generateReceiptPdf({
         packageName: selectedFormPackage?.name || "",
         packageCategory: selectedFormPackage?.category || "",
+        category: selectedFormPackage?.category || "",
         monthlyFee: getCalculatedMonthlyFee(),
         coverage: selectedFormPackage?.coverage || "",
         ahli: {
@@ -1510,6 +1510,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                 generateReceiptPdf({
                                   packageName: selectedFormPackage.name,
                                   packageCategory: selectedFormPackage.category,
+                                  category: selectedFormPackage.category,
                                   monthlyFee: getCalculatedMonthlyFee(),
                                   coverage: selectedFormPackage.coverage,
                                   ahli: {
@@ -1667,7 +1668,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                     }
 
                     return (
-                      <form onSubmit={handleProceedToDeclaration} className="space-y-4">
+                      <form onSubmit={(e) => e.preventDefault()} className="space-y-4">
                         {/* Multi-member Tab Navigation Bar */}
                         <div className="mb-2">
                           <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-slate-200 no-scrollbar">
@@ -1979,53 +1980,50 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         )}
 
                         {/* Tab Navigation Footer */}
-                        <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-200">
-                          {memberTabs.length > 1 ? (
-                            <>
-                              {memberTabs.findIndex((t) => t.id === activeMemberTab) > 0 ? (
+                        {(() => {
+                          const currentTabIndex = memberTabs.findIndex((t) => t.id === activeMemberTab);
+                          const isLastTab = currentTabIndex >= memberTabs.length - 1;
+                          const isFirstTab = currentTabIndex <= 0;
+
+                          return (
+                            <div className="flex items-center justify-between gap-3 pt-3 border-t border-slate-200">
+                              {/* Back Button */}
+                              {memberTabs.length > 1 && !isFirstTab ? (
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    const idx = memberTabs.findIndex((t) => t.id === activeMemberTab);
-                                    if (idx > 0) setActiveMemberTab(memberTabs[idx - 1].id);
+                                    if (currentTabIndex > 0) setActiveMemberTab(memberTabs[currentTabIndex - 1].id);
                                   }}
                                   className="px-3.5 py-2.5 rounded-xl text-xs font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors"
                                 >
-                                  &larr; {memberTabs[memberTabs.findIndex((t) => t.id === activeMemberTab) - 1]?.label}
+                                  &larr; {memberTabs[currentTabIndex - 1]?.label}
                                 </button>
                               ) : <div />}
 
-                              {memberTabs.findIndex((t) => t.id === activeMemberTab) < memberTabs.length - 1 ? (
+                              {/* Next or Submit Button */}
+                              {memberTabs.length > 1 && !isLastTab ? (
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    const idx = memberTabs.findIndex((t) => t.id === activeMemberTab);
-                                    if (idx < memberTabs.length - 1) setActiveMemberTab(memberTabs[idx + 1].id);
+                                    setActiveMemberTab(memberTabs[currentTabIndex + 1].id);
                                   }}
                                   className="px-4 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 hover:bg-emerald-100 transition-colors"
                                 >
-                                  Isi {memberTabs[memberTabs.findIndex((t) => t.id === activeMemberTab) + 1]?.label} &rarr;
+                                  Isi {memberTabs[currentTabIndex + 1]?.label} &rarr;
                                 </button>
                               ) : (
                                 <button
-                                  type="submit"
-                                  className="py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2"
+                                  type="button"
+                                  onClick={proceedToDeclaration}
+                                  className={`py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2 ${memberTabs.length === 1 ? "w-full py-3.5" : ""}`}
                                   style={{ background: "var(--color-brand-green)" }}
                                 >
                                   Teruskan ke Pengisytiharan &rarr;
                                 </button>
                               )}
-                            </>
-                          ) : (
-                            <button
-                              type="submit"
-                              className="w-full py-3.5 rounded-xl text-sm font-bold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2"
-                              style={{ background: "var(--color-brand-green)" }}
-                            >
-                              Teruskan ke Pengisytiharan &rarr;
-                            </button>
-                          )}
-                        </div>
+                            </div>
+                          );
+                        })()}
                       </form>
                     );
                   })()}

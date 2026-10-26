@@ -22,6 +22,7 @@ export interface ReceiptData {
   statusKeahlian: string;
   members: Record<string, MemberInfo>;
   submittedAt: Date;
+  category: string;
 }
 
 function generateReferenceNumber(date: Date): string {
@@ -104,10 +105,17 @@ export function generateReceiptPdf(data: ReceiptData): void {
     doc.setTextColor(30, 30, 30);
   };
 
-  const field = (label: string, value: string, col: "left" | "right" = "left") => {
+  const field = (label: string, value: string, col: "left" | "right" | "third" = "left") => {
     checkPageBreak(8);
-    const colX = col === "left" ? margin : pageWidth / 2 + 2;
-    const colW = contentWidth / 2 - 4;
+    const colW = contentWidth / 3 - 3;
+    let colX: number;
+    if (col === "left") {
+      colX = margin;
+    } else if (col === "right") {
+      colX = margin + contentWidth / 3 + 2;
+    } else {
+      colX = margin + (contentWidth / 3) * 2 + 2;
+    }
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
@@ -125,12 +133,18 @@ export function generateReceiptPdf(data: ReceiptData): void {
 
   const rowPair = (
     label1: string, val1: string,
-    label2: string, val2: string
+    label2: string, val2: string,
+    label3?: string, val3?: string
   ) => {
     checkPageBreak(14);
     const leftH = field(label1, val1, "left");
-    field(label2, val2, "right");
-    const maxH = Math.max(leftH, 9);
+    const midH = label2 ? field(label2, val2, "right") : 0;
+    let maxH = Math.max(leftH, midH);
+    // Render optional third column if a label/value is provided
+    if (label3 && val3) {
+      const thirdH = field(label3, val3, "third");
+      maxH = Math.max(maxH, thirdH);
+    }
     curY += maxH;
   };
 
@@ -144,6 +158,21 @@ export function generateReceiptPdf(data: ReceiptData): void {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(8.5);
     doc.setTextColor(20, 20, 20);
+    const lines = doc.splitTextToSize(value || "-", contentWidth);
+    doc.text(lines, margin, curY + 4);
+    curY += lines.length * 4.5 + 5;
+  };
+
+  const normalField = (label: string, value: string) => {
+    checkPageBreak(10);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(255, 0, 0);
+    doc.text(label, margin, curY);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.5);
+    doc.setTextColor(255, 0, 0);
     const lines = doc.splitTextToSize(value || "-", contentWidth);
     doc.text(lines, margin, curY + 4);
     curY += lines.length * 4.5 + 5;
@@ -213,24 +242,24 @@ export function generateReceiptPdf(data: ReceiptData): void {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(`RM${data.monthlyFee}.00 / Sebulan  •  ${data.coverage}`, pageWidth / 2, curY + 12, { align: "center" });
+  doc.text(`JUMLAH CARUMAN BULANAN • RM${data.monthlyFee}.00 / Sebulan  •`, pageWidth / 2, curY + 12, { align: "center" });
   curY += 19;
 
   // ── APPLICANT INFO ────────────────────────────────────────────────
   curY += 2;
   sectionTitle("A. Maklumat Ahli (Pemohon Utama)");
 
-  rowPair("Nama Penuh", data.ahli.nama.toUpperCase(), "No. Kad Pengenalan", formatIC(data.ahli.ic));
-  rowPair("No. Telefon", formatPhone(data.ahli.telefon), "Negeri", data.ahli.negeri.toUpperCase());
-  singleField("Alamat", [data.ahli.alamat1, data.ahli.alamat2, data.ahli.alamat3].filter(Boolean).join(", ").toUpperCase());
+  rowPair("Nama Penuh", data.ahli.nama.toUpperCase(), "No. Kad Pengenalan", formatIC(data.ahli.ic), "Nama Pakej", data.packageName.toUpperCase());
+  rowPair("No. Telefon", formatPhone(data.ahli.telefon), "Negeri", data.ahli.negeri.toUpperCase(), "Kategori", data.category.toUpperCase());
+  rowPair("Alamat", [data.ahli.alamat1, data.ahli.alamat2, data.ahli.alamat3].filter(Boolean).join(", ").toUpperCase(), "", "", "Skop Perlindungan", data.coverage.toUpperCase());
+  singleField("Status Keahlian KOHASIL", data.statusKeahlian.toUpperCase());
 
   curY += 2;
   addLine();
 
   // ── WARIS ─────────────────────────────────────────────────────────
   sectionTitle("B. Maklumat Waris (Penama)");
-  rowPair("Nama Waris", data.namaWaris.toUpperCase(), "No. Telefon Waris", formatPhone(data.telefonWaris));
-  singleField("Status Keahlian Waris", data.statusKeahlian.toUpperCase());
+  rowPair("Nama Waris", data.namaWaris.toUpperCase(), "No. Telefon Waris", formatPhone(data.telefonWaris), "", "");
 
   curY += 2;
   addLine();
@@ -238,13 +267,19 @@ export function generateReceiptPdf(data: ReceiptData): void {
   // ── OTHER MEMBERS ─────────────────────────────────────────────────
   const otherMembers = Object.entries(data.members).filter(([key]) => key !== "ahli");
   if (otherMembers.length > 0) {
-    sectionTitle("C. Maklumat Ahli Keluarga / Tanggungan");
+    sectionTitle("C. Maklumat Ahli Keluarga / Tambahan (jika ada)");
 
-    otherMembers.forEach(([key, member], index) => {
+    let tanggunanCount = 0;
+    otherMembers.forEach(([key, member]) => {
       checkPageBreak(18);
-      const label = key.startsWith("tanggungan")
-        ? `Tanggungan ${index + 1}${member.jenisTanggungan ? ` (${member.jenisTanggungan})` : ""}`
-        : key.charAt(0).toUpperCase() + key.slice(1);
+      let label: string;
+      if (key.startsWith("tanggungan")) {
+        tanggunanCount += 1;
+        label = `Kategori: Tambahan ${tanggunanCount}${member.jenisTanggungan ? ` (${member.jenisTanggungan})` : ""}`;
+      } else {
+        // e.g. "anak_1" → "Anak 1", "pasangan" → "Pasangan"
+        label = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      }
 
       doc.setFillColor(240, 248, 243);
       doc.rect(margin, curY, contentWidth, 5, "F");
@@ -254,10 +289,11 @@ export function generateReceiptPdf(data: ReceiptData): void {
       doc.text(label, margin + 3, curY + 3.5);
       curY += 7;
 
-      rowPair("Nama Penuh", member.nama.toUpperCase(), "No. Kad Pengenalan", formatIC(member.ic));
+      rowPair("Nama Penuh", member.nama.toUpperCase(), "No. Kad Pengenalan", formatIC(member.ic), "", "");
       if (member.telefon) {
         singleField("No. Telefon", formatPhone(member.telefon));
       }
+      normalField("1. Waris untuk semua ahli tambahan adalah ahli / pemohon utama (Pemotong Gaji)", "2. Pakej untuk semua ahli tambahan adalah Individu 10 sahaja");
       curY += 2;
     });
 
@@ -265,9 +301,16 @@ export function generateReceiptPdf(data: ReceiptData): void {
   }
 
   // ── PACKAGE BENEFITS SUMMARY ──────────────────────────────────────
-  sectionTitle("D. Maklumat Pakej");
-  rowPair("Nama Pakej", data.packageName, "Kategori", data.packageCategory.toUpperCase());
-  rowPair("Caruman Bulanan", `RM${data.monthlyFee}.00`, "Skop Perlindungan", data.coverage);
+  sectionTitle("D. Maklumat Pendaftaran Pakej");
+  // Build package name display — only count tanggungan (add-ons), not base package members
+  const extraCount = Object.keys(data.members).filter(k => k.startsWith("tanggungan")).length;
+  const extraPart = extraCount > 0 ? " + " + Array(extraCount).fill("Individu 10").join(" + ") : "";
+  rowPair(
+    "Nama Pakej",
+    `${data.packageName.toUpperCase()}${extraPart}`,
+    "Caruman Bulanan",
+    `RM${data.monthlyFee}.00`
+  );
   curY += 2;
   addLine();
 

@@ -17,9 +17,11 @@
     "dev:admin": "turbo run dev --filter=@sakinah/admin",
     "dev:membership_card": "turbo run dev --filter=@sakinah/membership-card",
     "lint": "turbo run lint",
-    "type-check": "turbo run type-check"
+    "type-check": "turbo run type-check",
+    "generate:receipt": "ts-node scripts/generateDummyReceipt.ts"
   },
   "devDependencies": {
+    "ts-node": "^10.9.2",
     "turbo": "^2.3.0"
   },
   "packageManager": "npm@10.9.2",
