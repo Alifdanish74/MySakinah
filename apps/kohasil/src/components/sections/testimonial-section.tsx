@@ -11,6 +11,10 @@ import { SECTION_IDS } from "@/lib/constants";
  */
 export const TESTIMONY_ITEMS: TestimonyItem[] = [
   {
+    src: "/images/manfaatkhidmat.png",
+    caption: "Manfaat yang sangat baik untuk ibu bapa di kampung (umur 60 ke 70 tahun = 10 tahun)",
+  },
+  {
     src: "/images/feedback.jpg",
     caption: "Majlis Bacaan Talkin kepada Arwah Yusof bin Karim",
   },

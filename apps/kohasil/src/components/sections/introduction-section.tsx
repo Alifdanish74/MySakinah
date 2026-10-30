@@ -91,6 +91,10 @@ export function IntroductionSection() {
             <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
               Pihak waris <strong>tidak perlu menyediakan kelengkapan</strong> pengurusan jenazah pada hari kejadian dan <strong>tidak perlu membayar kos semasa</strong> yang terlibat pada hari kejadian. Talian hotline 24 Jam <a href={BRAND.hotlineTel} className="font-bold text-green-900 underline">{BRAND.hotline}</a> sedia membantu 24 jam sehari.
             </p>
+            <br/>
+            <p className="text-sm sm:text-base text-slate-700 leading-relaxed">
+              <strong>Bantuan tunai RM1500 akan diberikan dalam masa 24 jam </strong> sekiranya pihak waris memilih untuk menguruskan sendiri jenazah dengan melengkapkan dokumen yang diperlukan.
+            </p>
           </div>
         </motion.div>
 

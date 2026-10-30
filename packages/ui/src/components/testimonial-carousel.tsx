@@ -258,9 +258,30 @@ export function TestimonialCarousel({
           eyebrow="Antara Khidmat Dari Kami"
           title=""
           subtitle=""
-          className="mb-12"
+          className="mb-8"
         />
 
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={viewportOnce}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="mb-8 text-center max-w-2xl mx-auto px-4"
+        >
+          <h2
+            className="text-xl sm:text-3xl lg:text-4xl font-bold tracking-tight leading-snug"
+            style={{
+              fontFamily: "var(--font-heading)",
+              color: "var(--color-brand-text, #1A1400)",
+            }}
+          >
+            Lebih Dari{" "}
+            <span style={{ color: "var(--color-brand-green, #792525)" }}>
+              15 Tahun
+            </span>{" "}
+            Kami Membantu Waris
+          </h2>
+        </motion.div>
         {/* ── Carousel card ────────────────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: 32 }}

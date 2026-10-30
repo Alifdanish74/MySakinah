@@ -114,7 +114,12 @@ const carouselItems = [
       <>
         Perlindungan terus disambung bagi anak-anak berumur 18 tahun keatas. Juga terbuka untuk ahli keluarga seperti adik/abang/kakak.
       </>
-    )
+    ),
+    note: (
+      <>
+        <strong>Syarat Umur Pendaftaran:</strong> Umur pendaftaran mestilah di bawah 66 tahun. Ahli wajib mendaftar diri sendiri terlebih dahulu.
+      </>
+    ),
   },
 ];
 
@@ -361,7 +366,9 @@ export function BenefitsSection() {
                     </p>
                   </div>
 
-                  {currentItem.id !== "anak-universiti" && currentItem.note && (
+                  {
+                  // currentItem.id !== "anak-universiti" && 
+                  currentItem.note && (
                     <div
                       className="flex items-start gap-3 rounded-xl p-4 border mt-auto"
                       style={{

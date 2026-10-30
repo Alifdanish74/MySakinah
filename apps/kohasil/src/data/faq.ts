@@ -39,6 +39,11 @@ export const faqItems: FaqItem[] = [
     answer:
       "Pihak BJSB akan menguruskan segala keperluan ketika jenazah sampai di Malaysia, dari lapangan terbang ke tanah perkuburan sehingga selesai.",
   },
+    {
+    id: "bersara",
+    question: "Saya akan bersara pada umur 60 tahun, bagaimana saya mahu menyambung perlindungan sehingga umur 70 tahun.",
+    answer: "Ahli boleh membuat pilihan untuk menyambung perlindungan sehingga umur 70 tahun dengan bayaran secara tahunan.",
+  },
   {
     id: "tuntutan-lewat",
     question: "Adakah tuntutan boleh dibuat jika pihak waris terlupa membuat tuntutan",
