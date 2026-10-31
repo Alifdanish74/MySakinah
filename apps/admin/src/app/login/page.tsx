@@ -1,16 +1,17 @@
 "use client";
 // File: src/app/login/page.tsx
-// Premium glassmorphism login page with Supabase email/password auth
+// Admin login page with Supabase email/password auth
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Lock, Mail, Eye, EyeOff, Shield, AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const supabase = createClient();
+  const reduceMotion = useReducedMotion();
 
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
@@ -39,45 +40,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      className="min-h-dvh flex items-center justify-center p-4 relative overflow-hidden"
+    <main
+      className="min-h-dvh flex items-center justify-center p-4"
       style={{ background: "var(--color-admin-bg)" }}
     >
-      {/* Ambient blobs */}
       <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          top: "-20%",
-          left: "-10%",
-          width: "60vw",
-          height: "60vw",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%)",
-          filter: "blur(60px)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        aria-hidden="true"
-        style={{
-          position: "absolute",
-          bottom: "-20%",
-          right: "-10%",
-          width: "50vw",
-          height: "50vw",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(139,92,246,0.10) 0%, transparent 70%)",
-          filter: "blur(60px)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="glass-card w-full max-w-md p-8 relative z-10"
+        className="glass-card w-full max-w-md p-8"
       >
         {/* Logo / Brand */}
         <div className="flex flex-col items-center gap-3 mb-8">
@@ -86,14 +54,13 @@ export default function LoginPage() {
               width: 56,
               height: 56,
               borderRadius: "var(--radius-lg)",
-              background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+              background: "var(--color-admin-primary)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 0 24px rgba(99,102,241,0.4)",
             }}
           >
-            <Shield size={28} color="#fff" />
+            <Shield size={28} color="#fff" aria-hidden="true" />
           </div>
           <div className="text-center">
             <h1
@@ -116,15 +83,16 @@ export default function LoginPage() {
         {/* Error message */}
         {error && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
+            initial={reduceMotion ? false : { opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
+            transition={reduceMotion ? { duration: 0 } : undefined}
             style={{
               display: "flex",
               alignItems: "center",
               gap: "0.5rem",
               padding: "0.75rem 1rem",
-              background: "rgba(239,68,68,0.12)",
-              border: "1px solid rgba(239,68,68,0.3)",
+              background: "color-mix(in srgb, var(--color-admin-danger) 12%, var(--color-admin-surface))",
+              border: "1px solid color-mix(in srgb, var(--color-admin-danger) 35%, transparent)",
               borderRadius: "var(--radius-md)",
               marginBottom: "1.25rem",
               color: "var(--color-admin-danger)",
@@ -132,18 +100,19 @@ export default function LoginPage() {
             }}
             role="alert"
           >
-            <AlertCircle size={16} />
+            <AlertCircle size={16} aria-hidden="true" />
             <span>{error}</span>
           </motion.div>
         )}
 
-        <form onSubmit={handleLogin} noValidate style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+        <form onSubmit={handleLogin} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
           {/* Email field */}
           <div>
             <label htmlFor="admin-email" className="form-label">Email Address</label>
             <div style={{ position: "relative" }}>
               <Mail
                 size={16}
+                aria-hidden="true"
                 style={{
                   position: "absolute",
                   left: "0.875rem",
@@ -173,6 +142,7 @@ export default function LoginPage() {
             <div style={{ position: "relative" }}>
               <Lock
                 size={16}
+                aria-hidden="true"
                 style={{
                   position: "absolute",
                   left: "0.875rem",
@@ -206,11 +176,13 @@ export default function LoginPage() {
                   border: "none",
                   cursor: "pointer",
                   color: "var(--color-admin-text-muted)",
-                  padding: 0,
-                  display: "flex",
+                  width: 44,
+                  height: 44,
+                  display: "grid",
+                  placeItems: "center",
                 }}
               >
-                {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
+                {showPass ? <EyeOff size={16} aria-hidden="true" /> : <Eye size={16} aria-hidden="true" />}
               </button>
             </div>
           </div>
@@ -232,7 +204,7 @@ export default function LoginPage() {
                     borderRadius: "50%",
                     border: "2px solid rgba(255,255,255,0.3)",
                     borderTopColor: "#fff",
-                    animation: "spin 0.8s linear infinite",
+                    animation: reduceMotion ? undefined : "spin 0.8s linear infinite",
                     display: "inline-block",
                   }}
                 />
@@ -254,11 +226,11 @@ export default function LoginPage() {
         >
           Access restricted to authorised administrators only.
         </p>
-      </motion.div>
+      </div>
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
       `}</style>
-    </div>
+    </main>
   );
 }

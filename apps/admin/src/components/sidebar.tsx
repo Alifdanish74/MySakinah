@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { AdminModule, UserRoleInfo } from "@/lib/types";
-import { motion } from "framer-motion";
 import {
   LayoutDashboard,
   LogOut,
   Shield,
   ChevronRight,
+  X,
 } from "lucide-react";
 import { ICON_MAP } from "@/lib/icons";
 
@@ -54,12 +54,11 @@ export function Sidebar({
       {/* Mobile Dark Backdrop */}
       {isMobileOpen && (
         <div
-          onClick={onCloseMobile}
+          aria-hidden="true"
           style={{
             position: "fixed",
             inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.75)",
-            backdropFilter: "blur(6px)",
+            backgroundColor: "rgba(8, 24, 16, 0.48)",
             zIndex: 45,
           }}
           className="md:hidden"
@@ -67,6 +66,8 @@ export function Sidebar({
       )}
 
       <aside
+        id="admin-sidebar"
+        aria-label="Primary navigation"
         className={`sidebar-container ${isMobileOpen ? "mobile-open" : ""}`}
         style={{
           background: "var(--color-admin-surface)",
@@ -103,14 +104,14 @@ export function Sidebar({
                 width: 36,
                 height: 36,
                 borderRadius: "var(--radius-md)",
-                background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                background: "var(--color-admin-primary)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
               }}
             >
-              <Shield size={18} color="#fff" />
+              <Shield size={18} color="#fff" aria-hidden="true" />
             </div>
             {!isCollapsed && (
               <div style={{ overflow: "hidden", whiteSpace: "nowrap" }}>
@@ -123,100 +124,82 @@ export function Sidebar({
               </div>
             )}
           </Link>
+          <button
+            type="button"
+            className="show-mobile-only btn-ghost"
+            onClick={onCloseMobile}
+            style={{ width: 44, minWidth: 44, height: 44, justifyContent: "center", padding: 0 }}
+            aria-label="Close navigation menu"
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
         </div>
 
-        {/* Dashboard Link */}
-        <Link
-          href="/"
-          id="sidebar-dashboard"
-          onClick={onCloseMobile}
-          className={`sidebar-link ${pathname === "/" ? "active" : ""}`}
-          title={isCollapsed ? "Dashboard" : undefined}
-          style={{
-            justifyContent: isCollapsed ? "center" : "flex-start",
-            padding: isCollapsed ? "0.625rem" : "0.625rem 0.875rem",
-          }}
-        >
-          <LayoutDashboard size={18} />
-          {!isCollapsed && <span>Dashboard</span>}
-        </Link>
-
-        {/* Section Header */}
-        {!isCollapsed ? (
-          <div
+        <nav aria-label="Dashboard sections" style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+          <Link
+            href="/"
+            id="sidebar-dashboard"
+            onClick={onCloseMobile}
+            className={`sidebar-link ${pathname === "/" ? "active" : ""}`}
+            title={isCollapsed ? "Dashboard" : undefined}
+            aria-current={pathname === "/" ? "page" : undefined}
             style={{
-              fontSize: "0.6875rem",
-              fontWeight: 600,
-              color: "var(--color-admin-text-muted)",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              padding: "1rem 0.5rem 0.25rem",
+              justifyContent: isCollapsed ? "center" : "flex-start",
+              padding: isCollapsed ? "0.625rem" : "0.625rem 0.875rem",
             }}
           >
-            Modules
-          </div>
-        ) : (
-          <div style={{ height: 1, backgroundColor: "var(--color-admin-border)", margin: "0.5rem 0" }} />
-        )}
+            <LayoutDashboard size={18} aria-hidden="true" />
+            {!isCollapsed && <span>Dashboard</span>}
+          </Link>
 
-        {/* Modules List */}
-        {modules.map((mod, i) => {
-          const Icon = ICON_MAP[mod.icon ?? ""] ?? Shield;
-          const isActive = pathname === `/${mod.slug}`;
-          const colorFrom = mod.color_from || mod.color || "#3b82f6";
-          const colorTo   = mod.color_to || mod.color || "#8b5cf6";
-
-          return (
-            <motion.div
-              key={mod.id}
-              initial={{ opacity: 0, x: -8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.03, duration: 0.2 }}
+          {!isCollapsed ? (
+            <div
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 600,
+                color: "var(--color-admin-text-muted)",
+                padding: "1rem 0.5rem 0.25rem",
+              }}
             >
+              Modules
+            </div>
+          ) : (
+            <div aria-hidden="true" style={{ height: 1, backgroundColor: "var(--color-admin-border)", margin: "0.5rem 0" }} />
+          )}
+
+          {modules.map((mod) => {
+            const Icon = ICON_MAP[mod.icon ?? ""] ?? Shield;
+            const isActive = pathname === `/${mod.slug}`;
+
+            return (
               <Link
+                key={mod.id}
                 href={`/${mod.slug}`}
                 id={`sidebar-${mod.slug}`}
                 onClick={onCloseMobile}
                 className={`sidebar-link ${isActive ? "active" : ""}`}
                 title={isCollapsed ? mod.display_name : undefined}
+                aria-current={isActive ? "page" : undefined}
                 style={{
                   justifyContent: isCollapsed ? "center" : "flex-start",
                   padding: isCollapsed ? "0.625rem" : "0.625rem 0.875rem",
-                  ...(isActive
-                    ? {
-                        background: `linear-gradient(135deg, ${colorFrom}22, ${colorTo}22)`,
-                        borderColor: `${colorFrom}44`,
-                        color: colorFrom,
-                      }
-                    : {}),
                 }}
               >
-                <div
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: "0.375rem",
-                    background: `linear-gradient(135deg, ${colorFrom}, ${colorTo})`,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  <Icon size={13} color="#fff" />
-                </div>
+                <span className="sidebar-module-icon">
+                  <Icon size={15} aria-hidden="true" />
+                </span>
                 {!isCollapsed && (
                   <>
                     <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                       {mod.display_name}
                     </span>
-                    {isActive && <ChevronRight size={14} />}
+                    {isActive && <ChevronRight size={14} aria-hidden="true" />}
                   </>
                 )}
               </Link>
-            </motion.div>
-          );
-        })}
+            );
+          })}
+        </nav>
 
         {/* Spacer & User Footer */}
         <div style={{ flex: 1 }} />

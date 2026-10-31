@@ -1,9 +1,10 @@
 "use client";
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { X, Save, Loader2 } from "lucide-react";
 import type { Submission } from "@/lib/types";
 import { calculateAgeFromIC, formatIC, formatPhone } from "@/lib/utils";
+import { useDialogAccessibility } from "@/lib/use-dialog-accessibility";
 
 interface EditModalProps {
   submission: Submission;
@@ -14,17 +15,9 @@ interface EditModalProps {
 }
 
 // ─── tiny helpers ────────────────────────────────────────────────────────────
-function Label({ children }: { children: React.ReactNode }) {
+function Label({ children, htmlFor }: { children: React.ReactNode; htmlFor?: string }) {
   return (
-    <label
-      style={{
-        display: "block",
-        fontSize: "0.75rem",
-        fontWeight: 600,
-        color: "var(--color-admin-text-muted)",
-        marginBottom: 4,
-      }}
-    >
+    <label htmlFor={htmlFor} className="form-label">
       {children}
     </label>
   );
@@ -32,16 +25,18 @@ function Label({ children }: { children: React.ReactNode }) {
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <Label>{label}</Label>
+    <label className="form-field">
+      <span className="form-label">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 
 // ─── component ───────────────────────────────────────────────────────────────
 export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModalProps) {
   const isAlbarzah = moduleSlug === "albarzah";
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useDialogAccessibility(true, onClose);
 
   const [status, setStatus] = useState<Submission["status"]>(submission.status || "terima");
   const [notes, setNotes] = useState<string>(submission.notes || "");
@@ -166,8 +161,8 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
       }
 
       onSaved();
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -188,9 +183,15 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
       }}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-modal-title"
+        tabIndex={-1}
+        initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98, y: 8 }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
         className="glass-card"
         style={{
           width: "100%",
@@ -208,7 +209,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div>
-            <h3 style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
+            <h3 id="edit-modal-title" style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
               Edit Registration Entry
             </h3>
             <p style={{ fontSize: "0.8125rem", color: "var(--color-admin-text-muted)", marginTop: 2 }}>
@@ -219,15 +220,15 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
             id="close-edit-modal"
             onClick={onClose}
             className="btn-ghost"
-            style={{ padding: "0.375rem" }}
+            style={{ width: 44, minWidth: 44, height: 44, justifyContent: "center", padding: 0 }}
             aria-label="Close modal"
           >
-            <X size={18} />
+            <X size={18} aria-hidden="true" />
           </button>
         </div>
 
         {error && (
-          <div className="badge-danger" style={{ padding: "0.75rem", borderRadius: "var(--radius-md)" }}>
+          <div className="badge-danger" role="alert" style={{ padding: "0.75rem", borderRadius: "var(--radius-md)" }}>
             {error}
           </div>
         )}
@@ -258,7 +259,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
 
 
 
-            {/* Tarikh Daftar — read-only, set when the form was submitted */}
+            {/* Tarikh Daftar is set when the form was submitted */}
             <Field label="Mohon">
               <input
                 id="form-input-tarikh_daftar"
@@ -274,7 +275,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
               />
             </Field>
 
-            {/* Al-Barzah only: Mohon — calendar date picker */}
+            {/* Al-Barzah only: Mohon calendar date picker */}
             {isAlbarzah && (
               <Field label="Daftar">
                 <input
@@ -294,17 +295,20 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
 
           {/* Tempoh Keahlian */}
           <div>
-            <Label>Tempoh Keahlian</Label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
-              <input
-                id="form-input-tk-start"
-                type="date"
-                value={tkStart}
-                onChange={(e) => setTkStart(e.target.value)}
-                className="form-input"
-              />
+              <div>
+                <Label htmlFor="form-input-tk-start">Tempoh Keahlian mula</Label>
+                <input
+                  id="form-input-tk-start"
+                  type="date"
+                  value={tkStart}
+                  onChange={(e) => setTkStart(e.target.value)}
+                  className="form-input"
+                />
+              </div>
               <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>hingga</span>
               <div style={{ position: "relative" }}>
+                <Label htmlFor="form-input-tk-end">Tempoh Keahlian tamat</Label>
                 <input
                   id="form-input-tk-end"
                   type="date"
@@ -340,17 +344,20 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
 
           {/* Tempoh Manfaat */}
           <div>
-            <Label>Tempoh Manfaat</Label>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
-              <input
-                id="form-input-tm-start"
-                type="date"
-                value={tmStart}
-                onChange={(e) => setTmStart(e.target.value)}
-                className="form-input"
-              />
+              <div>
+                <Label htmlFor="form-input-tm-start">Tempoh Manfaat mula</Label>
+                <input
+                  id="form-input-tm-start"
+                  type="date"
+                  value={tmStart}
+                  onChange={(e) => setTmStart(e.target.value)}
+                  className="form-input"
+                />
+              </div>
               <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>hingga</span>
               <div style={{ position: "relative" }}>
+                <Label htmlFor="form-input-tm-end">Tempoh Manfaat tamat</Label>
                 <input
                   id="form-input-tm-end"
                   type="date"

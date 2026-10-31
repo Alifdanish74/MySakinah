@@ -1,6 +1,7 @@
 // File: src/app/layout.tsx
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { AdminThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -11,8 +12,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MySakinah Admin — Dashboard",
-  description: "Admin dashboard for MySakinah Pro — manage form submissions across all modules.",
+  title: "MySakinah Admin: Dashboard",
+  description: "Admin dashboard for MySakinah Pro. Manage form submissions across all modules.",
   robots: "noindex, nofollow", // admin panel should not be indexed
 };
 
@@ -22,9 +23,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable}`}>
+    <html lang="en" className={`${inter.variable}`} data-scroll-behavior="smooth">
       <body className="antialiased">
-        {children}
+        <AdminThemeProvider>{children}</AdminThemeProvider>
       </body>
     </html>
   );

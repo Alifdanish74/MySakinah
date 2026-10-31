@@ -52,7 +52,7 @@ export function getUmurDisplay(fd: Record<string, any>): string {
     return String(fd.age).trim();
   }
   const calculated = calculateAgeFromIC(fd.no_kp || fd.ic || fd.no_ic || fd.ic_number);
-  return calculated || "—";
+  return calculated || "N/A";
 }
 
 /**
@@ -67,7 +67,7 @@ export function getAlamatDisplay(fd: Record<string, any>): string {
   if (parts.length > 0) return parts.join(", ");
   if (fd.alamat && fd.alamat !== "-" && fd.alamat !== "—") return String(fd.alamat).trim();
   if (fd.address && fd.address !== "-" && fd.address !== "—") return String(fd.address).trim();
-  return "—";
+  return "N/A";
 }
 
 /**
@@ -85,7 +85,7 @@ export function getPoskodDisplay(fd: Record<string, any>): string {
   const match = fullAddr.match(/\b\d{5}\b/);
   if (match) return match[0];
 
-  return "—";
+  return "N/A";
 }
 
 /**
@@ -98,7 +98,7 @@ export function getNegeriDisplay(fd: Record<string, any>): string {
   if (fd.state && fd.state !== "-" && fd.state !== "—" && String(fd.state).trim() !== "") {
     return String(fd.state).trim();
   }
-  return "—";
+  return "N/A";
 }
 
 /**
@@ -107,7 +107,7 @@ export function getNegeriDisplay(fd: Record<string, any>): string {
  * Returns the original value untouched if it doesn't have 12 digits.
  */
 export function formatIC(value?: string): string {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const digits = value.replace(/\D/g, "");
   if (digits.length !== 12) return value; // leave unrecognised values as-is
   return `${digits.slice(0, 6)}-${digits.slice(6, 8)}-${digits.slice(8)}`;
@@ -118,7 +118,7 @@ export function formatIC(value?: string): string {
  * Strips any existing non-digits before formatting.
  */
 export function formatPhone(value?: string): string {
-  if (!value) return "—";
+  if (!value) return "N/A";
   const digits = value.replace(/\D/g, "");
   // 11-digit: xxx-xxxxxxxx  (e.g. 011-12345678)
   if (digits.length === 11) return `${digits.slice(0, 3)}-${digits.slice(3)}`;

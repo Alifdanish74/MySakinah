@@ -13,7 +13,7 @@ export interface AdminModule {
   color_from?: string;
   color_to?: string;
   created_at: string;
-  submission_count?: number;
+  submission_count?: number | null;
 }
 
 export interface Submission {

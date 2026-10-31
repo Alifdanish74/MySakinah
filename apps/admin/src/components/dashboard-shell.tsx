@@ -2,7 +2,7 @@
 // File: src/components/dashboard-shell.tsx
 // Shell wrapper component managing sidebar collapse state and mobile navigation drawer
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import type { AdminModule, UserRoleInfo } from "@/lib/types";
@@ -22,6 +22,8 @@ export function DashboardShell({
 }: DashboardShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const wasMobileOpenRef = useRef(false);
 
   // Restore collapsed state preference from localStorage on mount
   useEffect(() => {
@@ -47,8 +49,29 @@ export function DashboardShell({
     setIsMobileOpen(false);
   }
 
+  useEffect(() => {
+    if (!isMobileOpen) {
+      if (wasMobileOpenRef.current) {
+        wasMobileOpenRef.current = false;
+        mobileMenuButtonRef.current?.focus();
+      }
+      return;
+    }
+
+    wasMobileOpenRef.current = true;
+    document.getElementById("admin-sidebar")?.querySelector<HTMLElement>("a[href]")?.focus();
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") closeMobile();
+    }
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileOpen]);
+
   return (
-    <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "var(--color-admin-bg)" }}>
+    <>
+      <a className="skip-link" href="#admin-main-content">Skip to main content</a>
+      <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "var(--color-admin-bg)" }}>
       <Sidebar
         modules={modules}
         userRole={userRole}
@@ -58,19 +81,31 @@ export function DashboardShell({
         onCloseMobile={closeMobile}
       />
 
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+      <div
+        inert={isMobileOpen}
+        style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}
+      >
         <Header
           userRole={userRole}
           title={title}
           isCollapsed={isCollapsed}
+          isMobileOpen={isMobileOpen}
+          mobileMenuButtonRef={mobileMenuButtonRef}
           onToggleCollapse={toggleCollapse}
           onToggleMobileMenu={toggleMobileOpen}
         />
 
-        <main className="admin-main-content" style={{ padding: "2rem", flex: 1, overflowY: "auto" }}>
+        <main
+          id="admin-main-content"
+          className="admin-main-content"
+          tabIndex={-1}
+          style={{ flex: 1, overflowY: "auto" }}
+        >
           {children}
         </main>
+        <footer className="admin-footer">MySakinahPro Admin</footer>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

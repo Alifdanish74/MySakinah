@@ -44,6 +44,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
   // Fetch submissions for this module
   let submissions: any[] = [];
+  let submissionsLoadFailed = false;
   try {
     const { data, error } = await supabase
       .from("submissions")
@@ -51,11 +52,15 @@ export default async function ModulePage({ params }: ModulePageProps) {
       .eq("module_id", currentModule.id)
       .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      submissions = data;
+    if (error) {
+      console.error(`Failed to load submissions for module ${moduleSlug}`, error);
+      submissionsLoadFailed = true;
+    } else {
+      submissions = data ?? [];
     }
-  } catch {
-    submissions = [];
+  } catch (error) {
+    console.error(`Failed to load submissions for module ${moduleSlug}`, error);
+    submissionsLoadFailed = true;
   }
 
   async function handleRefresh() {
@@ -73,10 +78,10 @@ export default async function ModulePage({ params }: ModulePageProps) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.25rem" }}>
         <div>
           <h2 style={{ fontSize: "1.375rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
-            {currentModule.display_name} Data Records
+            {currentModule.display_name} submissions
           </h2>
           <p style={{ fontSize: "0.875rem", color: "var(--color-admin-text-muted)", marginTop: 2 }}>
-            Viewing real-time enquiry entries and form responses
+            Review enquiry entries and form responses.
           </p>
         </div>
       </div>
@@ -88,6 +93,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
         onRefresh={handleRefresh}
         moduleName={currentModule.display_name}
         moduleSlug={moduleSlug}
+        loadError={submissionsLoadFailed ? "Submissions could not be loaded. Try again." : null}
       />
     </DashboardShell>
   );

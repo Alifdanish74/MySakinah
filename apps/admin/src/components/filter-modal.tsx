@@ -3,8 +3,9 @@
 // Advanced filter modal for Admin Dashboard submission table
 
 import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { X, SlidersHorizontal, RotateCcw, Check } from "lucide-react";
+import { useDialogAccessibility } from "@/lib/use-dialog-accessibility";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface FilterState {
@@ -70,20 +71,17 @@ interface FilterModalProps {
   /** Pass module-specific option lists */
   negeriOptions: string[];
   pakejOptions: string[];
+  statusOptions: string[];
 }
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
-function Label({ children }: { children: React.ReactNode }) {
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label style={{ display: "block", fontSize: "0.75rem", fontWeight: 600,
-      color: "var(--color-admin-text-muted)", marginBottom: 4 }}>
+    <label className="form-field">
+      <span className="form-label">{label}</span>
       {children}
     </label>
   );
-}
-
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  return <div><Label>{label}</Label>{children}</div>;
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -100,8 +98,10 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export function FilterModal({
-  isOpen, onClose, current, onApply, negeriOptions, pakejOptions,
+  isOpen, onClose, current, onApply, negeriOptions, pakejOptions, statusOptions,
 }: FilterModalProps) {
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useDialogAccessibility(isOpen, onClose);
   const [draft, setDraft] = useState<FilterState>(current);
   const currentRef = useRef(current);
   currentRef.current = current;
@@ -143,10 +143,15 @@ export function FilterModal({
           onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
         >
           <motion.div
-            initial={{ opacity: 0, x: 40, scale: 0.97 }}
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="filter-modal-title"
+            tabIndex={-1}
+            initial={reduceMotion ? false : { opacity: 0, x: 24 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: 40, scale: 0.97 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            exit={reduceMotion ? undefined : { opacity: 0, x: 24 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
             className="glass-card"
             style={{
               width: "100%", maxWidth: 460, maxHeight: "calc(100vh - 6rem)",
@@ -160,7 +165,7 @@ export function FilterModal({
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
                 <SlidersHorizontal size={16} style={{ color: "var(--color-admin-primary)" }} />
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
+                <h3 id="filter-modal-title" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
                   Filter Rekod
                 </h3>
                 {activeCount > 0 && (
@@ -172,9 +177,9 @@ export function FilterModal({
                   }}>{activeCount}</span>
                 )}
               </div>
-              <button id="close-filter-modal" onClick={onClose} className="btn-ghost"
-                style={{ padding: "0.375rem" }} aria-label="Close filter">
-                <X size={16} />
+              <button id="close-filter-modal" type="button" onClick={onClose} className="btn-ghost"
+                style={{ width: 44, minWidth: 44, height: 44, justifyContent: "center", padding: 0 }} aria-label="Close filter">
+                <X size={16} aria-hidden="true" />
               </button>
             </div>
 
@@ -199,19 +204,17 @@ export function FilterModal({
               <Field label="Status">
                 <select id="filter-status" value={draft.status}
                   onChange={(e) => set("status", e.target.value)} className="form-input">
-                  <option value="">— Semua —</option>
-                  <option value="pending">Pending</option>
-                  <option value="reviewed">Reviewed</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="completed">Completed</option>
-                  <option value="archived">Archived</option>
+                  <option value="">Semua</option>
+                  {statusOptions.map((status) => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
                 </select>
               </Field>
               <Field label="Pakej">
                 {pakejOptions.length > 0 ? (
                   <select id="filter-pakej" value={draft.pakej}
                     onChange={(e) => set("pakej", e.target.value)} className="form-input">
-                    <option value="">— Semua —</option>
+                    <option value="">Semua</option>
                     {pakejOptions.map((p) => (
                       <option key={p} value={p}>{p}</option>
                     ))}
@@ -230,7 +233,7 @@ export function FilterModal({
               {negeriOptions.length > 0 ? (
                 <select id="filter-negeri" value={draft.negeri}
                   onChange={(e) => set("negeri", e.target.value)} className="form-input">
-                  <option value="">— Semua Negeri —</option>
+                  <option value="">Semua negeri</option>
                   {negeriOptions.map((n) => (
                     <option key={n} value={n}>{n}</option>
                   ))}
@@ -244,67 +247,61 @@ export function FilterModal({
 
             {/* ── Umur ────────────────────────────────────────────────────── */}
             <SectionTitle>Umur</SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
-              <input id="filter-umur-min" type="number" min={0} max={120}
-                value={draft.umurMin}
-                onChange={(e) => set("umurMin", e.target.value)}
-                placeholder="Min" className="form-input" />
-              <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>hingga</span>
-              <input id="filter-umur-max" type="number" min={0} max={120}
-                value={draft.umurMax}
-                onChange={(e) => set("umurMax", e.target.value)}
-                placeholder="Max" className="form-input" />
+            <div className="date-range-grid">
+              <Field label="Umur minimum">
+                <input id="filter-umur-min" type="number" min={0} max={120}
+                  value={draft.umurMin}
+                  onChange={(e) => set("umurMin", e.target.value)}
+                  className="form-input" />
+              </Field>
+              <Field label="Umur maksimum">
+                <input id="filter-umur-max" type="number" min={0} max={120}
+                  value={draft.umurMax}
+                  onChange={(e) => set("umurMax", e.target.value)}
+                  className="form-input" />
+              </Field>
             </div>
 
             {/* ── Tarikh Daftar ───────────────────────────────────────────── */}
             <SectionTitle>Tarikh Daftar</SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
-              <div>
-                <Label>Dari</Label>
+            <div className="date-range-grid">
+              <Field label="Dari">
                 <input id="filter-tarikh-from" type="date" value={draft.tarikhFrom}
                   onChange={(e) => set("tarikhFrom", e.target.value)} className="form-input" />
-              </div>
-              <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", marginTop: 20 }}>—</span>
-              <div>
-                <Label>Hingga</Label>
+              </Field>
+              <Field label="Hingga">
                 <input id="filter-tarikh-to" type="date" value={draft.tarikhTo}
                   min={draft.tarikhFrom || undefined}
                   onChange={(e) => set("tarikhTo", e.target.value)} className="form-input" />
-              </div>
+              </Field>
             </div>
 
             {/* ── Tempoh Keahlian ─────────────────────────────────────────── */}
             <SectionTitle>Tempoh Keahlian </SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
-              <div>
-                <Label>Dari</Label>
+            <div className="date-range-grid">
+              <Field label="Dari">
                 <input id="filter-tk-from" type="date" value={draft.tkFrom}
                   onChange={(e) => set("tkFrom", e.target.value)} className="form-input" />
-              </div>
-              <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", marginTop: 20 }}>—</span>
-              <div>
-                <Label>Hingga</Label>
+              </Field>
+              <Field label="Hingga">
                 <input id="filter-tk-to" type="date" value={draft.tkTo}
                   min={draft.tkFrom || undefined}
                   onChange={(e) => set("tkTo", e.target.value)} className="form-input" />
-              </div>
+              </Field>
             </div>
 
             {/* ── Tempoh Manfaat ───────────────────────────────────────────── */}
             <SectionTitle>Tempoh Manfaat </SectionTitle>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
-              <div>
-                <Label>Dari</Label>
+            <div className="date-range-grid">
+              <Field label="Dari">
                 <input id="filter-tm-from" type="date" value={draft.tmFrom}
                   onChange={(e) => set("tmFrom", e.target.value)} className="form-input" />
-              </div>
-              <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", marginTop: 20 }}>—</span>
-              <div>
-                <Label>Hingga</Label>
+              </Field>
+              <Field label="Hingga">
                 <input id="filter-tm-to" type="date" value={draft.tmTo}
                   min={draft.tmFrom || undefined}
                   onChange={(e) => set("tmTo", e.target.value)} className="form-input" />
-              </div>
+              </Field>
             </div>
 
             {/* ── Actions ─────────────────────────────────────────────────── */}

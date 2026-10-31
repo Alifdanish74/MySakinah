@@ -3,14 +3,15 @@
 // Data table for listing module submissions aligned with CONTOH EXCEL JEMPUTAN (1).xlsx
 
 import { useState, useRef, useEffect, useMemo } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import type { Submission } from "@/lib/types";
 import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay, formatIC, formatPhone } from "@/lib/utils";
 import { EditModal } from "./edit-modal";
 import { DeleteDialog } from "./delete-dialog";
 import { FilterModal, type FilterState, EMPTY_FILTER, countActiveFilters } from "./filter-modal";
-import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, ChevronLeft, ChevronRight, Search, Download, FileSpreadsheet, SlidersHorizontal, X as XIcon } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, Download, FileSpreadsheet, SlidersHorizontal, X as XIcon } from "lucide-react";
 import { clsx } from "clsx";
+import { useRouter } from "next/navigation";
 
 interface SubmissionTableProps {
   submissions: Submission[];
@@ -18,11 +19,12 @@ interface SubmissionTableProps {
   onRefresh: () => void;
   moduleName?: string;
   moduleSlug?: string;
+  loadError?: string | null;
 }
 
 const PAGE_SIZE = 20;
 
-// Column definitions — generic modules (KOHASiL, KOPETRO, KRTB, KOTAMAS)
+// Column definitions: generic modules (KOHASiL, KOPETRO, KRTB, KOTAMAS)
 const COLS = [
   { label: "NO", center: true },
   { label: "NAMA", center: false },
@@ -69,7 +71,8 @@ const ALBARZAH_COLS = [
   { label: "STATUS", center: false },
 ] as const;
 
-export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, moduleSlug }: SubmissionTableProps) {
+export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, moduleSlug, loadError }: SubmissionTableProps) {
+  const router = useRouter();
   const isAlbarzah = moduleSlug === "albarzah";
   const activeCols = isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
@@ -90,10 +93,15 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     const set = new Set<string>();
     submissions.forEach((s) => {
       const n = getNegeriDisplay(s.form_data || {});
-      if (n && n !== "—") set.add(n);
+      if (n && n !== "N/A") set.add(n);
     });
     return Array.from(set).sort();
   }, [submissions]);
+
+  const statusOptions = useMemo(
+    () => Array.from(new Set(submissions.map((submission) => submission.status))).sort(),
+    [submissions],
+  );
 
   function handleApplyFilter(f: FilterState) {
     setFilters({ ...f, search });
@@ -125,16 +133,16 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     setColWidths(ths.map((th) => Math.ceil(th.getBoundingClientRect().width)));
   }, [colWidths]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function onResizeStart(colIdx: number, e: React.MouseEvent) {
+  function onResizeStart(colIdx: number, e: React.PointerEvent) {
     if (!colWidths) return;
     e.preventDefault();
     dragState.current = { colIdx, startX: e.clientX, startW: colWidths[colIdx] };
 
-    function onMouseMove(ev: MouseEvent) {
+    function onPointerMove(ev: PointerEvent) {
       if (!dragState.current) return;
       const { colIdx, startX, startW } = dragState.current;
       const delta = ev.clientX - startX;
-      const newW = Math.max(40, startW + delta);
+      const newW = Math.max(40, Math.min(1200, startW + delta));
       setColWidths((prev) => {
         if (!prev) return prev;
         const next = [...prev];
@@ -142,13 +150,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         return next;
       });
     }
-    function onMouseUp() {
+    function onPointerUp() {
       dragState.current = null;
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
     }
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
   }
   // ──────────────────────────────────────────────────────────
 
@@ -311,8 +319,22 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
+  if (loadError) {
+    return (
+      <section className="error-state" role="alert" aria-labelledby="submission-load-error-title">
+        <h3 id="submission-load-error-title" style={{ margin: "0 0 0.375rem", color: "var(--color-admin-text)" }}>
+          Unable to load submissions
+        </h3>
+        <p style={{ margin: "0 0 1rem" }}>{loadError}</p>
+        <button type="button" className="btn-ghost" onClick={() => router.refresh()}>
+          Try again
+        </button>
+      </section>
+    );
+  }
+
   function formatDate(iso: string) {
-    if (!iso) return "—";
+    if (!iso) return "N/A";
     const d = new Date(iso);
     if (isNaN(d.getTime())) return iso;
     return d.toLocaleDateString("en-MY", {
@@ -361,8 +383,8 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const telefon_waris = fd.telefonWaris || fd.telefon_waris || "";
       const alamat1 = fd.alamat1 || fd.alamat || "";
       const alamat2 = fd.alamat2 || "";
-      const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
-      const negeri = getNegeriDisplay(fd) === "—" ? "" : getNegeriDisplay(fd);
+      const poskod = getPoskodDisplay(fd) === "N/A" ? "" : getPoskodDisplay(fd);
+      const negeri = getNegeriDisplay(fd) === "N/A" ? "" : getNegeriDisplay(fd);
       const tk = s.tempoh_keahlian || "";
       const tkParts = tk.split(" - ").map((p: string) => p.trim());
       const tempoh_keahlian = tk
@@ -374,7 +396,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         no,
         `"${nama.replace(/"/g, '""')}"`,
         `="${no_kp}"`,   // ="..." forces Excel to treat as text, prevents 9.00E+11 notation
-        `"${umur === "—" ? "" : umur}"`,
+        `"${umur === "N/A" ? "" : umur}"`,
         `"${kategori}"`,
         `"${pakej}"`,
         `"${utama.replace(/"/g, '""')}"`,
@@ -447,16 +469,16 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "";
       const tel_perkenalkan = fd.telefonPerkenalkan || fd.telefon_perkenalkan || "";
       const alamat = fd.alamat1 || fd.alamat || "";
-      const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
+      const poskod = getPoskodDisplay(fd) === "N/A" ? "" : getPoskodDisplay(fd);
       const daerah = fd.alamat3 || fd.daerah || "";
-      const negeri = getNegeriDisplay(fd) === "—" ? "" : getNegeriDisplay(fd);
+      const negeri = getNegeriDisplay(fd) === "N/A" ? "" : getNegeriDisplay(fd);
 
       return [
         `"${tarikh_daftar}"`,
         `"${tarikh_mohon}"`,
         `"${nama.replace(/"/g, '""')}"`,
         `="${no_kp}"`,
-        `"${umur === "—" ? "" : umur}"`,
+        `"${umur === "N/A" ? "" : umur}"`,
         `"${no_telefon}"`,
         `"${pakej}"`,
         `"${nama_waris.replace(/"/g, '""')}"`,
@@ -528,11 +550,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               }),
             }}
           >
-            <SlidersHorizontal size={15} />
+            <SlidersHorizontal size={15} aria-hidden="true" />
             <span>Filter</span>
             {countActiveFilters(filters) > 0 && (
               <span style={{
-                background: "rgba(255,255,255,0.25)", borderRadius: "999px",
+                background: "var(--color-admin-primary-soft)",
+                color: "var(--color-admin-primary-strong)",
+                borderRadius: "var(--radius-sm)",
                 fontSize: "0.6875rem", fontWeight: 700, padding: "0.05rem 0.45rem",
               }}>{countActiveFilters(filters)}</span>
             )}
@@ -550,9 +574,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               color: "var(--color-admin-text)",
             }}
           >
-            <FileSpreadsheet size={16} style={{ color: "var(--color-admin-accent)" }} />
+            <FileSpreadsheet size={16} aria-hidden="true" style={{ color: "var(--color-admin-accent)" }} />
             <span>Export CSV</span>
-            <Download size={14} style={{ opacity: 0.7 }} />
+            <Download size={14} aria-hidden="true" style={{ opacity: 0.7 }} />
           </button>
 
         </div>
@@ -581,40 +605,38 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               Active filters:
             </span>
             {chips.map(({ key, label }) => (
-              <motion.span
+              <span
                 key={key}
-                initial={{ opacity: 0, scale: 0.85 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.85 }}
                 style={{
                   display: "inline-flex", alignItems: "center", gap: "0.25rem",
-                  background: "rgba(99,102,241,0.15)",
-                  border: "1px solid rgba(99,102,241,0.4)",
+                  background: "var(--color-admin-primary-soft)",
+                  border: "1px solid var(--color-admin-border-bright)",
                   color: "var(--color-admin-primary)",
-                  borderRadius: "999px",
+                  borderRadius: "var(--radius-sm)",
                   fontSize: "0.7rem", fontWeight: 600,
                   padding: "0.2rem 0.5rem 0.2rem 0.625rem",
                 }}
               >
                 {label}
                 <button
+                  type="button"
+                  className="filter-chip-remove"
                   onClick={() => clearOneFilter(key)}
                   style={{
-                    background: "none", border: "none", cursor: "pointer",
-                    padding: 0, lineHeight: 1, color: "inherit", opacity: 0.7,
+                    color: "inherit",
                   }}
                   aria-label={`Remove ${label} filter`}
                 >
-                  <XIcon size={11} />
+                  <XIcon size={14} aria-hidden="true" />
                 </button>
-              </motion.span>
+              </span>
             ))}
             <button
+              type="button"
+              className="filter-clear-all"
               onClick={() => { setFilters(EMPTY_FILTER); setSearch(""); setPage(1); }}
               style={{
-                background: "none", border: "none", cursor: "pointer",
-                fontSize: "0.7rem", color: "var(--color-admin-text-muted)",
-                textDecoration: "underline", padding: "0.1rem 0.25rem",
+                cursor: "pointer",
               }}
             >
               Clear all
@@ -627,6 +649,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       <div
         ref={topScrollRef}
         onScroll={onTopScroll}
+        aria-hidden="true"
         style={{
           overflowX: "auto",
           overflowY: "hidden",
@@ -643,6 +666,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         ref={tableWrapperRef}
         onScroll={onBottomScroll}
         className="surface"
+        role="region"
+        aria-label={`${moduleName || "Module"} submissions`}
+        tabIndex={0}
         style={{
           overflowX: "auto",
           overflowY: "auto",
@@ -662,20 +688,23 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
             tableLayout: colWidths ? "fixed" : "auto",
           }}
         >
-          {/* colgroup — only rendered after widths are measured */}
+          <caption className="sr-only">
+            {moduleName || "Module"} submissions
+          </caption>
+          {/* colgroup rendered after widths are measured */}
           {colWidths && (
             <colgroup>
               {activeCols.map((_, i) => (
                 <col key={i} style={{ width: colWidths[i] }} />
               ))}
-              {canEdit && <col style={{ width: 90 }} />}
+              {canEdit && <col style={{ width: 128 }} />}
             </colgroup>
           )}
           <thead>
             <tr
               ref={theadRowRef}
               style={{
-                background: "rgba(15, 23, 42, 0.95)",
+                background: "var(--color-admin-surface-2)",
                 borderBottom: "1px solid var(--color-admin-border)",
                 position: "sticky",
                 top: 0,
@@ -702,26 +731,46 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                   {col.label}
                   {colWidths && (
                     <span
-                      onMouseDown={(e) => onResizeStart(i, e)}
-                      title="Drag to resize"
+                      role="separator"
+                      aria-orientation="vertical"
+                      aria-valuemin={40}
+                      aria-valuemax={1200}
+                      aria-valuenow={colWidths[i]}
+                      aria-label={`Resize ${col.label} column`}
+                      tabIndex={0}
+                      onPointerDown={(e) => onResizeStart(i, e)}
+                      onKeyDown={(event) => {
+                        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+                        event.preventDefault();
+                        const delta = event.key === "ArrowRight" ? 16 : -16;
+                        setColWidths((previous) => {
+                          if (!previous) return previous;
+                          const next = [...previous];
+                          next[i] = Math.max(40, Math.min(1200, next[i] + delta));
+                          return next;
+                        });
+                      }}
+                      title="Drag or use arrow keys to resize"
+                      className="column-resizer"
                       style={{
                         position: "absolute",
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                        width: 6,
+                        right: -22,
+                        top: "50%",
+                        width: 44,
+                        height: 44,
+                        transform: "translateY(-50%)",
+                        display: "grid",
+                        placeItems: "center",
+                        border: 0,
+                        padding: 0,
+                        color: "var(--color-admin-primary)",
                         cursor: "col-resize",
-                        background: "transparent",
-                        transition: "background 0.15s",
+                        touchAction: "none",
                         zIndex: 1,
                       }}
-                      onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = "rgba(99,102,241,0.5)";
-                      }}
-                      onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLElement).style.background = "transparent";
-                      }}
-                    />
+                    >
+                      <span aria-hidden="true" className="column-resizer-mark" />
+                    </span>
                   )}
                 </th>
               ))}
@@ -729,7 +778,6 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
             </tr>
           </thead>
           <tbody>
-            <AnimatePresence mode="popLayout">
               {paginated.length === 0 && (
                 <tr>
                   <td
@@ -742,37 +790,33 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               )}
               {paginated.map((s, i) => {
                 const fd = s.form_data || {};
-                const nama = fd.nama || s.submitted_by || "—";
+                const nama = fd.nama || s.submitted_by || "N/A";
                 const no_kp = formatIC(fd.no_kp || fd.ic || fd.no_ic);
                 const umur = getUmurDisplay(fd);
                 const no_telefon = formatPhone(fd.no_telefon || fd.telefon || fd.phone);
                 const alamatStr = fd.alamat1 || fd.alamat || "";
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
-                const pakej = fd.pakej || "—";
+                const pakej = fd.pakej || "N/A";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
 
                 // ── Al-Barzah specific row ────────────────────────────────
                 if (isAlbarzah) {
-                  const nama_waris = fd.namaWaris || fd.nama_waris || "—";
-                  const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "—";
+                  const nama_waris = fd.namaWaris || fd.nama_waris || "N/A";
+                  const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "N/A";
                   const telefon_waris = formatPhone(fd.telefonWaris || fd.telefon_waris);
-                  const nama_kawan = fd.namaKawan || fd.nama_kawan || "—";
-                  const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "—";
-                  const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "—";
+                  const nama_kawan = fd.namaKawan || fd.nama_kawan || "N/A";
+                  const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "N/A";
+                  const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "N/A";
                   const tel_perkenalkan = formatPhone(fd.telefonPerkenalkan || fd.telefon_perkenalkan);
                   const tel_kawan = formatPhone(fd.telefonKawan || fd.telefon_kawan);
-                  const daerah = fd.alamat3 || fd.daerah || "—";
+                  const daerah = fd.alamat3 || fd.daerah || "N/A";
                   const tarikh_mohon = fd.tarikh_mohon || "";
 
                   return (
-                    <motion.tr
+                    <tr
                       key={s.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ delay: i * 0.02 }}
-                      style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                      style={{ borderBottom: "1px solid var(--color-admin-border)" }}
                     >
                       {/* 1. Tarikh Daftar */}
                       <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
@@ -780,10 +824,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
                       {/* 2. Tarikh Mohon */}
                       <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
-                        {tarikh_mohon || "—"}
+                        {tarikh_mohon || "N/A"}
                       </td>
                       {/* 3. Nama */}
-                      <td style={{ fontWeight: 600, color: "#ffffff" }}>{nama}</td>
+                      <td style={{ fontWeight: 600, color: "var(--color-admin-text)" }}>{nama}</td>
                       {/* 4. No KP */}
                       <td style={{ fontFamily: "monospace", color: "var(--color-admin-primary)", fontSize: "0.75rem" }}>
                         {no_kp}
@@ -843,11 +887,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>{negeriStr}</td>
                       {/* 18. Tempoh Keahlian */}
                       <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
-                        {s.tempoh_keahlian || "—"}
+                        {s.tempoh_keahlian || "N/A"}
                       </td>
                       {/* 19. Tempoh Manfaat */}
                       <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
-                        {s.tempoh_manfaat || "—"}
+                        {s.tempoh_manfaat || "N/A"}
                       </td>
                       {/* 20. Status */}
                       {/* 20. Status */}
@@ -881,48 +925,44 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                               id={`edit-${s.id}`}
                               onClick={() => setEditingItem(s)}
                               className="btn-ghost"
-                              style={{ padding: "0.375rem 0.5rem", minHeight: 30 }}
-                              aria-label="Edit record"
+                              style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
+                              aria-label={`Edit ${nama}`}
                             >
-                              <Pencil size={13} />
+                              <Pencil size={16} aria-hidden="true" />
                             </button>
                             <button
                               id={`delete-${s.id}`}
                               onClick={() => setDeletingItem(s)}
                               className="btn-danger"
-                              style={{ padding: "0.375rem 0.5rem", minHeight: 30 }}
-                              aria-label="Delete record"
+                              style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
+                              aria-label={`Delete ${nama}`}
                             >
-                              <Trash2 size={13} />
+                              <Trash2 size={16} aria-hidden="true" />
                             </button>
                           </div>
                         </td>
                       )}
-                    </motion.tr>
+                    </tr>
                   );
                 }
 
                 // ── Generic modules row ───────────────────────────────────
                 const rowNo = fd.no || ((page - 1) * PAGE_SIZE + i + 1).toString();
                 const kategori = fd.kategori || fd.statusKeahlian || "AHLI";
-                const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "—");
-                const nama_waris = fd.namaWaris || fd.nama_waris || "—";
+                const no_ahli = fd.no_ahli || (fd.bukan_anggota ? "BUKAN ANGGOTA" : "N/A");
+                const nama_waris = fd.namaWaris || fd.nama_waris || "N/A";
                 const telefon_waris = formatPhone(fd.telefonWaris || fd.telefon_waris);
                 const utama = fd.utama || nama;
 
                 return (
-                  <motion.tr
+                  <tr
                     key={s.id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ delay: i * 0.02 }}
-                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                    style={{ borderBottom: "1px solid var(--color-admin-border)" }}
                   >
                     <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", fontWeight: 600 }}>
                       {rowNo}
                     </td>
-                    <td style={{ fontWeight: 600, color: "#ffffff" }}>
+                    <td style={{ fontWeight: 600, color: "var(--color-admin-text)" }}>
                       {nama}
                     </td>
                     <td style={{ fontFamily: "monospace", color: "var(--color-admin-primary)", fontSize: "0.75rem" }}>
@@ -933,36 +973,23 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     </td>
                     <td>
                       <span
+                        className={`category-badge ${
+                          kategori === "AHLI"
+                            ? "category-badge--member"
+                            : kategori === "PASANGAN"
+                              ? "category-badge--spouse"
+                              : kategori === "ANAK"
+                                ? "category-badge--child"
+                                : "category-badge--other"
+                        }`}
                         style={{
-                          display: "inline-block",
-                          padding: "0.15rem 0.5rem",
-                          borderRadius: "4px",
-                          fontSize: "0.6875rem",
-                          fontWeight: 700,
                           textTransform: "uppercase",
-                          backgroundColor:
-                            kategori === "AHLI"
-                              ? "rgba(59, 130, 246, 0.15)"
-                              : kategori === "PASANGAN"
-                                ? "rgba(236, 72, 153, 0.15)"
-                                : kategori === "ANAK"
-                                  ? "rgba(16, 185, 129, 0.15)"
-                                  : "rgba(245, 158, 11, 0.15)",
-                          color:
-                            kategori === "AHLI"
-                              ? "#60a5fa"
-                              : kategori === "PASANGAN"
-                                ? "#f472b6"
-                                : kategori === "ANAK"
-                                  ? "#34d399"
-                                  : "#fbbf24",
-                          border: "1px solid currentColor",
                         }}
                       >
                         {kategori}
                       </span>
                     </td>
-                    <td style={{ color: no_ahli === "BUKAN ANGGOTA" ? "#ef4444" : "var(--color-admin-text)" }}>
+                    <td style={{ color: no_ahli === "BUKAN ANGGOTA" ? "var(--color-admin-danger)" : "var(--color-admin-text)" }}>
                       {no_ahli}
                     </td>
                     <td>{no_telefon}</td>
@@ -994,7 +1021,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
                       {(() => {
                         const tk = s.tempoh_keahlian;
-                        if (!tk) return "—";
+                        if (!tk) return "N/A";
                         const parts = tk.split(" - ").map((p: string) => p.trim());
                         if (parts.length === 1 || !parts[1]) return `${parts[0]} - Hingga Tamat Perkhidmatan`;
                         return tk;
@@ -1002,7 +1029,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     </td>
                     {/* Tempoh Manfaat */}
                     <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
-                      {s.tempoh_manfaat || "—"}
+                      {s.tempoh_manfaat || "N/A"}
                     </td>
                     <td>
                       {/* Map new status values to badge classes */}
@@ -1027,33 +1054,32 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       })()}
                     </td>
                     {canEdit && (
-                      <td style={{ textAlign: "right" }}>
-                        <div style={{ display: "flex", gap: "0.375rem", justifyContent: "flex-end" }}>
+                      <td style={{ textAlign: "center" }}>
+                        <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
                           <button
                             id={`edit-${s.id}`}
                             onClick={() => setEditingItem(s)}
                             className="btn-ghost"
-                            style={{ padding: "0.375rem 0.5rem", minHeight: 30 }}
-                            aria-label="Edit record"
+                            style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
+                            aria-label={`Edit ${nama}`}
                           >
-                            <Pencil size={13} />
+                            <Pencil size={16} aria-hidden="true" />
                           </button>
                           <button
                             id={`delete-${s.id}`}
                             onClick={() => setDeletingItem(s)}
                             className="btn-danger"
-                            style={{ padding: "0.375rem 0.5rem", minHeight: 30 }}
-                            aria-label="Delete record"
+                            style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
+                            aria-label={`Delete ${nama}`}
                           >
-                            <Trash2 size={13} />
+                            <Trash2 size={16} aria-hidden="true" />
                           </button>
                         </div>
                       </td>
                     )}
-                  </motion.tr>
+                  </tr>
                 );
               })}
-            </AnimatePresence>
           </tbody>
         </table>
       </div>
@@ -1070,7 +1096,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1}
               className="btn-ghost"
-              style={{ padding: "0.5rem", minHeight: 36 }}
+              style={{ padding: "0.5rem", minHeight: 44, minWidth: 44 }}
               aria-label="Previous page"
             >
               <ChevronLeft size={16} />
@@ -1080,7 +1106,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
               className="btn-ghost"
-              style={{ padding: "0.5rem", minHeight: 36 }}
+              style={{ padding: "0.5rem", minHeight: 44, minWidth: 44 }}
               aria-label="Next page"
             >
               <ChevronRight size={16} />
@@ -1096,6 +1122,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         onApply={handleApplyFilter}
         negeriOptions={negeriOptions}
         pakejOptions={pakejOptions}
+        statusOptions={statusOptions}
       />
 
       {/* Modals */}

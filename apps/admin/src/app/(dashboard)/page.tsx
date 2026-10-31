@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getUserRole, getAccessibleModules } from "@/lib/auth";
 import { DashboardShell } from "@/components/dashboard-shell";
 import { ModuleCard } from "@/components/module-card";
-import { LayoutGrid, Layers, FileText, Activity } from "lucide-react";
+import { LayoutGrid, Layers, FileText } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -24,108 +24,105 @@ export default async function AdminHomePage() {
   const roleInfo = await getUserRole(user.id);
   const modules  = await getAccessibleModules(user.id);
 
-  // Fetch submission counts for each module
+  // Keep failed counts distinct from a genuine zero.
   const modulesWithCounts = await Promise.all(
     modules.map(async (mod) => {
       try {
-        const { count } = await supabase
+        const { count, error } = await supabase
           .from("submissions")
           .select("*", { count: "exact", head: true })
           .eq("module_id", mod.id);
 
+        if (error) {
+          console.error(`Failed to load submission count for module ${mod.slug}`, error);
+          return { ...mod, submission_count: null };
+        }
+
         return { ...mod, submission_count: count ?? 0 };
-      } catch {
-        return { ...mod, submission_count: 0 };
+      } catch (error) {
+        console.error(`Failed to load submission count for module ${mod.slug}`, error);
+        return { ...mod, submission_count: null };
       }
     })
   );
 
-  const totalSubmissions = modulesWithCounts.reduce(
-    (acc, item) => acc + (item.submission_count || 0),
-    0
-  );
+  const hasCountErrors = modulesWithCounts.some((item) => item.submission_count === null);
+  const totalSubmissions = hasCountErrors
+    ? null
+    : modulesWithCounts.reduce((acc, item) => acc + (item.submission_count ?? 0), 0);
+  const roleLabel = roleInfo?.role === "super"
+    ? "Super Admin"
+    : roleInfo?.role || "Viewer";
 
   return (
-    <DashboardShell modules={modules} userRole={roleInfo} title="Overview Dashboard">
-      {/* Welcome Banner */}
-      <div
-        className="surface"
-        style={{
-          padding: "1.75rem",
-          borderRadius: "var(--radius-xl)",
-          marginBottom: "1.5rem",
-          position: "relative",
-          overflow: "hidden",
-          background: "linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)",
-          border: "1px solid rgba(59, 130, 246, 0.25)",
-        }}
-      >
-        <div style={{ position: "relative", zIndex: 2 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", padding: "0.25rem 0.75rem", borderRadius: "9999px", backgroundColor: "rgba(59, 130, 246, 0.2)", border: "1px solid rgba(59, 130, 246, 0.3)", marginBottom: "0.75rem" }}>
-            <Activity size={14} style={{ color: "var(--color-admin-primary)" }} />
-            <span style={{ fontSize: "0.75rem", fontWeight: 600, color: "var(--color-admin-primary)", letterSpacing: "0.05em" }}>
-              SYSTEM OPERATIONAL
-            </span>
-          </div>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#ffffff", marginBottom: "0.5rem" }}>
-            Welcome to MySakinah Admin
-          </h2>
-          <p style={{ fontSize: "0.875rem", color: "var(--color-admin-text-muted)", maxWidth: 600, lineHeight: 1.6 }}>
-            Select a module below to view, manage, and process real-time user enquiry submissions.
-          </p>
+    <DashboardShell modules={modules} userRole={roleInfo} title="Overview">
+      <section className="overview-heading" aria-labelledby="overview-title">
+        <div>
+          <h2 id="overview-title">Membership submissions</h2>
+          <p>Review enquiries and manage records across your assigned modules.</p>
         </div>
-      </div>
+      </section>
 
-      {/* Quick Metrics Bar */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem", marginBottom: "1.5rem" }}>
-        <div className="surface" style={{ padding: "1.25rem", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: "1rem" }}>
-          <div style={{ padding: "0.875rem", borderRadius: "var(--radius-md)", backgroundColor: "rgba(59, 130, 246, 0.12)", color: "var(--color-admin-primary)" }}>
-            <Layers size={22} />
+      {hasCountErrors && (
+        <p className="error-state" role="alert" style={{ marginBottom: "1rem" }}>
+          Some submission counts could not be loaded. Reload this page to try again.
+        </p>
+      )}
+
+      <section className="metric-grid" aria-label="Overview metrics">
+        <div className="metric-card">
+          <div className="metric-icon">
+            <Layers size={20} aria-hidden="true" />
           </div>
           <div>
-            <p style={{ fontSize: "0.8125rem", color: "var(--color-admin-text-muted)", fontWeight: 500 }}>Active Modules</p>
-            <h4 style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--color-admin-text)", marginTop: 2 }}>{modules.length}</h4>
+            <p className="metric-label">Available modules</p>
+            <p className="metric-value">{modules.length}</p>
           </div>
         </div>
 
-        <div className="surface" style={{ padding: "1.25rem", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: "1rem" }}>
-          <div style={{ padding: "0.875rem", borderRadius: "var(--radius-md)", backgroundColor: "rgba(16, 185, 129, 0.12)", color: "var(--color-admin-accent)" }}>
-            <FileText size={22} />
+        <div className="metric-card">
+          <div className="metric-icon">
+            <FileText size={20} aria-hidden="true" />
           </div>
           <div>
-            <p style={{ fontSize: "0.8125rem", color: "var(--color-admin-text-muted)", fontWeight: 500 }}>Total Submissions</p>
-            <h4 style={{ fontSize: "1.5rem", fontWeight: 700, color: "var(--color-admin-text)", marginTop: 2 }}>{totalSubmissions}</h4>
+            <p className="metric-label">Total submissions</p>
+            <p className="metric-value">{totalSubmissions ?? "Unavailable"}</p>
           </div>
         </div>
 
-        <div className="surface" style={{ padding: "1.25rem", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: "1rem" }}>
-          <div style={{ padding: "0.875rem", borderRadius: "var(--radius-md)", backgroundColor: "rgba(245, 158, 11, 0.12)", color: "#f59e0b" }}>
-            <LayoutGrid size={22} />
+        <div className="metric-card">
+          <div className="metric-icon">
+            <LayoutGrid size={20} aria-hidden="true" />
           </div>
           <div>
-            <p style={{ fontSize: "0.8125rem", color: "var(--color-admin-text-muted)", fontWeight: 500 }}>Role Clearance</p>
-            <h4 style={{ fontSize: "1.25rem", fontWeight: 700, color: "var(--color-admin-text)", textTransform: "capitalize", marginTop: 2 }}>
-              {roleInfo?.role === "super" ? "Super Admin" : roleInfo?.role || "Viewer"}
-            </h4>
+            <p className="metric-label">Access level</p>
+            <p className="metric-value" style={{ fontSize: "1.125rem", textTransform: "capitalize" }}>
+              {roleLabel}
+            </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Module Cards Grid */}
-      <div style={{ marginBottom: "1rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h3 style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
-          Modules Directory
-        </h3>
-        <span style={{ fontSize: "0.8125rem", color: "var(--color-admin-text-muted)" }}>
-          Showing {modules.length} module{modules.length !== 1 ? "s" : ""}
-        </span>
-      </div>
+      <section aria-labelledby="modules-title">
+        <div style={{ marginBottom: "1rem", display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "1rem" }}>
+          <h3 id="modules-title" style={{ margin: 0, fontSize: "1.125rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
+            Modules
+          </h3>
+          <span style={{ fontSize: "0.8125rem", color: "var(--color-admin-text-muted)" }}>
+            {modules.length} available
+          </span>
+        </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "1.25rem" }}>
-        {modulesWithCounts.map((module) => (
-          <ModuleCard key={module.id} module={module} />
-        ))}
-      </div>
+        {modulesWithCounts.length > 0 ? (
+          <div className="module-grid">
+            {modulesWithCounts.map((module) => (
+              <ModuleCard key={module.id} module={module} />
+            ))}
+          </div>
+        ) : (
+          <p className="empty-state">No modules are assigned to your account. Contact an administrator for access.</p>
+        )}
+      </section>
     </DashboardShell>
   );
 }

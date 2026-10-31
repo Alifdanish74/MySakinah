@@ -3,9 +3,10 @@
 // Confirmation dialog for deleting a submission
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import type { Submission } from "@/lib/types";
+import { useDialogAccessibility } from "@/lib/use-dialog-accessibility";
 
 interface DeleteDialogProps {
   submission: Submission;
@@ -16,6 +17,8 @@ interface DeleteDialogProps {
 export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState<string | null>(null);
+  const reduceMotion = useReducedMotion();
+  const dialogRef = useDialogAccessibility(true, onClose);
 
   async function handleDelete() {
     setLoading(true);
@@ -32,8 +35,8 @@ export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogPro
       }
 
       onDeleted();
-    } catch (err: any) {
-      setError(err.message || "An unexpected error occurred");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "An unexpected error occurred");
     } finally {
       setLoading(false);
     }
@@ -49,14 +52,21 @@ export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogPro
         alignItems: "center",
         justifyContent: "center",
         padding: "1rem",
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
-        backdropFilter: "blur(4px)",
+        backgroundColor: "rgba(8, 24, 16, 0.48)",
+        backdropFilter: "blur(2px)",
       }}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 10 }}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+        tabIndex={-1}
+        initial={reduceMotion ? false : { opacity: 0, scale: 0.98, y: 8 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
+        exit={reduceMotion ? undefined : { opacity: 0, scale: 0.98, y: 8 }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 0.18 }}
         className="glass-card"
         style={{
           width: "100%",
@@ -66,7 +76,7 @@ export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogPro
           flexDirection: "column",
           gap: "1.25rem",
           borderRadius: "var(--radius-xl)",
-          border: "1px solid rgba(239, 68, 68, 0.3)",
+          border: "1px solid color-mix(in srgb, var(--color-admin-danger) 35%, transparent)",
         }}
       >
         <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
@@ -74,31 +84,31 @@ export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogPro
             style={{
               padding: "0.75rem",
               borderRadius: "50%",
-              backgroundColor: "rgba(239, 68, 68, 0.1)",
-              color: "#ef4444",
+              backgroundColor: "color-mix(in srgb, var(--color-admin-danger) 12%, var(--color-admin-surface))",
+              color: "var(--color-admin-danger)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               flexShrink: 0,
             }}
           >
-            <AlertTriangle size={24} />
+            <AlertTriangle size={24} aria-hidden="true" />
           </div>
           <div>
-            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--color-admin-text)" }}>
+            <h3 id="delete-dialog-title" style={{ fontSize: "1.125rem", fontWeight: 600, color: "var(--color-admin-text)" }}>
               Confirm Deletion
             </h3>
-            <p style={{ fontSize: "0.875rem", color: "var(--color-admin-text-muted)", marginTop: "0.375rem", lineHeight: 1.5 }}>
-              Are you sure you want to delete submission <code style={{ color: "#ef4444" }}>{submission.id.slice(0, 8)}...</code> submitted by <strong>{submission.submitted_by || "Anonymous"}</strong>?
+            <p id="delete-dialog-description" style={{ fontSize: "0.875rem", color: "var(--color-admin-text-muted)", marginTop: "0.375rem", lineHeight: 1.5 }}>
+              Are you sure you want to delete submission <code style={{ color: "var(--color-admin-danger)" }}>{submission.id.slice(0, 8)}...</code> submitted by <strong>{submission.submitted_by || "Anonymous"}</strong>?
             </p>
-            <p style={{ fontSize: "0.75rem", color: "#ef4444", marginTop: "0.5rem" }}>
+            <p style={{ fontSize: "0.75rem", color: "var(--color-admin-danger)", marginTop: "0.5rem" }}>
               This action cannot be undone.
             </p>
           </div>
         </div>
 
         {error && (
-          <div className="badge-danger" style={{ padding: "0.75rem", borderRadius: "var(--radius-md)" }}>
+          <div className="badge-danger" role="alert" style={{ padding: "0.75rem", borderRadius: "var(--radius-md)" }}>
             {error}
           </div>
         )}
@@ -119,9 +129,9 @@ export function DeleteDialog({ submission, onClose, onDeleted }: DeleteDialogPro
             onClick={handleDelete}
             disabled={loading}
             className="btn-danger"
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem" }}
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.625rem 1.25rem", minHeight: 44 }}
           >
-            {loading && <Loader2 size={16} className="animate-spin" />}
+            {loading && <Loader2 size={16} className="animate-spin" aria-hidden="true" />}
             <span>Delete Submission</span>
           </button>
         </div>
