@@ -312,9 +312,11 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                   min={tkStart || undefined}
                   onChange={(e) => setTkEnd(e.target.value)}
                   className="form-input"
-                  placeholder="Tiada tarikh tamat"
+                  placeholder={isAlbarzah ? "Tiada tarikh tamat" : "Hingga Tamat Perkhidmatan"}
+                  disabled={status !== "tamat"}
+                  style={{ opacity: status !== "tamat" ? 0.4 : 1, cursor: status !== "tamat" ? "not-allowed" : undefined }}
                 />
-                {tkEnd && (
+                {tkEnd && status === "tamat" && (
                   <button
                     type="button"
                     onClick={() => setTkEnd("")}
@@ -331,7 +333,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
             </div>
             {tkStart && (
               <p style={{ marginTop: 4, fontSize: "0.7rem", color: "var(--color-admin-text-muted)" }}>
-                {fromInputDate(tkStart)}{tkEnd ? ` - ${fromInputDate(tkEnd)}` : " (tiada tarikh tamat)"}
+                {fromInputDate(tkStart)}{tkEnd ? ` - ${fromInputDate(tkEnd)}` : isAlbarzah ? " (tiada tarikh tamat)" : " - Hingga Tamat Perkhidmatan"}
               </p>
             )}
           </div>
@@ -357,8 +359,10 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                   onChange={(e) => setTmEnd(e.target.value)}
                   className="form-input"
                   placeholder="Tiada tarikh tamat"
+                  disabled={status !== "tamat"}
+                  style={{ opacity: status !== "tamat" ? 0.4 : 1, cursor: status !== "tamat" ? "not-allowed" : undefined }}
                 />
-                {tmEnd && (
+                {tmEnd && status === "tamat" && (
                   <button
                     type="button"
                     onClick={() => setTmEnd("")}
@@ -441,7 +445,11 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                 <Field label="Kategori">
                   <select
                     id="kategori-select"
-                    value={fd("kategori") || "AHLI"}
+                    value={(() => {
+                      const raw = (fd("kategori") || "AHLI").toUpperCase();
+                      const match = raw.match(/^TAMBAHAN\s*\((.+)\)$/);
+                      return match ? match[1].trim() : raw;
+                    })()}
                     onChange={(e) => handleFieldChange("kategori", e.target.value)}
                     className="form-input"
                   >
@@ -449,8 +457,15 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                     <option value="PASANGAN">PASANGAN</option>
                     <option value="ANAK">ANAK</option>
                     <option value="IBU">IBU</option>
+                    <option value="BAPA">BAPA</option>
+                    <option value="IBU MERTUA">IBU MERTUA</option>
+                    <option value="BAPA MERTUA">BAPA MERTUA</option>
+                    <option value="ANAK (PAKEJ SENDIRI)">ANAK (PAKEJ SENDIRI)</option>
+                    <option value="ADIK">ADIK</option>
                     <option value="KAKAK">KAKAK</option>
                     <option value="ABANG">ABANG</option>
+                    <option value="BAPA SAUDARA">BAPA SAUDARA</option>
+                    <option value="IBU SAUDARA">IBU SAUDARA</option>
                   </select>
                 </Field>
 

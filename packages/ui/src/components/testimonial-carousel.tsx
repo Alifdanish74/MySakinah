@@ -287,7 +287,7 @@ export function TestimonialCarousel({
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={viewportOnce}
-          transition={{ duration: 0.65 }}
+          transition={{ duration: 5, delay: 0.2 }}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
           className="group relative max-w-xl mx-auto"

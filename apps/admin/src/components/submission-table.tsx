@@ -337,9 +337,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       "NAMA WARIS",
       "TELEFON WARIS",
       "ALAMAT 1",
-      "ALAMAT 2",
       "POSKOD",
       "NEGERI",
+      "TEMPOH KEAHLIAN",
+      "TEMPOH MANFAAT",
     ];
 
     const rows = filtered.map((s, index) => {
@@ -362,6 +363,12 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const alamat2 = fd.alamat2 || "";
       const poskod = getPoskodDisplay(fd) === "—" ? "" : getPoskodDisplay(fd);
       const negeri = getNegeriDisplay(fd) === "—" ? "" : getNegeriDisplay(fd);
+      const tk = s.tempoh_keahlian || "";
+      const tkParts = tk.split(" - ").map((p: string) => p.trim());
+      const tempoh_keahlian = tk
+        ? (tkParts.length === 1 || !tkParts[1] ? `${tkParts[0]} - Hingga Tamat Perkhidmatan` : tk)
+        : "";
+      const tempoh_manfaat = s.tempoh_manfaat || "";
 
       return [
         no,
@@ -379,9 +386,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         `"${nama_waris.replace(/"/g, '""')}"`,
         `"${telefon_waris}"`,
         `"${alamat1.replace(/"/g, '""')}"`,
-        `"${alamat2.replace(/"/g, '""')}"`,
         `"${poskod}"`,
         `"${negeri}"`,
+        `"${tempoh_keahlian}"`,
+        `"${tempoh_manfaat}"`,
       ].join(",");
     });
 
@@ -984,7 +992,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     </td>
                     {/* Tempoh Keahlian */}
                     <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
-                      {s.tempoh_keahlian || "—"}
+                      {(() => {
+                        const tk = s.tempoh_keahlian;
+                        if (!tk) return "—";
+                        const parts = tk.split(" - ").map((p: string) => p.trim());
+                        if (parts.length === 1 || !parts[1]) return `${parts[0]} - Hingga Tamat Perkhidmatan`;
+                        return tk;
+                      })()}
                     </td>
                     {/* Tempoh Manfaat */}
                     <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
@@ -1006,7 +1020,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         };
                         const badgeClass = statusMap[s.status] || "badge-new";
                         return (
-                          <span className={clsx("badge", badgeClass)}>
+                          <span className={clsx("badge", badgeClass)} style={{ textTransform: "capitalize" }}>
                             {s.status}
                           </span>
                         );

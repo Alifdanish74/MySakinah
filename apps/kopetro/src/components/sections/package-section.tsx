@@ -428,7 +428,7 @@ export function validateMalaysianIC(icString: string, isRequired: boolean = true
     return isRequired ? "Sila masukkan No. Kad Pengenalan" : null;
   }
   if (cleanIC.length !== 12) {
-    return "No. Kad Pengenalan mestilah 12 digit (cth: 001210-10-0267)";
+    return "No. Kad Pengenalan mestilah 12 digit (cth: 000000-00-0000)";
   }
 
   const yy = parseInt(cleanIC.substring(0, 2), 10);
@@ -1733,7 +1733,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             required={activeMemberTab === "ahli"}
                             value={currentMemberData.ic}
                             onChange={(e) => handleMemberFieldChange(activeMemberTab, "ic", e.target.value)}
-                            placeholder=" 001210-10-0267"
+                            placeholder=" 000000-00-0000"
                             maxLength={14}
                             className="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800"
                           />

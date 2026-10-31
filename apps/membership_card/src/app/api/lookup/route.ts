@@ -218,7 +218,7 @@ export async function POST(req: Request) {
                 noAhli: rawNoAhli,
                 pakej: fd.pakej || "Skim Perlindungan Sakinah",
                 skim: moduleName,
-                status: match.status === "rejected" ? "TIDAK AKTIF" : "AKTIF",
+                status: (match.status || "baru").toLowerCase(),
                 tarikhDaftar: fd.tarikh_daftar || new Date(match.created_at).toLocaleDateString("en-GB"),
                 tempohKeahlian: match.tempoh_keahlian || fd.tarikh_daftar || new Date(match.created_at).toLocaleDateString("en-GB"),
                 namaWaris: fd.namaWaris || fd.nama_waris || fd.waris || "-",

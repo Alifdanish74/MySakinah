@@ -51,7 +51,7 @@ export const enquirySchema = z.object({
       if (!val || val.trim() === "") return true;
       const cleanIC = val.replace(/\D/g, "");
       return cleanIC.length === 12;
-    }, "No. Kad Pengenalan mestilah 12 digit (cth: 001210-10-0267)"),
+    }, "No. Kad Pengenalan mestilah 12 digit (cth: 000000-00-0000)"),
   umur: z.string().optional(), // auto-computed from IC, display only
   alamat: z
     .string()

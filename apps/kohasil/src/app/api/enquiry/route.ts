@@ -81,7 +81,7 @@ export async function POST(request: Request) {
             alamat3: m.alamat3 || data.alamat3 || "-",
             poskod: data.poskod || "-",
             negeri: m.negeri || data.negeri || "-",
-            pakej: data.pakej,
+            pakej: key === "ahli" ? data.pakej : "INDIVIDU 10",
             tarikh_daftar: getMalaysiaDateString(),
             utama: mainName,
             namaWaris: data.namaWaris || "-",
