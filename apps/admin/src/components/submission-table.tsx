@@ -205,6 +205,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     if (!raw) return null;
     return parseDMY(raw.split(" - ")[0].trim());
   }
+  function tarikhKeahlianOf(raw?: string): string {
+    if (!raw) return "";
+    const startDate = raw.split(" - ")[0].trim();
+    return parseDMY(startDate) ? startDate : "";
+  }
 
   // ── Combined filter logic ────────────────────────────────────────────────
   const filtered = useMemo(() => {
@@ -361,6 +366,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       "ALAMAT 1",
       "POSKOD",
       "NEGERI",
+      "TARIKH KEAHLIAN",
       "TEMPOH KEAHLIAN",
       "TEMPOH MANFAAT",
     ];
@@ -386,6 +392,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const poskod = getPoskodDisplay(fd) === "N/A" ? "" : getPoskodDisplay(fd);
       const negeri = getNegeriDisplay(fd) === "N/A" ? "" : getNegeriDisplay(fd);
       const tk = s.tempoh_keahlian || "";
+      const tarikh_keahlian = tarikhKeahlianOf(tk);
       const tkParts = tk.split(" - ").map((p: string) => p.trim());
       const tempoh_keahlian = tk
         ? (tkParts.length === 1 || !tkParts[1] ? `${tkParts[0]} - Hingga Tamat Perkhidmatan` : tk)
@@ -410,6 +417,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         `"${alamat1.replace(/"/g, '""')}"`,
         `"${poskod}"`,
         `"${negeri}"`,
+        `"${tarikh_keahlian}"`,
         `"${tempoh_keahlian}"`,
         `"${tempoh_manfaat}"`,
       ].join(",");
@@ -447,6 +455,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       "POSKOD",
       "DAERAH/BANDAR",
       "NEGERI",
+      "TARIKH KEAHLIAN",
       "TEMPOH KEAHLIAN",
       "TEMPOH MANFAAT",
       "STATUS",
@@ -472,6 +481,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const poskod = getPoskodDisplay(fd) === "N/A" ? "" : getPoskodDisplay(fd);
       const daerah = fd.alamat3 || fd.daerah || "";
       const negeri = getNegeriDisplay(fd) === "N/A" ? "" : getNegeriDisplay(fd);
+      const tarikh_keahlian = tarikhKeahlianOf(s.tempoh_keahlian);
 
       return [
         `"${tarikh_daftar}"`,
@@ -492,6 +502,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         `"${poskod}"`,
         `"${daerah}"`,
         `"${negeri}"`,
+        `"${tarikh_keahlian}"`,
         `"${s.tempoh_keahlian || ""}"`,
         `"${s.tempoh_manfaat || ""}"`,
         `"${s.status}"`,

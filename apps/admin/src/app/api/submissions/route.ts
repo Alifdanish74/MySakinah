@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
         module_id: targetModuleId,
         form_data: enrichedFormData,
         submitted_by: submitted_by || enrichedFormData.nama || enrichedFormData.full_name || enrichedFormData.email || "Anonymous",
-        status: "pending",
+        status: "baru",
         created_at: getMalaysiaTimestamp(), // Capture submission time in Malaysia timezone (GMT+8)
       })
       .select()
