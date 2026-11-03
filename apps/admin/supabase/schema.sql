@@ -32,7 +32,7 @@ create table if not exists public.submissions (
   module_id        uuid not null references public.modules(id) on delete cascade,
   form_data        jsonb not null default '{}',       -- flexible per-module payload
   submitted_by     text,                              -- name or identifier from form
-  status           text not null default 'terima'    -- 'terima', 'proses', 'aktif', 'tak layak', 'lebih umur', 'meninggal'
+  status           text not null default 'baru'      -- New submissions start as 'baru'
                     check (status in ('terima', 'proses', 'aktif', 'tak layak', 'lebih umur', 'meninggal',
                                       'pending', 'new', 'reviewed', 'contacted', 'completed', 'archived')),
   notes            text,                              -- admin notes field
@@ -52,6 +52,7 @@ alter table public.submissions add constraint submissions_status_check
 -- Migration: add tempoh columns if they don't exist yet (safe for existing databases)
 alter table public.submissions add column if not exists tempoh_keahlian text;
 alter table public.submissions add column if not exists tempoh_manfaat  text;
+alter table public.submissions alter column status set default 'baru';
 
 -- NOTE: 'tarikh_mohon' for the Al-Barzah module is stored inside form_data JSONB
 -- (key: "tarikh_mohon"), following the same pattern as 'tarikh_daftar'.
@@ -217,4 +218,3 @@ cross join (
     ('CHIN SENG HUP', '{"no": "3", "nama": "CHIN SENG HUP", "no_kp": "785645330", "umur": "34", "kategori": "AHLI", "no_ahli": "345678", "bukan_anggota": "", "no_telefon": "019 887 7665", "alamat1": "LOT 12", "alamat2": "BANDAR JAYA", "poskod": "50000", "negeri": "WILAYAH PERSEKUTUAN", "pakej": "INDIVIDU 10", "tarikh_daftar": "8102026", "utama": "CHIN SENG HUP"}'::jsonb)
 ) as s(submitted_by, form_data)
 where m.slug = 'kohasil';
-

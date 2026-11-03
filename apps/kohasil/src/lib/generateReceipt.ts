@@ -348,7 +348,7 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setFontSize(7);
   doc.setTextColor(255, 255, 255);
   doc.text(
-    "Skim Khairat Kohasil Raudhah • Diuruskan oleh BJSB Sdn. Bhd. • Daftar Syarikat: 201801031648 (1295100-A)",
+    "Skim Khairat KOHASiL Raudhah • Diuruskan oleh BJSB Sdn. Bhd. • Daftar Syarikat: 201801031648 (1295100-A)",
     pageWidth / 2,
     pageHeight - 8,
     { align: "center" }

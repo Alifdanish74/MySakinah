@@ -242,7 +242,7 @@ export function IntroductionSection() {
           viewport={viewportOnce}
           transition={{ duration: 0.8, delay: 0.3 }}
         >
-          <OrnamentalDivider className="mt-14" label="Kohasil Raudhah" />
+          <OrnamentalDivider className="mt-14" label="KOHASiL Raudhah" />
         </motion.div>
       </ResponsiveContainer>
     </section>

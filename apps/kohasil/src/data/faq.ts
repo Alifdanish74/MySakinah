@@ -25,7 +25,7 @@ export const faqItems: FaqItem[] = [
     id: "khairat-masjid",
     question: "Saya sudah memiliki khairat kematian di surau / masjid tempatan, bagaimana?",
     answer:
-      "Pihak waris boleh mendapat kedua - dua manfaat khairat yang terlibat. Skim Kohasil Raudhah akan memberi bantuan tambahan jika diperlukan waris seperti bantuan kos yang mungkin tidak ditanggung oleh pihak surau / masjid tempatan seperti kos menggali kubur dan kos van jenazah untuk penghantaran jenazah ke luar kawasan / negeri.",
+      "Pihak waris boleh mendapat kedua - dua manfaat khairat yang terlibat. Skim KOHASiL Raudhah akan memberi bantuan tambahan jika diperlukan waris seperti bantuan kos yang mungkin tidak ditanggung oleh pihak surau / masjid tempatan seperti kos menggali kubur dan kos van jenazah untuk penghantaran jenazah ke luar kawasan / negeri.",
   },
   {
     id: "insurans-kemalangan",

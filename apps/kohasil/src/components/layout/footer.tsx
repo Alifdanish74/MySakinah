@@ -102,7 +102,7 @@ export function Footer() {
             color: "rgba(255,255,255,0.35)",
           }}
         >
-          <p>&copy; {year} Kohasil Raudhah. Hak cipta terpelihara.</p>
+          <p>&copy; {year} KOHASiL Raudhah. Hak cipta terpelihara.</p>
           <p>Dibangunkan untuk {BRAND.product}</p>
         </div>
       </ResponsiveContainer>

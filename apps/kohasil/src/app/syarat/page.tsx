@@ -64,7 +64,7 @@ export default function SyaratPage() {
 
         <SectionHeading
           title="Terma & Syarat Penyertaan"
-          subtitle="Syarat Penyertaan Skim & Syarat Tuntutan Manfaat Skim Khairat Kohasil Raudhah"
+          subtitle="Syarat Penyertaan Skim & Syarat Tuntutan Manfaat Skim Khairat KOHASiL Raudhah"
           align="center"
         />
 

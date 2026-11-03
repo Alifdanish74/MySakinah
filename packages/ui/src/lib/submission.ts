@@ -167,7 +167,7 @@ export async function saveSubmissionToDatabase({
             module_id: targetModuleId,
             form_data,
             submitted_by: submitted_by || form_data.nama || form_data.full_name || "Anonymous",
-            status: "pending",
+            status: "baru",
             created_at: getMalaysiaTimestamp(), // Capture submission time in Malaysia timezone (GMT+8)
           }),
         });
