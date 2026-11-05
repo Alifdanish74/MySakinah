@@ -8,6 +8,9 @@
     ".": "./src/index.ts",
     "./lib/*": "./src/lib/*.ts"
   },
+  "dependencies": {
+    "jspdf": "^4.2.1"
+  },
   "scripts": {
     "type-check": "tsc --noEmit"
   },

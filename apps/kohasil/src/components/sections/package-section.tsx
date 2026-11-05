@@ -9,7 +9,11 @@ import { FaMale, FaFemale } from "react-icons/fa";
 import { SECTION_IDS, BRAND } from "@/lib/constants";
 import { ResponsiveContainer } from "@sakinah/ui";
 import { SectionHeading } from "@sakinah/ui";
-import { generateReceiptPdf } from "@/lib/generateReceipt";
+import {
+  generateReceiptPdf,
+  generateReceiptReferenceNumber,
+  type ReceiptData,
+} from "@sakinah/ui/lib/kohasil-receipt";
 
 export interface PackageDetail {
   id: string;
@@ -562,6 +566,20 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [submittedReceipt, setSubmittedReceipt] = useState<ReceiptData | null>(null);
+  const [receiptDownloadError, setReceiptDownloadError] = useState("");
+
+  const handleReceiptDownload = () => {
+    if (!submittedReceipt) return;
+
+    try {
+      generateReceiptPdf(submittedReceipt);
+      setReceiptDownloadError("");
+    } catch (error) {
+      console.error("Receipt download error:", error);
+      setReceiptDownloadError("Surat pengesahan tidak dapat dimuat turun. Sila cuba lagi.");
+    }
+  };
 
   // Auto-close form modal 5 seconds after successful submission
   // useEffect(() => {
@@ -844,6 +862,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
     setFormStatus("loading");
     setErrorMessage("");
+    setReceiptDownloadError("");
 
     const ahli = membersData["ahli"] || {
       nama: "",
@@ -872,6 +891,30 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         }
       });
 
+      const submittedAt = new Date();
+      const receiptData: ReceiptData = {
+        referenceNumber: generateReceiptReferenceNumber(submittedAt),
+        packageName: selectedFormPackage?.name || "INDIVIDU 10",
+        packageCategory: selectedFormPackage?.category || "",
+        category: selectedFormPackage?.category || "",
+        monthlyFee: getCalculatedMonthlyFee(),
+        coverage: selectedFormPackage?.coverage || "",
+        ahli: {
+          nama: ahli.nama,
+          telefon: sanitizedAhliTelefon || "",
+          ic: sanitizedAhliIC || "",
+          alamat1: ahli.alamat1,
+          alamat2: ahli.alamat2,
+          alamat3: ahli.alamat3,
+          negeri: ahli.negeri,
+        },
+        namaWaris: warisData.namaWaris,
+        telefonWaris: sanitizedWarisTelefon || "",
+        statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
+        members: sanitizedMembers,
+        submittedAt,
+      };
+
       const response = await fetch("/kohasil/api/enquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -889,6 +932,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
           pakej: selectedFormPackage?.name || "INDIVIDU 10",
           persetujuan: true,
           members: sanitizedMembers,
+          receiptData,
         }),
       });
 
@@ -897,29 +941,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         throw new Error(errData?.error || "Ralat menghantar permohonan");
       }
 
-      // Auto-generate and download confirmation PDF
-      generateReceiptPdf({
-        packageName: selectedFormPackage?.name || "",
-        packageCategory: selectedFormPackage?.category || "",
-        category: selectedFormPackage?.category || "",
-        monthlyFee: getCalculatedMonthlyFee(),
-        coverage: selectedFormPackage?.coverage || "",
-        ahli: {
-          nama: ahli.nama,
-          telefon: sanitizedAhliTelefon,
-          ic: sanitizedAhliIC,
-          alamat1: ahli.alamat1,
-          alamat2: ahli.alamat2,
-          alamat3: ahli.alamat3,
-          negeri: ahli.negeri,
-        },
-        namaWaris: warisData.namaWaris,
-        telefonWaris: sanitizedWarisTelefon,
-        statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
-        members: sanitizedMembers,
-        submittedAt: new Date(),
-      });
-
+      setSubmittedReceipt(receiptData);
+      generateReceiptPdf(receiptData);
       setFormStatus("success");
     } catch (err: any) {
       console.error("Form submit error:", err);
@@ -1503,27 +1526,15 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               <FileText className="h-4 w-4 flex-shrink-0" />
                               Surat pengesahan PDF telah dimuat turun secara automatik.
                             </p>
+                            {receiptDownloadError && (
+                              <p role="alert" className="text-sm text-red-700">
+                                {receiptDownloadError}
+                              </p>
+                            )}
                             <button
                               type="button"
-                              onClick={() => {
-                                const ahli = membersData["ahli"] || { nama: "", telefon: "", ic: "", alamat1: "", alamat2: "", alamat3: "", negeri: "" };
-                                generateReceiptPdf({
-                                  packageName: selectedFormPackage.name,
-                                  packageCategory: selectedFormPackage.category,
-                                  category: selectedFormPackage.category,
-                                  monthlyFee: getCalculatedMonthlyFee(),
-                                  coverage: selectedFormPackage.coverage,
-                                  ahli: {
-                                    nama: ahli.nama, telefon: ahli.telefon, ic: ahli.ic,
-                                    alamat1: ahli.alamat1, alamat2: ahli.alamat2, alamat3: ahli.alamat3, negeri: ahli.negeri,
-                                  },
-                                  namaWaris: warisData.namaWaris,
-                                  telefonWaris: warisData.telefonWaris,
-                                  statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
-                                  members: membersData,
-                                  submittedAt: new Date(),
-                                });
-                              }}
+                              onClick={handleReceiptDownload}
+                              disabled={!submittedReceipt}
                               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-95"
                               style={{ background: "var(--color-brand-green)" }}
                             >
@@ -1559,7 +1570,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         <div className="space-y-4">
                           <div>
                             <h4 className="text-lg font-bold text-green-950 mb-1" style={{ fontFamily: "var(--font-heading)" }}>
-                              Pengisytiharan &amp; Pengesahan
+                              Pengesahan Kebenaran Potongan Gaji
                             </h4>
                             <p className="text-xs text-slate-500">
                               Sila semak pengisytiharan berikut sebelum menghantar permohonan {selectedFormPackage.name}.

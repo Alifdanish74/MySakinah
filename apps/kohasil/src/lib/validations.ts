@@ -1,6 +1,32 @@
 // File: src/lib/validations.ts
 import { z } from "zod";
 
+const receiptMemberSchema = z.object({
+  nama: z.string(),
+  telefon: z.string(),
+  ic: z.string(),
+  alamat1: z.string(),
+  alamat2: z.string(),
+  alamat3: z.string(),
+  negeri: z.string(),
+  jenisTanggungan: z.string().optional(),
+});
+
+const receiptDataSchema = z.object({
+  referenceNumber: z.string().min(1),
+  packageName: z.string().min(1),
+  packageCategory: z.string(),
+  monthlyFee: z.number().finite().nonnegative(),
+  coverage: z.string(),
+  ahli: receiptMemberSchema,
+  namaWaris: z.string(),
+  telefonWaris: z.string(),
+  statusKeahlian: z.string(),
+  members: z.record(z.string(), receiptMemberSchema),
+  submittedAt: z.iso.datetime(),
+  category: z.string(),
+});
+
 export const enquirySchema = z.object({
   nama: z
     .string()
@@ -39,6 +65,7 @@ export const enquirySchema = z.object({
       .optional()
       .default(true)
   ),
+  receiptData: receiptDataSchema.optional(),
 });
 
 export type EnquiryFormData = z.infer<typeof enquirySchema>;

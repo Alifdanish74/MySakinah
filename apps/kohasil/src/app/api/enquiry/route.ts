@@ -47,6 +47,7 @@ export async function POST(request: Request) {
     }
 
     const data = parsed.data as any;
+    const receiptData = parsed.data.receiptData;
     const membersData = body.members || {};
     const memberKeys = Object.keys(membersData);
 
@@ -89,6 +90,7 @@ export async function POST(request: Request) {
             jenisTanggungan: m.jenisTanggungan || "",
             lindungiIbuBapa: data.lindungiIbuBapa === "ya" ? "Ya (RM10/bln)" : "Tidak",
             kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+            ...(receiptData ? { receiptData } : {}),
           },
         });
       });
@@ -116,6 +118,7 @@ export async function POST(request: Request) {
         telefonWaris: data.telefonWaris || "-",
         lindungiIbuBapa: data.lindungiIbuBapa === "ya" ? "Ya (RM10/bln)" : "Tidak",
         kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+        ...(receiptData ? { receiptData } : {}),
       };
 
       submissionsToPost.push({

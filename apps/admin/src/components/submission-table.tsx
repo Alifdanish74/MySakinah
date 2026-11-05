@@ -12,6 +12,11 @@ import { FilterModal, type FilterState, EMPTY_FILTER, countActiveFilters } from 
 import { Pencil, Trash2, ChevronLeft, ChevronRight, Download, FileSpreadsheet, SlidersHorizontal, X as XIcon } from "lucide-react";
 import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
+import {
+  generateReceiptPdf,
+  type MemberInfo,
+  type ReceiptData,
+} from "@sakinah/ui/lib/kohasil-receipt";
 
 interface SubmissionTableProps {
   submissions: Submission[];
@@ -71,9 +76,75 @@ const ALBARZAH_COLS = [
   { label: "STATUS", center: false },
 ] as const;
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isReceiptMember(value: unknown): value is MemberInfo {
+  if (!isRecord(value)) return false;
+
+  return (
+    typeof value.nama === "string" &&
+    typeof value.telefon === "string" &&
+    typeof value.ic === "string" &&
+    typeof value.alamat1 === "string" &&
+    typeof value.alamat2 === "string" &&
+    typeof value.alamat3 === "string" &&
+    typeof value.negeri === "string" &&
+    (value.jenisTanggungan === undefined || typeof value.jenisTanggungan === "string")
+  );
+}
+
+function parseReceiptData(value: unknown): ReceiptData | null {
+  if (
+    !isRecord(value) ||
+    typeof value.referenceNumber !== "string" ||
+    typeof value.packageName !== "string" ||
+    typeof value.packageCategory !== "string" ||
+    typeof value.monthlyFee !== "number" ||
+    !Number.isFinite(value.monthlyFee) ||
+    typeof value.coverage !== "string" ||
+    !isReceiptMember(value.ahli) ||
+    typeof value.namaWaris !== "string" ||
+    typeof value.telefonWaris !== "string" ||
+    typeof value.statusKeahlian !== "string" ||
+    !isRecord(value.members) ||
+    typeof value.submittedAt !== "string" ||
+    typeof value.category !== "string"
+  ) {
+    return null;
+  }
+
+  const submittedAt = new Date(value.submittedAt);
+  if (Number.isNaN(submittedAt.getTime())) return null;
+
+  const members: Record<string, MemberInfo> = {};
+  for (const [key, member] of Object.entries(value.members)) {
+    if (!isReceiptMember(member)) return null;
+    members[key] = member;
+  }
+
+  return {
+    referenceNumber: value.referenceNumber,
+    packageName: value.packageName,
+    packageCategory: value.packageCategory,
+    monthlyFee: value.monthlyFee,
+    coverage: value.coverage,
+    ahli: value.ahli,
+    namaWaris: value.namaWaris,
+    telefonWaris: value.telefonWaris,
+    statusKeahlian: value.statusKeahlian,
+    members,
+    submittedAt,
+    category: value.category,
+  };
+}
+
 export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, moduleSlug, loadError }: SubmissionTableProps) {
   const router = useRouter();
   const isAlbarzah = moduleSlug === "albarzah";
+  const isKohasil = moduleSlug === "kohasil";
+  const showActions = canEdit || isKohasil;
   const activeCols = isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTER);
@@ -81,6 +152,20 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const [page, setPage] = useState(1);
   const [editingItem, setEditingItem] = useState<Submission | null>(null);
   const [deletingItem, setDeletingItem] = useState<Submission | null>(null);
+  const [receiptError, setReceiptError] = useState("");
+
+  function handleReceiptDownload(submission: Submission) {
+    const receiptData = parseReceiptData(submission.form_data?.receiptData);
+    if (!receiptData) return;
+
+    try {
+      generateReceiptPdf(receiptData);
+      setReceiptError("");
+    } catch (error) {
+      console.error(`Failed to generate receipt for submission ${submission.id}`, error);
+      setReceiptError("The receipt could not be generated. Please try again.");
+    }
+  }
 
   // Derive unique option lists from data for the filter dropdowns
   const pakejOptions = useMemo(() => {
@@ -657,6 +742,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       })()}
 
       {/* Top Mirror Scrollbar */}
+      {receiptError && (
+        <p role="alert" style={{ color: "var(--color-admin-danger)", margin: "0 0 0.75rem" }}>
+          {receiptError}
+        </p>
+      )}
       <div
         ref={topScrollRef}
         onScroll={onTopScroll}
@@ -708,7 +798,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               {activeCols.map((_, i) => (
                 <col key={i} style={{ width: colWidths[i] }} />
               ))}
-              {canEdit && <col style={{ width: 128 }} />}
+              {showActions && <col style={{ width: isKohasil ? (canEdit ? 240 : 136) : 128 }} />}
             </colgroup>
           )}
           <thead>
@@ -785,14 +875,14 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                   )}
                 </th>
               ))}
-              {canEdit && <th style={{ textAlign: "right" }}>ACTIONS</th>}
+              {showActions && <th style={{ textAlign: "right" }}>ACTIONS</th>}
             </tr>
           </thead>
           <tbody>
               {paginated.length === 0 && (
                 <tr>
                   <td
-                    colSpan={activeCols.length + (canEdit ? 1 : 0)}
+                    colSpan={activeCols.length + (showActions ? 1 : 0)}
                     style={{ textAlign: "center", padding: "3rem", color: "var(--color-admin-text-muted)" }}
                   >
                     No matching records found.
@@ -810,6 +900,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const negeriStr = getNegeriDisplay(fd);
                 const pakej = fd.pakej || "N/A";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
+                const receiptData = isKohasil ? parseReceiptData(fd.receiptData) : null;
 
                 // ── Al-Barzah specific row ────────────────────────────────
                 if (isAlbarzah) {
@@ -1064,27 +1155,63 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         );
                       })()}
                     </td>
-                    {canEdit && (
+                    {showActions && (
                       <td style={{ textAlign: "center" }}>
                         <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
-                          <button
-                            id={`edit-${s.id}`}
-                            onClick={() => setEditingItem(s)}
-                            className="btn-ghost"
-                            style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
-                            aria-label={`Edit ${nama}`}
-                          >
-                            <Pencil size={16} aria-hidden="true" />
-                          </button>
-                          <button
-                            id={`delete-${s.id}`}
-                            onClick={() => setDeletingItem(s)}
-                            className="btn-danger"
-                            style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
-                            aria-label={`Delete ${nama}`}
-                          >
-                            <Trash2 size={16} aria-hidden="true" />
-                          </button>
+                          {isKohasil && (
+                            <button
+                              type="button"
+                              onClick={() => handleReceiptDownload(s)}
+                              disabled={!receiptData}
+                              className="btn-ghost"
+                              style={{
+                                minWidth: 44,
+                                height: 44,
+                                minHeight: 44,
+                                padding: "0 0.625rem",
+                                justifyContent: "center",
+                                gap: "0.375rem",
+                                cursor: receiptData ? "pointer" : "not-allowed",
+                                opacity: receiptData ? 1 : 0.55,
+                                whiteSpace: "nowrap",
+                              }}
+                              aria-label={
+                                receiptData
+                                  ? `Download receipt for ${nama}`
+                                  : `Receipt unavailable for ${nama}`
+                              }
+                              title={
+                                receiptData
+                                  ? `Download receipt for ${nama}`
+                                  : "Receipt data was not saved for this older submission."
+                              }
+                            >
+                              <Download size={16} aria-hidden="true" />
+                              <span>{receiptData ? "Download" : "Unavailable"}</span>
+                            </button>
+                          )}
+                          {canEdit && (
+                            <>
+                              <button
+                                id={`edit-${s.id}`}
+                                onClick={() => setEditingItem(s)}
+                                className="btn-ghost"
+                                style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
+                                aria-label={`Edit ${nama}`}
+                              >
+                                <Pencil size={16} aria-hidden="true" />
+                              </button>
+                              <button
+                                id={`delete-${s.id}`}
+                                onClick={() => setDeletingItem(s)}
+                                className="btn-danger"
+                                style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
+                                aria-label={`Delete ${nama}`}
+                              >
+                                <Trash2 size={16} aria-hidden="true" />
+                              </button>
+                            </>
+                          )}
                         </div>
                       </td>
                     )}

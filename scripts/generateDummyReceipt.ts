@@ -1,4 +1,8 @@
-import { generateReceiptPdf, ReceiptData, MemberInfo } from '../apps/kohasil/src/lib/generateReceipt.ts';
+import {
+  generateReceiptPdf,
+  type MemberInfo,
+  type ReceiptData,
+} from "../packages/ui/src/lib/kohasil-receipt.ts";
 
 // Helper to create dummy member info
 const dummyMember: MemberInfo = {

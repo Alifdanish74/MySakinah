@@ -1505,7 +1505,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         <div className="space-y-4">
                           <div>
                             <h4 className="text-lg font-bold text-green-950 mb-1" style={{ fontFamily: "var(--font-heading)" }}>
-                              Pengisytiharan &amp; Pengesahan
+                              Pengesahan Kebenaran Potongan Gaji
                             </h4>
                             <p className="text-xs text-slate-500">
                               Sila semak pengisytiharan berikut sebelum menghantar permohonan {selectedFormPackage.name}.

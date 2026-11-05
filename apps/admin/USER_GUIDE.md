@@ -76,11 +76,11 @@ WHERE slug = 'kopetro';
 
 ## 3. Role Permissions Matrix
 
-| Role | Overview Stats | View Submissions | Edit & Update Status | Delete Records | Module Scope |
-|---|:---:|:---:|:---:|:---:|---|
-| **Super Admin** | ✅ Yes | ✅ All Modules | ✅ All Modules | ✅ All Modules | All 5 Modules |
-| **Module Editor** | ✅ Yes | ✅ Assigned Only | ✅ Assigned Only | ✅ Assigned Only | Assigned Module(s) |
-| **Module Viewer** | ✅ Yes | ✅ Assigned Only | ❌ Read-Only | ❌ Read-Only | Assigned Module(s) |
+| Role | Overview Stats | View Submissions | Edit & Update Status | Delete Records | Download KOHASiL Receipts | Module Scope |
+|---|:---:|:---:|:---:|:---:|:---:|---|
+| **Super Admin** | ✅ Yes | ✅ All Modules | ✅ All Modules | ✅ All Modules | ✅ Yes | All 5 Modules |
+| **Module Editor** | ✅ Yes | ✅ Assigned Only | ✅ Assigned Only | ✅ Assigned Only | ✅ If assigned to KOHASiL | Assigned Module(s) |
+| **Module Viewer** | ✅ Yes | ✅ Assigned Only | ❌ Read-Only | ❌ Read-Only | ✅ If assigned to KOHASiL | Assigned Module(s) |
 
 ---
 
@@ -107,6 +107,10 @@ When you click on any module card (e.g. `/kohasil`), you enter the data manageme
 4. **Deleting a Record**:
    - Click the **Trash icon** (🗑️) on any row.
    - Confirm in the dialog.
+5. **Downloading a KOHASiL receipt**:
+   - On the KOHASiL submissions page, select **Download** in the row's Actions column.
+   - Receipt downloads are available to any admin with access to the KOHASiL module.
+   - Older submissions without a saved receipt snapshot show **Unavailable**. Their stored rows do not contain all details needed to recreate the original receipt.
 
 ---
 

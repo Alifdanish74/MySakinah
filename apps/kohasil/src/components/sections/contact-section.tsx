@@ -163,18 +163,17 @@ export function ContactSection({ preselectedPackage }: ContactSectionProps) {
               <div className="pt-4 border-t space-y-3 text-xs text-slate-600">
                 <div className="rounded-xl p-3 bg-white border border-slate-200">
                   <p className="font-bold text-green-900 text-xs mb-1">
-                    KOHASIL (Pejabat Utama)
-                  </p>
-                  <p>1-23 Tingkat 1 Kanan, Blok 9, Kompleks Bangunan Kerajaan, Jalan Tuanku Abdul Halim, 50600 Kuala Lumpur</p>
-                  <p className="mt-1 font-semibold text-slate-700">Tel Pejabat: 03-6203 5858</p>
-                </div>
-
-                <div className="rounded-xl p-3 bg-white border border-slate-200">
-                  <p className="font-bold text-green-900 text-xs mb-1">
                     BUMIJEZ SDN BHD (Pengendali Skim)
                   </p>
                   <p>No 11, Tingkat 1, Jalan PP 2/1, Taman Putra Prima, 47130 Puchong, Selangor</p>
                   <p className="mt-1 font-semibold text-slate-700">Email: info@bumijez.com.my</p>
+                </div>
+                <div className="rounded-xl p-3 bg-white border border-slate-200">
+                  <p className="font-bold text-green-900 text-xs mb-1">
+                    KOHASIL (Pejabat Utama)
+                  </p>
+                  <p>1-23 Tingkat 1 Kanan, Blok 9, Kompleks Bangunan Kerajaan, Jalan Tuanku Abdul Halim, 50600 Kuala Lumpur</p>
+                  <p className="mt-1 font-semibold text-slate-700">Tel Pejabat: 03-6203 5858</p>
                 </div>
               </div>
             </motion.div>

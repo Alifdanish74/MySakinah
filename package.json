@@ -18,7 +18,7 @@
     "dev:membership_card": "turbo run dev --filter=@sakinah/membership-card",
     "lint": "turbo run lint",
     "type-check": "turbo run type-check",
-    "generate:receipt": "ts-node scripts/generateDummyReceipt.ts"
+    "generate:receipt": "ts-node --compiler-options '{\"module\":\"CommonJS\",\"allowImportingTsExtensions\":true,\"esModuleInterop\":true}' scripts/generateDummyReceipt.ts"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
