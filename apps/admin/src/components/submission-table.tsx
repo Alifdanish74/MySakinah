@@ -103,6 +103,8 @@ function parseReceiptData(value: unknown): ReceiptData | null {
     typeof value.packageCategory !== "string" ||
     typeof value.monthlyFee !== "number" ||
     !Number.isFinite(value.monthlyFee) ||
+    (value.module !== undefined && value.module !== "kohasil" && value.module !== "albarzah") ||
+    (value.contributionDescription !== undefined && typeof value.contributionDescription !== "string") ||
     typeof value.coverage !== "string" ||
     !isReceiptMember(value.ahli) ||
     typeof value.namaWaris !== "string" ||
@@ -125,10 +127,12 @@ function parseReceiptData(value: unknown): ReceiptData | null {
   }
 
   return {
+    module: value.module,
     referenceNumber: value.referenceNumber,
     packageName: value.packageName,
     packageCategory: value.packageCategory,
     monthlyFee: value.monthlyFee,
+    contributionDescription: value.contributionDescription,
     coverage: value.coverage,
     ahli: value.ahli,
     namaWaris: value.namaWaris,
@@ -144,7 +148,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const router = useRouter();
   const isAlbarzah = moduleSlug === "albarzah";
   const isKohasil = moduleSlug === "kohasil";
-  const showActions = canEdit || isKohasil;
+  const showActions = canEdit || isKohasil || isAlbarzah;
   const activeCols = isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTER);
@@ -159,7 +163,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     if (!receiptData) return;
 
     try {
-      generateReceiptPdf(receiptData);
+      generateReceiptPdf({
+        ...receiptData,
+        module: isAlbarzah ? "albarzah" : "kohasil",
+      });
       setReceiptError("");
     } catch (error) {
       console.error(`Failed to generate receipt for submission ${submission.id}`, error);
@@ -798,7 +805,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               {activeCols.map((_, i) => (
                 <col key={i} style={{ width: colWidths[i] }} />
               ))}
-              {showActions && <col style={{ width: isKohasil ? (canEdit ? 240 : 136) : 128 }} />}
+              {showActions && (
+                <col
+                  style={{
+                    width: isKohasil || isAlbarzah ? (canEdit ? 240 : 136) : 128,
+                  }}
+                />
+              )}
             </colgroup>
           )}
           <thead>
@@ -900,7 +913,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const negeriStr = getNegeriDisplay(fd);
                 const pakej = fd.pakej || "N/A";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
-                const receiptData = isKohasil ? parseReceiptData(fd.receiptData) : null;
+                const receiptData = isKohasil || isAlbarzah ? parseReceiptData(fd.receiptData) : null;
 
                 // ── Al-Barzah specific row ────────────────────────────────
                 if (isAlbarzah) {
@@ -1020,27 +1033,61 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         })()}
                       </td>
                       {/* 19. Actions */}
-                      {canEdit && (
-                        <td style={{ textAlign: "right" }}>
-                          <div style={{ display: "flex", gap: "0.375rem", justifyContent: "flex-end" }}>
+                      {showActions && (
+                        <td style={{ textAlign: "center" }}>
+                          <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
                             <button
-                              id={`edit-${s.id}`}
-                              onClick={() => setEditingItem(s)}
+                              type="button"
+                              onClick={() => handleReceiptDownload(s)}
+                              disabled={!receiptData}
                               className="btn-ghost"
-                              style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
-                              aria-label={`Edit ${nama}`}
+                              style={{
+                                minWidth: 44,
+                                height: 44,
+                                minHeight: 44,
+                                padding: "0 0.625rem",
+                                justifyContent: "center",
+                                gap: "0.375rem",
+                                cursor: receiptData ? "pointer" : "not-allowed",
+                                opacity: receiptData ? 1 : 0.55,
+                                whiteSpace: "nowrap",
+                              }}
+                              aria-label={
+                                receiptData
+                                  ? `Download receipt for ${nama}`
+                                  : `Receipt unavailable for ${nama}`
+                              }
+                              title={
+                                receiptData
+                                  ? `Download receipt for ${nama}`
+                                  : "Receipt data was not saved for this older submission."
+                              }
                             >
-                              <Pencil size={16} aria-hidden="true" />
+                              <Download size={16} aria-hidden="true" />
+                              <span>{receiptData ? "Download" : "Unavailable"}</span>
                             </button>
-                            <button
-                              id={`delete-${s.id}`}
-                              onClick={() => setDeletingItem(s)}
-                              className="btn-danger"
-                              style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
-                              aria-label={`Delete ${nama}`}
-                            >
-                              <Trash2 size={16} aria-hidden="true" />
-                            </button>
+                            {canEdit && (
+                              <>
+                                <button
+                                  id={`edit-${s.id}`}
+                                  onClick={() => setEditingItem(s)}
+                                  className="btn-ghost"
+                                  style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
+                                  aria-label={`Edit ${nama}`}
+                                >
+                                  <Pencil size={16} aria-hidden="true" />
+                                </button>
+                                <button
+                                  id={`delete-${s.id}`}
+                                  onClick={() => setDeletingItem(s)}
+                                  className="btn-danger"
+                                  style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
+                                  aria-label={`Delete ${nama}`}
+                                >
+                                  <Trash2 size={16} aria-hidden="true" />
+                                </button>
+                              </>
+                            )}
                           </div>
                         </td>
                       )}
@@ -1158,7 +1205,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     {showActions && (
                       <td style={{ textAlign: "center" }}>
                         <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
-                          {isKohasil && (
+                          {(isKohasil || isAlbarzah) && (
                             <button
                               type="button"
                               onClick={() => handleReceiptDownload(s)}

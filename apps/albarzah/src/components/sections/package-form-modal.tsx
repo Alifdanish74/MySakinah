@@ -6,6 +6,11 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download, Copy, Check } from "lucide-react";
 import { toAlbarzahStoragePakej } from "@/lib/pakej";
+import {
+  generateReceiptPdf,
+  generateReceiptReferenceNumber,
+  type ReceiptData,
+} from "@sakinah/ui/lib/kohasil-receipt";
 
 // ── Dropdown options ──────────────────────────────────────────────────────
 const HUBUNGAN_OPTIONS = [
@@ -133,6 +138,27 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errMsg, setErrMsg] = useState("");
   const [accCopied, setAccCopied] = useState(false);
+  const [submittedReceipt, setSubmittedReceipt] = useState<ReceiptData | null>(null);
+  const [receiptDownloadError, setReceiptDownloadError] = useState("");
+
+  const details = PACKAGE_DETAILS_MAP[packageName] || {
+    yearly: packageName,
+    monthly: "Manfaat Perlindungan Lengkap",
+    daily: "Albarzah Khairat Kematian",
+    age: "Semua Umur",
+    total: "Mengikut Pakej",
+  };
+
+  function handleReceiptDownload() {
+    if (!submittedReceipt) return;
+    try {
+      generateReceiptPdf(submittedReceipt);
+      setReceiptDownloadError("");
+    } catch (error) {
+      console.error("Albarzah receipt download error:", error);
+      setReceiptDownloadError("Surat pengesahan tidak dapat dimuat turun. Sila cuba lagi.");
+    }
+  }
 
   const handleCopyAcc = async () => {
     try {
@@ -179,6 +205,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
       return;
     }
     setErrMsg("");
+    setReceiptDownloadError("");
     setStatus("loading");
     try {
       const sanitizedTel = tel.replace(/[\s-]/g, "");
@@ -187,6 +214,32 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
       const sanitizedIc = ic ? ic.replace(/\D/g, "") : undefined;
 
       const fullAlamat = [alamat1, poskod, daerah, negeri].filter(Boolean).join(", ");
+      const submittedAt = new Date();
+      const yearlyFee = Number(details.yearly.replace(/[^\d.]/g, ""));
+      const receiptData: ReceiptData = {
+        module: "albarzah",
+        referenceNumber: generateReceiptReferenceNumber(submittedAt, "albarzah"),
+        packageName,
+        packageCategory: "Individu",
+        monthlyFee: Number.isFinite(yearlyFee) ? yearlyFee : 0,
+        contributionDescription: `Yuran pakej: ${details.yearly}`,
+        coverage: details.total,
+        ahli: {
+          nama,
+          telefon: sanitizedTel,
+          ic: sanitizedIc || "",
+          alamat1,
+          alamat2: poskod,
+          alamat3: daerah,
+          negeri,
+        },
+        namaWaris: namaWaris || "",
+        telefonWaris: sanitizedTelWaris || "",
+        statusKeahlian: "Permohonan diterima",
+        members: {},
+        submittedAt,
+        category: "Individu",
+      };
 
       const res = await fetch("/albarzah/api/enquiry", {
         method: "POST",
@@ -211,6 +264,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
           namaPerkenalkan: namaPerkenalkan || undefined,
           telefonPerkenalkan: telPerkenalkan ? telPerkenalkan.replace(/[\s-]/g, "") : undefined,
           pakej: toAlbarzahStoragePakej(packageName),
+          receiptData,
           kaedahHubungi: "whatsapp",
           persetujuan: true,
         }),
@@ -220,19 +274,18 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
         const errData = await res.json().catch(() => null);
         throw new Error(errData?.error || "Ralat menghantar permohonan");
       }
+      setSubmittedReceipt(receiptData);
       setStatus("success");
+      try {
+        generateReceiptPdf(receiptData);
+      } catch (error) {
+        console.error("Albarzah receipt auto-download error:", error);
+        setReceiptDownloadError("Surat pengesahan tidak dapat dimuat turun secara automatik. Cuba muat turun sekali lagi.");
+      }
     } catch (err: any) {
       setStatus("error");
       setErrMsg(err?.message || "Ralat sambungan. Sila cuba lagi atau hubungi kami melalui WhatsApp.");
     }
-  };
-
-  const details = PACKAGE_DETAILS_MAP[packageName] || {
-    yearly: packageName,
-    monthly: "Manfaat Perlindungan Lengkap",
-    daily: "Albarzah Khairat Kematian",
-    age: "Semua Umur",
-    total: "Mengikut Pakej",
   };
 
   const labelClass = "block text-xs font-bold mb-1.5 uppercase tracking-wide text-slate-700";
@@ -317,16 +370,31 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                       PERMOHONAN BERJAYA!
                     </h4>
                     <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                      Maklumat bagi <strong>{packageName}</strong> telah berjaya disimpan ke dalam sistem Albarzah.
+                      Permohonan bagi <strong>{packageName}</strong> telah berjaya disimpan. Surat pengesahan Albarzah tersedia untuk dimuat turun.
                     </p>
                   </div>
 
                   <div className="p-4 rounded-2xl border text-left bg-white" style={{ borderColor: "var(--color-brand-border)" }}>
                     <p className="text-xs font-semibold text-slate-700 leading-relaxed">
-                      ★ Resit akan dihantar setelah bayaran disahkan.<br />
-                      ★ Anda boleh mendapatkan Kad Keahlian selepas 3 hari bekerja melalui WhatsApp.
+                      Resit pembayaran rasmi akan dihantar setelah bayaran disahkan.
+                      <br />
+                      Anda boleh mendapatkan Kad Keahlian selepas 3 hari bekerja melalui WhatsApp.
                     </p>
                   </div>
+
+                  {receiptDownloadError && (
+                    <p role="alert" className="text-sm text-red-700">{receiptDownloadError}</p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleReceiptDownload}
+                    disabled={!submittedReceipt}
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full text-sm font-bold border transition-colors disabled:opacity-50"
+                    style={{ borderColor: "var(--color-brand-border)", color: "var(--color-brand-green-dark)" }}
+                  >
+                    <Download className="h-4 w-4" />
+                    Muat Turun Surat Pengesahan
+                  </button>
 
                   <div className="pt-2 space-y-2.5">
                     <a

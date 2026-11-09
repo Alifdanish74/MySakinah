@@ -97,6 +97,7 @@ export async function POST(request: Request) {
             telefonPerkenalkan: data.telefonPerkenalkan || "-",
             jenisTanggungan: m.jenisTanggungan || "",
             kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+            ...(data.receiptData ? { receiptData: data.receiptData } : {}),
           },
         });
       });
@@ -129,6 +130,7 @@ export async function POST(request: Request) {
         namaPerkenalkan: data.namaPerkenalkan || "-",
         telefonPerkenalkan: data.telefonPerkenalkan || "-",
         kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+        ...(data.receiptData ? { receiptData: data.receiptData } : {}),
       };
 
       submissionsToPost.push({

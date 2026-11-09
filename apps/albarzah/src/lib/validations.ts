@@ -39,6 +39,34 @@ export const PAKEJ_OPTIONS = [
   "pakej-1500-seumur-hidup",
 ] as const;
 
+const receiptMemberSchema = z.object({
+  nama: z.string(),
+  telefon: z.string(),
+  ic: z.string(),
+  alamat1: z.string(),
+  alamat2: z.string(),
+  alamat3: z.string(),
+  negeri: z.string(),
+  jenisTanggungan: z.string().optional(),
+});
+
+const receiptDataSchema = z.object({
+  module: z.literal("albarzah"),
+  referenceNumber: z.string(),
+  packageName: z.string(),
+  packageCategory: z.string(),
+  monthlyFee: z.number().finite().nonnegative(),
+  contributionDescription: z.string(),
+  coverage: z.string(),
+  ahli: receiptMemberSchema,
+  namaWaris: z.string(),
+  telefonWaris: z.string(),
+  statusKeahlian: z.string(),
+  members: z.record(z.string(), receiptMemberSchema),
+  submittedAt: z.string().datetime(),
+  category: z.string(),
+});
+
 export const enquirySchema = z.object({
   // Step 1: Maklumat Diri
   nama: z
@@ -113,6 +141,7 @@ export const enquirySchema = z.object({
     (val) => (typeof val === "string" ? val.replace(/[\s-]/g, "") : val),
     z.string().optional()
   ),
+  receiptData: receiptDataSchema.optional(),
 });
 
 export type EnquiryFormData = z.infer<typeof enquirySchema>;

@@ -12,10 +12,12 @@ export interface MemberInfo {
 }
 
 export interface ReceiptData {
+  module?: "kohasil" | "albarzah";
   referenceNumber?: string;
   packageName: string;
   packageCategory: string;
   monthlyFee: number;
+  contributionDescription?: string;
   coverage: string;
   ahli: MemberInfo;
   namaWaris: string;
@@ -26,7 +28,7 @@ export interface ReceiptData {
   category: string;
 }
 
-export function generateReceiptReferenceNumber(date: Date): string {
+export function generateReceiptReferenceNumber(date: Date, module: ReceiptData["module"] = "kohasil"): string {
   const pad = (n: number) => String(n).padStart(2, "0");
   const yyyy = date.getFullYear();
   const mm = pad(date.getMonth() + 1);
@@ -34,7 +36,8 @@ export function generateReceiptReferenceNumber(date: Date): string {
   const hh = pad(date.getHours());
   const min = pad(date.getMinutes());
   const rand = Math.floor(1000 + Math.random() * 9000);
-  return `KOHASIL-${yyyy}${mm}${dd}-${hh}${min}-${rand}`;
+  const prefix = module === "albarzah" ? "ALBARZAH" : "KOHASIL";
+  return `${prefix}-${yyyy}${mm}${dd}-${hh}${min}-${rand}`;
 }
 
 function formatIC(ic: string): string {
@@ -70,8 +73,9 @@ function formatTime(date: Date): string {
 }
 
 export function generateReceiptPdf(data: ReceiptData): void {
+  const isAlbarzah = data.module === "albarzah";
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const refNo = data.referenceNumber || generateReceiptReferenceNumber(data.submittedAt);
+  const refNo = data.referenceNumber || generateReceiptReferenceNumber(data.submittedAt, data.module);
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 20;
@@ -189,7 +193,12 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
-  doc.text("SKIM KHAIRAT KOHASIL RAUDHAH", pageWidth / 2, 6, { align: "center" });
+  doc.text(
+    isAlbarzah ? "ALBARZAH • SKIM KHAIRAT KEMATIAN" : "SKIM KHAIRAT KOHASIL RAUDHAH",
+    pageWidth / 2,
+    6,
+    { align: "center" },
+  );
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
@@ -207,7 +216,14 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setFont("helvetica", "italic");
   doc.setFontSize(8);
   doc.setTextColor(100, 100, 100);
-  doc.text("Confirmation of Application – Skim Khairat Kematian & Pengurusan Jenazah", pageWidth / 2, curY, { align: "center" });
+  doc.text(
+    isAlbarzah
+      ? "Pengesahan Permohonan Keahlian Albarzah"
+      : "Confirmation of Application – Skim Khairat Kematian & Pengurusan Jenazah",
+    pageWidth / 2,
+    curY,
+    { align: "center" },
+  );
   curY += 8;
 
   addLine(0.5, [34, 85, 53]);
@@ -243,17 +259,32 @@ export function generateReceiptPdf(data: ReceiptData): void {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  doc.text(`JUMLAH CARUMAN BULANAN • RM${data.monthlyFee}.00 / Sebulan  •`, pageWidth / 2, curY + 12, { align: "center" });
+  doc.text(
+    data.contributionDescription || `JUMLAH CARUMAN BULANAN • RM${data.monthlyFee}.00 / Sebulan`,
+    pageWidth / 2,
+    curY + 12,
+    { align: "center" },
+  );
   curY += 19;
 
   // ── APPLICANT INFO ────────────────────────────────────────────────
   curY += 2;
-  sectionTitle("A. Maklumat Ahli (Pemohon Utama)");
+  sectionTitle(isAlbarzah ? "A. Maklumat Pemohon" : "A. Maklumat Ahli (Pemohon Utama)");
 
   rowPair("Nama Penuh", data.ahli.nama.toUpperCase(), "No. Kad Pengenalan", formatIC(data.ahli.ic), "Nama Pakej", data.packageName.toUpperCase());
   rowPair("No. Telefon", formatPhone(data.ahli.telefon), "Negeri", data.ahli.negeri.toUpperCase(), "Kategori", data.category.toUpperCase());
-  rowPair("Alamat", [data.ahli.alamat1, data.ahli.alamat2, data.ahli.alamat3].filter(Boolean).join(", ").toUpperCase(), "", "", "Skop Perlindungan", data.coverage.toUpperCase());
-  singleField("Status Keahlian KOHASIL", data.statusKeahlian.toUpperCase());
+  rowPair(
+    "Alamat",
+    [data.ahli.alamat1, data.ahli.alamat2, data.ahli.alamat3].filter(Boolean).join(", ").toUpperCase(),
+    "",
+    "",
+    isAlbarzah ? "Jumlah Manfaat" : "Skop Perlindungan",
+    data.coverage.toUpperCase(),
+  );
+  singleField(
+    isAlbarzah ? "Status Permohonan" : "Status Keahlian KOHASIL",
+    data.statusKeahlian.toUpperCase(),
+  );
 
   curY += 2;
   addLine();
@@ -302,30 +333,47 @@ export function generateReceiptPdf(data: ReceiptData): void {
   }
 
   // ── PACKAGE BENEFITS SUMMARY ──────────────────────────────────────
-  sectionTitle("D. Maklumat Pendaftaran Pakej");
+  sectionTitle(isAlbarzah ? "C. Maklumat Pendaftaran Pakej" : "D. Maklumat Pendaftaran Pakej");
   // Build package name display — only count tanggungan (add-ons), not base package members
   const extraCount = Object.keys(data.members).filter(k => k.startsWith("tanggungan")).length;
   const extraPart = extraCount > 0 ? " + " + Array(extraCount).fill("Individu 10").join(" + ") : "";
-  rowPair(
-    "Nama Pakej",
-    `${data.packageName.toUpperCase()}${extraPart}`,
-    "Caruman Bulanan",
-    `RM${data.monthlyFee}.00`
-  );
+  if (isAlbarzah) {
+    rowPair(
+      "Nama Pakej",
+      data.packageName.toUpperCase(),
+      "Yuran Pakej",
+      data.contributionDescription || `RM${data.monthlyFee}.00`,
+    );
+  } else {
+    rowPair(
+      "Nama Pakej",
+      `${data.packageName.toUpperCase()}${extraPart}`,
+      "Caruman Bulanan",
+      `RM${data.monthlyFee}.00`,
+    );
+  }
   curY += 2;
   addLine();
 
   // ── DISCLAIMER ────────────────────────────────────────────────────
   checkPageBreak(28);
-  sectionTitle("E. Nota Penting");
+  sectionTitle(isAlbarzah ? "D. Nota Penting" : "E. Nota Penting");
 
-  const notes = [
-    "1. Surat ini adalah pengesahan bahawa permohonan anda telah berjaya diterima oleh sistem.",
-    "2. Perlindungan bermula selepas 30 hari dari tarikh 01/15hb terdekat selepas pengesahan bayaran potongan gaji.",
-    "3. Pegawai kami akan menghubungi anda dalam masa terdekat bagi tujuan pengesahan lanjut.",
-    "4. Untuk sebarang pertanyaan, sila hubungi 011-1300 1999 (WhatsApp) atau emel ke info@bjsb.com.my.",
-    "5. Dokumen ini dijana secara automatik. Sila simpan sebagai rekod peribadi anda.",
-  ];
+  const notes = isAlbarzah
+    ? [
+        "1. Surat ini mengesahkan permohonan keahlian Albarzah telah diterima untuk diproses.",
+        "2. Tarikh keahlian bermula pada 01 atau 15 haribulan. Manfaat bermula 30 hari selepas tarikh keahlian.",
+        "3. Pembaharuan sebelum tarikh tamat mengekalkan manfaat tanpa tempoh menunggu; pembaharuan selepas tamat tertakluk kepada tempoh menunggu 30 hari.",
+        "4. Untuk pertanyaan, hubungi Albarzah melalui WhatsApp di 017-3383884.",
+        "5. Dokumen ini dijana secara automatik. Sila simpan sebagai rekod permohonan.",
+      ]
+    : [
+        "1. Surat ini adalah pengesahan bahawa permohonan anda telah berjaya diterima oleh sistem.",
+        "2. Perlindungan bermula selepas 30 hari dari tarikh 01/15hb terdekat selepas pengesahan bayaran potongan gaji.",
+        "3. Pegawai kami akan menghubungi anda dalam masa terdekat bagi tujuan pengesahan lanjut.",
+        "4. Untuk sebarang pertanyaan, sila hubungi 011-1300 1999 (WhatsApp) atau emel ke info@bjsb.com.my.",
+        "5. Dokumen ini dijana secara automatik. Sila simpan sebagai rekod peribadi anda.",
+      ];
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.5);
@@ -349,7 +397,9 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setFontSize(7);
   doc.setTextColor(255, 255, 255);
   doc.text(
-    "Skim Khairat KOHASiL Raudhah • Diuruskan oleh BJSB Sdn. Bhd. • Daftar Syarikat: 201801031648 (1295100-A)",
+    isAlbarzah
+      ? "Albarzah • Skim Pengurusan Jenazah 24 Jam dan Manfaat Khairat Kematian"
+      : "Skim Khairat KOHASiL Raudhah • Diuruskan oleh BJSB Sdn. Bhd. • Daftar Syarikat: 201801031648 (1295100-A)",
     pageWidth / 2,
     pageHeight - 8,
     { align: "center" }
