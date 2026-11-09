@@ -55,7 +55,7 @@ const COLS = [
 const ALBARZAH_COLS = [
   { label: "MOHON", center: false },
   { label: "DAFTAR", center: false },
-  { label: "NAMA", center: false },
+  { label: "NAMA PEMOHON", center: false },
   { label: "NO KP", center: false },
   { label: "UMUR", center: true },
   { label: "NO TELEFON", center: false },
@@ -435,7 +435,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   function exportToCSV() {
     const headers = [
       "NO",
-      "NAMA",
+      "NAMA PEMOHON",
       "NO KP",
       "UMUR",
       "KATEGORI",
@@ -524,7 +524,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     const headers = [
       "TARIKH DAFTAR",
       "TARIKH MOHON",
-      "NAMA",
+      "NAMA PEMOHON",
       "NO KP",
       "UMUR",
       "NO TELEFON",
@@ -942,7 +942,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       {/* 6. No Telefon */}
                       <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>{no_telefon}</td>
                       {/* 5. Pakej */}
-                      <td style={{ fontWeight: 500, color: "var(--color-admin-accent)", whiteSpace: "nowrap" }}>
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-accent)" }}>
                         {pakej}
                       </td>
                       {/* 7. Nama Waris */}
@@ -954,11 +954,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         {hubungan_waris}
                       </td>
                       {/* 9. Tel Waris */}
-                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
+                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
                         {telefon_waris}
                       </td>
                       {/* 10. Nama Kawan */}
-                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
                         {nama_kawan}
                       </td>
                       {/* 11. Kategori Kawan */}
@@ -966,11 +966,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         {jenis_kawan}
                       </td>
                       {/* 12. Diperkenalkan */}
-                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)", whiteSpace: "nowrap" }}>
+                      <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
                         {nama_perkenalkan}
                       </td>
                       {/* 13. Tel Diperkenalkan */}
-                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>
+                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem"}}>
                         {tel_perkenalkan}
                       </td>
                       {/* 14. Alamat */}
@@ -982,7 +982,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                         {poskodStr}
                       </td>
                       {/* 16. Daerah/Bandar */}
-                      <td style={{ color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                      <td style={{ color: "var(--color-admin-text-muted)" }}>
                         {daerah}
                       </td>
                       {/* 17. Negeri */}

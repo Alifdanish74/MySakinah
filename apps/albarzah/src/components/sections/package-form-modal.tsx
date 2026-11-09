@@ -10,7 +10,7 @@ import { toAlbarzahStoragePakej } from "@/lib/pakej";
 // ── Dropdown options ──────────────────────────────────────────────────────
 const HUBUNGAN_OPTIONS = [
   "SUAMI", "ISTERI", "AYAH", "IBU",
-  "AYAH MERTUA", "IBU MERTUA", "ANAK",
+  "AYAH MENTUA", "IBU MENTUA", "MENANTU", "ANAK",
   "ABANG", "KAKAK", "ADIK",
   "ABANG IPAR", "KAKAK IPAR", "ADIK IPAR",
 ];
