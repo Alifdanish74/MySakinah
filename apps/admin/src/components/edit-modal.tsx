@@ -39,6 +39,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
   const dialogRef = useDialogAccessibility(true, onClose);
 
   const [status, setStatus] = useState<Submission["status"]>(submission.status || "terima");
+  const isTempohDisabled = status === "baru";
   const [notes, setNotes] = useState<string>(submission.notes || "");
 
   // Parse "DD/MM/YYYY - DD/MM/YYYY" → [start, end] where end may be ""
@@ -54,6 +55,25 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
     if (!d || !m || !y) return "";
     return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
   }
+  function addMonths(ymd: string, months: number): string {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+    if (!match) return "";
+    const [, yearText, monthText, dayText] = match;
+    const targetMonth = new Date(Date.UTC(Number(yearText), Number(monthText) - 1 + months, 1));
+    const year = targetMonth.getUTCFullYear();
+    const month = targetMonth.getUTCMonth();
+    const day = Math.min(
+      Number(dayText),
+      new Date(Date.UTC(year, month + 1, 0)).getUTCDate(),
+    );
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  }
+  function addOneMonth(ymd: string): string {
+    return addMonths(ymd, 1);
+  }
+  function addOneYear(ymd: string): string {
+    return addMonths(ymd, 12);
+  }
   // "YYYY-MM-DD" → "DD/MM/YYYY"
   function fromInputDate(ymd: string): string {
     if (!ymd) return "";
@@ -67,10 +87,21 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
     return end ? `${start} - ${end}` : start;
   }
 
-  const [tkStart, setTkStart] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[0]));
-  const [tkEnd, setTkEnd] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_keahlian)[1]));
-  const [tmStart, setTmStart] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[0]));
-  const [tmEnd, setTmEnd] = useState<string>(() => toInputDate(parseTempoh(submission.tempoh_manfaat)[1]));
+  const initialDaftarDate = isAlbarzah
+    ? toInputDate(submission.form_data?.tarikh_mohon || "")
+    : "";
+  const initialTkStart =
+    toInputDate(parseTempoh(submission.tempoh_keahlian)[0]) || initialDaftarDate;
+  const [tkStart, setTkStart] = useState<string>(() => initialTkStart);
+  const [tkEnd, setTkEnd] = useState<string>(
+    () => toInputDate(parseTempoh(submission.tempoh_keahlian)[1]) || (isAlbarzah ? addOneYear(initialTkStart) : ""),
+  );
+  const [tmStart, setTmStart] = useState<string>(
+    () => toInputDate(parseTempoh(submission.tempoh_manfaat)[0]) || addOneMonth(initialDaftarDate),
+  );
+  const [tmEnd, setTmEnd] = useState<string>(
+    () => toInputDate(parseTempoh(submission.tempoh_manfaat)[1]) || (isAlbarzah ? addOneYear(initialTkStart) : ""),
+  );
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const rawFd = { ...(submission.form_data || {}) };
     if (!rawFd.umur || rawFd.umur === "-" || rawFd.umur === "—") {
@@ -97,6 +128,26 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
       }
       return next;
     });
+  }
+
+  function handleDaftarDateChange(value: string) {
+    handleFieldChange("tarikh_mohon", fromInputDate(value));
+    setTkStart(value);
+    setTmStart(addOneMonth(value));
+    if (isAlbarzah) {
+      const endDate = addOneYear(value);
+      setTkEnd(endDate);
+      setTmEnd(endDate);
+    }
+  }
+
+  function handleTkStartChange(value: string) {
+    setTkStart(value);
+    if (isAlbarzah) {
+      const endDate = addOneYear(value);
+      setTkEnd(endDate);
+      setTmEnd(endDate);
+    }
   }
 
   function fd(key: string, fallback = "") {
@@ -282,7 +333,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                   id="form-input-tarikh_mohon"
                   type="date"
                   value={toInputDate(fd("tarikh_mohon"))}
-                  onChange={(e) => handleFieldChange("tarikh_mohon", fromInputDate(e.target.value))}
+                  onChange={(e) => handleDaftarDateChange(e.target.value)}
                   className="form-input"
                 />
               </Field>
@@ -297,18 +348,20 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
           <div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
               <div>
-                <Label htmlFor="form-input-tk-start">Tempoh Keahlian mula</Label>
+                <Label htmlFor="form-input-tk-start">Tempoh Keahlian Mula</Label>
                 <input
                   id="form-input-tk-start"
                   type="date"
                   value={tkStart}
-                  onChange={(e) => setTkStart(e.target.value)}
+                  onChange={(e) => handleTkStartChange(e.target.value)}
                   className="form-input"
+                  disabled={isTempohDisabled}
+                  style={{ opacity: isTempohDisabled ? 0.4 : 1, cursor: isTempohDisabled ? "not-allowed" : undefined }}
                 />
               </div>
               <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>hingga</span>
               <div style={{ position: "relative" }}>
-                <Label htmlFor="form-input-tk-end">Tempoh Keahlian tamat</Label>
+                <Label htmlFor="form-input-tk-end">Tempoh Keahlian Tamat</Label>
                 <input
                   id="form-input-tk-end"
                   type="date"
@@ -317,10 +370,10 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                   onChange={(e) => setTkEnd(e.target.value)}
                   className="form-input"
                   placeholder={isAlbarzah ? "Tiada tarikh tamat" : "Hingga Tamat Perkhidmatan"}
-                  disabled={status !== "tamat"}
-                  style={{ opacity: status !== "tamat" ? 0.4 : 1, cursor: status !== "tamat" ? "not-allowed" : undefined }}
+                  disabled={isTempohDisabled}
+                  style={{ opacity: isTempohDisabled ? 0.4 : 1, cursor: isTempohDisabled ? "not-allowed" : undefined }}
                 />
-                {tkEnd && status === "tamat" && (
+                {tkEnd && !isTempohDisabled && (
                   <button
                     type="button"
                     onClick={() => setTkEnd("")}
@@ -346,18 +399,20 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
           <div>
             <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: "0.5rem", alignItems: "center" }}>
               <div>
-                <Label htmlFor="form-input-tm-start">Tempoh Manfaat mula</Label>
+                <Label htmlFor="form-input-tm-start">Tempoh Manfaat Mula</Label>
                 <input
                   id="form-input-tm-start"
                   type="date"
                   value={tmStart}
                   onChange={(e) => setTmStart(e.target.value)}
                   className="form-input"
+                  disabled={isTempohDisabled}
+                  style={{ opacity: isTempohDisabled ? 0.4 : 1, cursor: isTempohDisabled ? "not-allowed" : undefined }}
                 />
               </div>
               <span style={{ color: "var(--color-admin-text-muted)", fontSize: "0.75rem", whiteSpace: "nowrap" }}>hingga</span>
               <div style={{ position: "relative" }}>
-                <Label htmlFor="form-input-tm-end">Tempoh Manfaat tamat</Label>
+                <Label htmlFor="form-input-tm-end">Tempoh Manfaat Tamat</Label>
                 <input
                   id="form-input-tm-end"
                   type="date"
@@ -366,10 +421,10 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                   onChange={(e) => setTmEnd(e.target.value)}
                   className="form-input"
                   placeholder="Tiada tarikh tamat"
-                  disabled={status !== "tamat"}
-                  style={{ opacity: status !== "tamat" ? 0.4 : 1, cursor: status !== "tamat" ? "not-allowed" : undefined }}
+                  disabled={isTempohDisabled}
+                  style={{ opacity: isTempohDisabled ? 0.4 : 1, cursor: isTempohDisabled ? "not-allowed" : undefined }}
                 />
-                {tmEnd && status === "tamat" && (
+                {tmEnd && !isTempohDisabled && (
                   <button
                     type="button"
                     onClick={() => setTmEnd("")}

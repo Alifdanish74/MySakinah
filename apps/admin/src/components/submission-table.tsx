@@ -988,11 +988,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       {/* 17. Negeri */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>{negeriStr}</td>
                       {/* 18. Tempoh Keahlian */}
-                      <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                      <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)" }}>
                         {s.tempoh_keahlian || "N/A"}
                       </td>
                       {/* 19. Tempoh Manfaat */}
-                      <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
+                      <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)" }}>
                         {s.tempoh_manfaat || "N/A"}
                       </td>
                       {/* 20. Status */}
