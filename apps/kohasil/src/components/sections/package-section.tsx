@@ -518,6 +518,70 @@ export const JENIS_TANGGUNGAN_OPTIONS = [
   "Ibu saudara",
 ];
 
+const MALAYSIAN_BANK_OPTIONS = [
+  {
+    label: "Bank Tempatan dan Islam",
+    banks: [
+      "Affin Bank Berhad",
+      "Affin Islamic Bank Berhad",
+      "Alliance Bank Malaysia Berhad",
+      "Alliance Islamic Bank Berhad",
+      "AmBank (M) Berhad",
+      "AmBank Islamic Berhad",
+      "Bank Islam Malaysia Berhad",
+      "Bank Muamalat Malaysia Berhad",
+      "CIMB Bank Berhad",
+      "CIMB Islamic Bank Berhad",
+      "Hong Leong Bank Berhad",
+      "Hong Leong Islamic Bank Berhad",
+      "Malayan Banking Berhad (Maybank)",
+      "Maybank Islamic Berhad",
+      "MBSB Bank Berhad",
+      "OCBC Al-Amin Bank Berhad",
+      "OCBC Bank (Malaysia) Berhad",
+      "Public Bank Berhad",
+      "Public Islamic Bank Berhad",
+      "RHB Bank Berhad",
+      "RHB Islamic Bank Berhad",
+    ],
+  },
+  {
+    label: "Bank Antarabangsa",
+    banks: [
+      "Al Rajhi Banking & Investment Corporation (Malaysia) Berhad",
+      "Bangkok Bank Berhad",
+      "Bank of America Malaysia Berhad",
+      "Bank of China (Malaysia) Berhad",
+      "BNP Paribas Malaysia Berhad",
+      "China Construction Bank (Malaysia) Berhad",
+      "Citibank Berhad",
+      "Deutsche Bank (Malaysia) Berhad",
+      "HSBC Amanah Malaysia Berhad",
+      "HSBC Bank Malaysia Berhad",
+      "Industrial and Commercial Bank of China (Malaysia) Berhad",
+      "J.P. Morgan Chase Bank Berhad",
+      "Kuwait Finance House (Malaysia) Berhad",
+      "Mizuho Bank (Malaysia) Berhad",
+      "MUFG Bank (Malaysia) Berhad",
+      "Standard Chartered Bank Malaysia Berhad",
+      "Standard Chartered Saadiq Berhad",
+      "Sumitomo Mitsui Banking Corporation Malaysia Berhad",
+      "The Bank of Nova Scotia Berhad",
+      "United Overseas Bank (Malaysia) Berhad",
+    ],
+  },
+  {
+    label: "Bank Digital",
+    banks: [
+      "AEON Bank (M) Berhad",
+      "Boost Bank Berhad",
+      "GX Bank Berhad",
+      "KAF Digital Bank Berhad",
+      "Ryt Bank Berhad",
+    ],
+  },
+] as const;
+
 export interface MemberFormData {
   nama: string;
   telefon: string;
@@ -538,9 +602,17 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
   // Dedicated Popup Form Modal state
   const [selectedFormPackage, setSelectedFormPackage] = useState<PackageDetail | null>(null);
 
-  // Form modal steps: "form" | "declaration"
-  const [formStep, setFormStep] = useState<"form" | "declaration">("form");
+  // Form modal steps: member details, salary deduction authorization, final declaration
+  const [formStep, setFormStep] = useState<"form" | "authorization" | "declaration">("form");
   const [declarationAgreed, setDeclarationAgreed] = useState(false);
+  const [potonganGajiData, setPotonganGajiData] = useState({
+    noGaji: "",
+    jabatanCawangan: "",
+    noAnggotaKohasil: "",
+    namaBank: "",
+    namaBankLain: "",
+    noAkaunBank: "",
+  });
 
   // Multi-tab member form states
   const [activeMemberTab, setActiveMemberTab] = useState<string>("ahli");
@@ -690,6 +762,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     setSelectedFormPackage(pkg);
     setFormStep("form");
     setDeclarationAgreed(false);
+    setPotonganGajiData({
+      noGaji: "",
+      jabatanCawangan: "",
+      noAnggotaKohasil: "",
+      namaBank: "",
+      namaBankLain: "",
+      noAkaunBank: "",
+    });
     setFormStatus("idle");
     setErrorMessage("");
     setActiveMemberTab("ahli");
@@ -803,7 +883,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     });
   };
 
-  const proceedToDeclaration = () => {
+  const proceedToAuthorization = () => {
     const ahli = membersData["ahli"];
     if (
       !ahli ||
@@ -850,6 +930,25 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     }
 
     setErrorMessage("");
+    setFormStep("authorization");
+  };
+
+  const proceedToDeclaration = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (
+      !potonganGajiData.noGaji.trim() ||
+      !potonganGajiData.jabatanCawangan.trim() ||
+      !potonganGajiData.noAnggotaKohasil.trim() ||
+      !potonganGajiData.namaBank.trim() ||
+      !potonganGajiData.noAkaunBank.trim() ||
+      (potonganGajiData.namaBank === "Lain-lain" && !potonganGajiData.namaBankLain.trim())
+    ) {
+      setErrorMessage("Sila lengkapkan semua maklumat pengesahan potongan gaji.");
+      return;
+    }
+
+    setErrorMessage("");
     setFormStep("declaration");
   };
 
@@ -893,6 +992,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
       const submittedAt = new Date();
       const receiptData: ReceiptData = {
+        module: "kohasil",
         referenceNumber: generateReceiptReferenceNumber(submittedAt),
         packageName: selectedFormPackage?.name || "INDIVIDU 10",
         packageCategory: selectedFormPackage?.category || "",
@@ -913,6 +1013,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
         members: sanitizedMembers,
         submittedAt,
+        salaryDeductionAuthorization: {
+          noGaji: potonganGajiData.noGaji,
+          jabatanCawangan: potonganGajiData.jabatanCawangan,
+          noAnggotaKohasil: potonganGajiData.noAnggotaKohasil,
+          namaBank: potonganGajiData.namaBank,
+          namaBankLain: potonganGajiData.namaBankLain,
+          noAkaunBank: potonganGajiData.noAkaunBank,
+        },
       };
 
       const response = await fetch("/kohasil/api/enquiry", {
@@ -929,6 +1037,8 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
           namaWaris: warisData.namaWaris,
           telefonWaris: sanitizedWarisTelefon,
           statusKeahlian: warisData.statusKeahlian === "ahli" ? "Ahli" : "Bukan Ahli",
+          noAhli: potonganGajiData.noAnggotaKohasil,
+          potonganGaji: potonganGajiData,
           pakej: selectedFormPackage?.name || "INDIVIDU 10",
           persetujuan: true,
           members: sanitizedMembers,
@@ -1565,12 +1675,277 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                       );
                     }
 
-                    if (formStep === "declaration") {
+                    if (formStep === "authorization") {
+                      const ahli = membersData.ahli;
+                      const bankName = potonganGajiData.namaBank === "Lain-lain"
+                        ? potonganGajiData.namaBankLain
+                        : potonganGajiData.namaBank;
+                      const monthlyDeduction = getCalculatedMonthlyFee() + (
+                        warisData.statusKeahlian === "bukan_ahli" ? 1 : 0
+                      );
+                      const spouseTab = memberTabs.find((tab) => tab.role === "pasangan");
+                      const childTabs = memberTabs.filter((tab) => tab.role === "anak");
+                      const addressLines = [
+                        ahli?.alamat1,
+                        ahli?.alamat2,
+                        ahli?.alamat3,
+                        ahli?.negeri,
+                      ].filter(Boolean);
+                      const childRows = Array.from(
+                        { length: Math.max(5, childTabs.length) },
+                        (_, index) => childTabs[index],
+                      );
+                      const renderMemberRow = (member?: MemberFormData, key?: string) => (
+                        <div
+                          key={key}
+                          className="grid grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)_minmax(3rem,0.4fr)] gap-x-3"
+                        >
+                          {[member?.nama, member?.ic, ""].map((value, index) => (
+                            <span
+                              key={index}
+                              className="min-h-6 overflow-hidden border-b border-dotted border-black px-1"
+                            >
+                              {value || "\u00a0"}
+                            </span>
+                          ))}
+                        </div>
+                      );
+
                       return (
                         <div className="space-y-4">
                           <div>
                             <h4 className="text-lg font-bold text-green-950 mb-1" style={{ fontFamily: "var(--font-heading)" }}>
                               Pengesahan Kebenaran Potongan Gaji
+                            </h4>
+                            <p className="text-xs text-slate-500">
+                              Lengkapkan maklumat potongan gaji dan semak surat kebenaran sebelum meneruskan.
+                            </p>
+                          </div>
+
+                          <form onSubmit={proceedToDeclaration} className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <label htmlFor="kohasil-no-gaji" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                  No. Gaji <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  id="kohasil-no-gaji"
+                                  type="text"
+                                  required
+                                  value={potonganGajiData.noGaji}
+                                  onChange={(e) => setPotonganGajiData({ ...potonganGajiData, noGaji: e.target.value })}
+                                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
+                                  autoComplete="off"
+                                />
+                              </div>
+
+                              <div>
+                                <label htmlFor="kohasil-jabatan-cawangan" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                  Jabatan/Cawangan <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  id="kohasil-jabatan-cawangan"
+                                  type="text"
+                                  required
+                                  value={potonganGajiData.jabatanCawangan}
+                                  onChange={(e) => setPotonganGajiData({ ...potonganGajiData, jabatanCawangan: e.target.value })}
+                                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
+                                  autoComplete="organization"
+                                />
+                              </div>
+
+                              <div>
+                                <label htmlFor="kohasil-no-anggota" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                  No. Anggota Kohasil <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  id="kohasil-no-anggota"
+                                  type="text"
+                                  required
+                                  value={potonganGajiData.noAnggotaKohasil}
+                                  onChange={(e) => setPotonganGajiData({ ...potonganGajiData, noAnggotaKohasil: e.target.value })}
+                                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
+                                  autoComplete="off"
+                                />
+                              </div>
+
+                              <div>
+                                <label htmlFor="kohasil-bank" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                  Nama Bank <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                  id="kohasil-bank"
+                                  required
+                                  value={potonganGajiData.namaBank}
+                                  onChange={(e) => setPotonganGajiData({
+                                    ...potonganGajiData,
+                                    namaBank: e.target.value,
+                                    namaBankLain: e.target.value === "Lain-lain" ? potonganGajiData.namaBankLain : "",
+                                  })}
+                                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all text-slate-800 bg-white"
+                                >
+                                  <option value="">-- Pilih Nama Bank --</option>
+                                  {MALAYSIAN_BANK_OPTIONS.map((group) => (
+                                    <optgroup key={group.label} label={group.label}>
+                                      {group.banks.map((bank) => (
+                                        <option key={bank} value={bank}>{bank}</option>
+                                      ))}
+                                    </optgroup>
+                                  ))}
+                                  <option value="Lain-lain">Lain-lain</option>
+                                </select>
+                              </div>
+
+                              {potonganGajiData.namaBank === "Lain-lain" && (
+                                <div className="sm:col-span-2">
+                                  <label htmlFor="kohasil-bank-lain" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    Nama Bank Lain <span className="text-red-500">*</span>
+                                  </label>
+                                  <input
+                                    id="kohasil-bank-lain"
+                                    type="text"
+                                    required
+                                    value={potonganGajiData.namaBankLain}
+                                    onChange={(e) => setPotonganGajiData({ ...potonganGajiData, namaBankLain: e.target.value })}
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
+                                  />
+                                </div>
+                              )}
+
+                              <div className="sm:col-span-2">
+                                <label htmlFor="kohasil-no-akaun" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                  No. Akaun Bank <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                  id="kohasil-no-akaun"
+                                  type="text"
+                                  required
+                                  value={potonganGajiData.noAkaunBank}
+                                  onChange={(e) => setPotonganGajiData({ ...potonganGajiData, noAkaunBank: e.target.value })}
+                                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
+                                  inputMode="numeric"
+                                  autoComplete="off"
+                                />
+                              </div>
+                            </div>
+
+                            <section
+                              aria-labelledby="salary-authorization-letter"
+                              className="bg-white p-4 text-xs leading-relaxed text-black sm:p-6 sm:text-sm"
+                              style={{ fontFamily: "Arial, Helvetica, sans-serif" }}
+                            >
+                              <div className="space-y-1">
+                                <p><strong>Nama :</strong> {ahli?.nama}</p>
+                                <p><strong>Alamat :</strong> {addressLines[0]}</p>
+                                {addressLines.slice(1).map((line, index) => (
+                                  <p key={`alamat-${index}`} className="pl-14">{line}</p>
+                                ))}
+                                <p><strong>Tarikh :</strong> {new Date().toLocaleDateString("ms-MY", {
+                                  day: "2-digit",
+                                  month: "long",
+                                  year: "numeric",
+                                  timeZone: "Asia/Kuala_Lumpur",
+                                })}</p>
+                              </div>
+
+                              <div className="mt-5">
+                                <p>Kepada</p>
+                                <p className="font-bold">Setiausaha</p>
+                                <p className="font-bold">Koperasi Hasil Dalam Negeri Malaysia Berhad</p>
+                              </div>
+
+                              <p className="mt-4">Tuan/Puan,</p>
+                              <h5 id="salary-authorization-letter" className="my-4 font-bold uppercase">
+                                Kebenaran Potongan Gaji Untuk Skim Kesihatan Dan Simpanan Pelbagai Manfaat Yang Akan Dibayar Oleh Lembaga Hasil Dalam Negeri Malaysia
+                              </h5>
+
+                              <div className="space-y-1">
+                                <p>Saya <strong>{ahli?.nama}</strong> (Gunakan Huruf Besar)</p>
+                                <p>No. Kad Pengenalan : <strong>{ahli?.ic}</strong> ( Baru/Lama )</p>
+                                <p>No. Gaji : <strong>{potonganGajiData.noGaji}</strong></p>
+                                <p>Jabatan/Cawangan : <strong>{potonganGajiData.jabatanCawangan}</strong></p>
+                                <p>No. Anggota Kohasil : <strong>{potonganGajiData.noAnggotaKohasil}</strong></p>
+                                <p>No. Akaun/Nama Bank : <strong>{potonganGajiData.noAkaunBank} / {bankName}</strong></p>
+                              </div>
+
+                              <p className="mt-5 text-justify">
+                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim berkelompok pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
+                              </p>
+
+                              <div className="mt-5 space-y-1">
+                                <div className="grid grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)_minmax(3rem,0.4fr)] gap-x-3 font-bold">
+                                  <span>Nama Sendiri/Ahli</span>
+                                  <span>No KP</span>
+                                  <span>RM</span>
+                                </div>
+                                {renderMemberRow(ahli, "ahli")}
+                                <p className="pt-1 font-bold">Nama Pasangan</p>
+                                {renderMemberRow(
+                                  spouseTab ? membersData[spouseTab.id] : undefined,
+                                  "pasangan",
+                                )}
+                                <p className="pt-1 font-bold">Nama Anak-anak</p>
+                                {childRows.map((tab, index) =>
+                                  renderMemberRow(
+                                    tab ? membersData[tab.id] : undefined,
+                                    tab?.id || `anak-kosong-${index}`,
+                                  )
+                                )}
+                                <div className="grid grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)_minmax(3rem,0.4fr)] gap-x-3 pt-1 font-bold">
+                                  <span>Jumlah</span>
+                                  <span />
+                                  <span>RM {monthlyDeduction.toFixed(2)}</span>
+                                </div>
+                              </div>
+
+                              <p className="mt-5">
+                                Jika terdapat sebarang pertanyaan, sila hubungi saya di nombor telefon yang telah diberikan.
+                              </p>
+                              <p className="mt-3">Sekian, terima kasih.</p>
+                              <div className="mt-4 space-y-1">
+                                <p>Tandatangan : ......................................</p>
+                                <p>Tarikh : ......................................</p>
+                                <p>No.Telefon : {ahli?.telefon}</p>
+                              </div>
+                            </section>
+
+                            {errorMessage && (
+                              <div role="alert" className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700">
+                                {errorMessage}
+                              </div>
+                            )}
+
+                            <div className="flex gap-3 pt-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setFormStep("form");
+                                  setErrorMessage("");
+                                }}
+                                className="flex-1 py-3.5 rounded-xl text-xs sm:text-sm font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5"
+                              >
+                                <ArrowLeft className="h-4 w-4" />
+                                Kembali
+                              </button>
+                              <button
+                                type="submit"
+                                className="flex-[2] py-3.5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2"
+                                style={{ background: "var(--color-brand-green)" }}
+                              >
+                                Teruskan ke Pengisytiharan &rarr;
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      );
+                    }
+
+                    if (formStep === "declaration") {
+                      return (
+                        <div className="space-y-4">
+                          <div>
+                            <h4 className="text-lg font-bold text-green-950 mb-1" style={{ fontFamily: "var(--font-heading)" }}>
+                              Pengisytiharan & Persetujuan Akhir
                             </h4>
                             <p className="text-xs text-slate-500">
                               Sila semak pengisytiharan berikut sebelum menghantar permohonan {selectedFormPackage.name}.
@@ -1646,7 +2021,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               <button
                                 type="button"
                                 onClick={() => {
-                                  setFormStep("form");
+                                  setFormStep("authorization");
                                   setErrorMessage("");
                                 }}
                                 className="flex-1 py-3.5 rounded-xl text-xs sm:text-sm font-semibold border border-slate-300 text-slate-700 hover:bg-slate-100 transition-colors flex items-center justify-center gap-1.5"
@@ -2025,11 +2400,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               ) : (
                                 <button
                                   type="button"
-                                  onClick={proceedToDeclaration}
+                                  onClick={proceedToAuthorization}
                                   className={`py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white shadow-lg transition-all hover:opacity-95 flex items-center justify-center gap-2 ${memberTabs.length === 1 ? "w-full py-3.5" : ""}`}
                                   style={{ background: "var(--color-brand-green)" }}
                                 >
-                                  Teruskan ke Pengisytiharan &rarr;
+                                  Teruskan ke Pengesahan Kebenaran Potongan Gaji &rarr;
                                 </button>
                               )}
                             </div>

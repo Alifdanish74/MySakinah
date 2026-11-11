@@ -16,6 +16,7 @@ import {
   generateReceiptPdf,
   type MemberInfo,
   type ReceiptData,
+  type SalaryDeductionAuthorization,
 } from "@sakinah/ui/lib/kohasil-receipt";
 
 interface SubmissionTableProps {
@@ -95,6 +96,19 @@ function isReceiptMember(value: unknown): value is MemberInfo {
   );
 }
 
+function isSalaryDeductionAuthorization(value: unknown): value is SalaryDeductionAuthorization {
+  if (!isRecord(value)) return false;
+
+  return (
+    typeof value.noGaji === "string" &&
+    typeof value.jabatanCawangan === "string" &&
+    typeof value.noAnggotaKohasil === "string" &&
+    typeof value.namaBank === "string" &&
+    typeof value.noAkaunBank === "string" &&
+    (value.namaBankLain === undefined || typeof value.namaBankLain === "string")
+  );
+}
+
 function parseReceiptData(value: unknown): ReceiptData | null {
   if (
     !isRecord(value) ||
@@ -112,7 +126,9 @@ function parseReceiptData(value: unknown): ReceiptData | null {
     typeof value.statusKeahlian !== "string" ||
     !isRecord(value.members) ||
     typeof value.submittedAt !== "string" ||
-    typeof value.category !== "string"
+    typeof value.category !== "string" ||
+    (value.salaryDeductionAuthorization !== undefined &&
+      !isSalaryDeductionAuthorization(value.salaryDeductionAuthorization))
   ) {
     return null;
   }
@@ -141,6 +157,84 @@ function parseReceiptData(value: unknown): ReceiptData | null {
     members,
     submittedAt,
     category: value.category,
+    salaryDeductionAuthorization: value.salaryDeductionAuthorization,
+  };
+}
+
+function getAlbarzahReceiptData(submission: Submission): ReceiptData | null {
+  const formData = submission.form_data || {};
+  const savedReceipt = parseReceiptData(formData.receiptData);
+  if (savedReceipt) return savedReceipt;
+
+  const stringValue = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = formData[key];
+      if (typeof value === "string" && value.trim()) return value.trim();
+    }
+    return "";
+  };
+
+  const packageName = stringValue("pakej", "packageName", "package_name");
+  const packageAmountMatch = packageName.match(/[\d,]+(?:\.\d{1,2})?/);
+  const packageAmount = /permata/i.test(packageName)
+    ? 1500
+    : packageAmountMatch
+      ? Number(packageAmountMatch[0].replace(/,/g, ""))
+      : Number.NaN;
+  const submittedAt = new Date(submission.created_at);
+  const nama = stringValue("nama", "name") || submission.submitted_by?.trim() || "";
+
+  if (!nama || !packageName || !Number.isFinite(submittedAt.getTime())) return null;
+
+  const knownPackages: Record<number, { name: string; coverage: string }> = {
+    80: { name: "Pakej RM 80.00 Setahun", coverage: "RM 8,000" },
+    120: { name: "Pakej RM 120.00 Setahun", coverage: "RM 10,000" },
+    180: { name: "Pakej RM 180.00 Setahun", coverage: "RM 17,000" },
+    240: { name: "Pakej RM 240.00 Setahun", coverage: "RM 24,000" },
+    1500: { name: packageName, coverage: "RM 1,730" },
+  };
+  const packageDetails = knownPackages[packageAmount];
+  const displayPackageName = packageDetails?.name ?? packageName;
+  const contributionDescription = packageAmount === 1500
+    ? "Yuran pakej: RM 1,500.00 seumur hidup"
+    : Number.isFinite(packageAmount)
+      ? `Yuran pakej: RM ${packageAmount.toFixed(2)} setahun`
+      : `Yuran pakej: ${packageName}`;
+  const formattedStatus: Record<Submission["status"], string> = {
+    baru: "Permohonan baru",
+    terima: "Permohonan diterima",
+    tangguh: "Permohonan ditangguhkan",
+    proses: "Permohonan dalam proses",
+    aktif: "Keahlian aktif",
+    tamat: "Keahlian tamat",
+    "tak layak": "Permohonan tidak layak",
+    "lebih umur": "Melebihi had umur",
+    meninggal: "Meninggal dunia",
+  };
+
+  return {
+    module: "albarzah",
+    referenceNumber: `ALBARZAH-${submittedAt.toISOString().slice(0, 10).replace(/-/g, "")}-${submission.id.slice(0, 8).toUpperCase()}`,
+    packageName: displayPackageName,
+    packageCategory: "Individu",
+    monthlyFee: Number.isFinite(packageAmount) ? packageAmount : 0,
+    contributionDescription,
+    coverage: stringValue("coverage", "jumlahManfaat", "jumlah_manfaat") || packageDetails?.coverage || "-",
+    ahli: {
+      nama,
+      telefon: stringValue("no_telefon", "telefon", "phone"),
+      ic: stringValue("no_kp", "ic", "no_ic"),
+      alamat1: stringValue("alamat1", "alamat"),
+      alamat2: stringValue("alamat2", "poskod"),
+      alamat3: stringValue("alamat3", "daerah"),
+      negeri: stringValue("negeri"),
+    },
+    namaWaris: stringValue("namaWaris", "nama_waris"),
+    telefonWaris: stringValue("telefonWaris", "telefon_waris"),
+    statusKeahlian: formattedStatus[submission.status],
+    members: {},
+    submittedAt,
+    category: "Individu",
   };
 }
 
@@ -159,7 +253,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const [receiptError, setReceiptError] = useState("");
 
   function handleReceiptDownload(submission: Submission) {
-    const receiptData = parseReceiptData(submission.form_data?.receiptData);
+    const receiptData = isAlbarzah
+      ? getAlbarzahReceiptData(submission)
+      : parseReceiptData(submission.form_data?.receiptData);
     if (!receiptData) return;
 
     try {
@@ -913,7 +1009,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const negeriStr = getNegeriDisplay(fd);
                 const pakej = fd.pakej || "N/A";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
-                const receiptData = isKohasil || isAlbarzah ? parseReceiptData(fd.receiptData) : null;
+                const receiptData = isAlbarzah
+                  ? getAlbarzahReceiptData(s)
+                  : isKohasil
+                    ? parseReceiptData(fd.receiptData)
+                    : null;
 
                 // ── Al-Barzah specific row ────────────────────────────────
                 if (isAlbarzah) {
@@ -1036,43 +1136,45 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       {showActions && (
                         <td style={{ textAlign: "center" }}>
                           <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
-                            <button
-                              type="button"
-                              onClick={() => handleReceiptDownload(s)}
-                              disabled={!receiptData}
-                              className="btn-ghost"
-                              style={{
-                                minWidth: 44,
-                                height: 44,
-                                minHeight: 44,
-                                padding: "0 0.625rem",
-                                justifyContent: "center",
-                                gap: "0.375rem",
-                                cursor: receiptData ? "pointer" : "not-allowed",
-                                opacity: receiptData ? 1 : 0.55,
-                                whiteSpace: "nowrap",
-                              }}
-                              aria-label={
-                                receiptData
-                                  ? `Download receipt for ${nama}`
-                                  : `Receipt unavailable for ${nama}`
-                              }
-                              title={
-                                receiptData
-                                  ? `Download receipt for ${nama}`
-                                  : "Receipt data was not saved for this older submission."
-                              }
-                            >
-                              <Download size={16} aria-hidden="true" />
-                              <span>{receiptData ? "Download" : "Unavailable"}</span>
-                            </button>
+                            {["terima", "proses", "aktif"].includes(s.status) && (
+                              <button
+                                type="button"
+                                onClick={() => handleReceiptDownload(s)}
+                                disabled={!receiptData}
+                                className="btn-ghost"
+                                style={{
+                                  minWidth: 44,
+                                  height: 44,
+                                  minHeight: 44,
+                                  padding: "0 0.625rem",
+                                  justifyContent: "center",
+                                  gap: "0.375rem",
+                                  cursor: receiptData ? "pointer" : "not-allowed",
+                                  opacity: receiptData ? 1 : 0.55,
+                                  whiteSpace: "nowrap",
+                                }}
+                                aria-label={
+                                  receiptData
+                                    ? `Download receipt for ${nama}`
+                                    : `Receipt unavailable for ${nama}`
+                                }
+                                title={
+                                  receiptData
+                                    ? `Download receipt for ${nama}`
+                                    : "Required application details are missing, so this receipt cannot be generated."
+                                }
+                              >
+                                <Download size={16} aria-hidden="true" />
+                                <span>{receiptData ? "Download" : "Unavailable"}</span>
+                              </button>
+                            )}
                             {canEdit && (
                               <>
                                 <button
                                   id={`edit-${s.id}`}
                                   onClick={() => setEditingItem(s)}
                                   className="btn-ghost"
-                                  style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
+                                  style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
                                   aria-label={`Edit ${nama}`}
                                 >
                                   <Pencil size={16} aria-hidden="true" />
@@ -1081,7 +1183,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                                   id={`delete-${s.id}`}
                                   onClick={() => setDeletingItem(s)}
                                   className="btn-danger"
-                                  style={{ padding: "0.375rem 0.5rem", minHeight: 44, minWidth: 44 }}
+                                  style={{ width: 44, minWidth: 44, height: 44, minHeight: 44, padding: 0, justifyContent: "center" }}
                                   aria-label={`Delete ${nama}`}
                                 >
                                   <Trash2 size={16} aria-hidden="true" />
@@ -1205,7 +1307,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     {showActions && (
                       <td style={{ textAlign: "center" }}>
                         <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
-                          {(isKohasil || isAlbarzah) && (
+                          {(isKohasil || (isAlbarzah && ["terima", "proses", "aktif"].includes(s.status))) && (
                             <button
                               type="button"
                               onClick={() => handleReceiptDownload(s)}
@@ -1230,7 +1332,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                               title={
                                 receiptData
                                   ? `Download receipt for ${nama}`
-                                  : "Receipt data was not saved for this older submission."
+                                  : "Required application details are missing, so this receipt cannot be generated."
                               }
                             >
                               <Download size={16} aria-hidden="true" />

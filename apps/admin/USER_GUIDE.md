@@ -111,6 +111,10 @@ When you click on any module card (e.g. `/kohasil`), you enter the data manageme
    - On the KOHASiL submissions page, select **Download** in the row's Actions column.
    - Receipt downloads are available to any admin with access to the KOHASiL module.
    - Older submissions without a saved receipt snapshot show **Unavailable**. Their stored rows do not contain all details needed to recreate the original receipt.
+6. **Downloading an Al-Barzah receipt**:
+   - On the Al-Barzah submissions page, first edit the application and change its status to **Terima**, **Proses**, or **Aktif**.
+   - The row's **Download** button appears only for applications in one of these statuses.
+   - Older applications are generated from their saved application details; **Unavailable** appears only if required details are missing.
 
 ---
 

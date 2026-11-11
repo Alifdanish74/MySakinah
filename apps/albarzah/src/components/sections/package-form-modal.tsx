@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download, Copy, Check } from "lucide-react";
 import { toAlbarzahStoragePakej } from "@/lib/pakej";
 import {
-  generateReceiptPdf,
   generateReceiptReferenceNumber,
   type ReceiptData,
 } from "@sakinah/ui/lib/kohasil-receipt";
@@ -138,8 +137,6 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errMsg, setErrMsg] = useState("");
   const [accCopied, setAccCopied] = useState(false);
-  const [submittedReceipt, setSubmittedReceipt] = useState<ReceiptData | null>(null);
-  const [receiptDownloadError, setReceiptDownloadError] = useState("");
 
   const details = PACKAGE_DETAILS_MAP[packageName] || {
     yearly: packageName,
@@ -148,17 +145,6 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
     age: "Semua Umur",
     total: "Mengikut Pakej",
   };
-
-  function handleReceiptDownload() {
-    if (!submittedReceipt) return;
-    try {
-      generateReceiptPdf(submittedReceipt);
-      setReceiptDownloadError("");
-    } catch (error) {
-      console.error("Albarzah receipt download error:", error);
-      setReceiptDownloadError("Surat pengesahan tidak dapat dimuat turun. Sila cuba lagi.");
-    }
-  }
 
   const handleCopyAcc = async () => {
     try {
@@ -205,7 +191,6 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
       return;
     }
     setErrMsg("");
-    setReceiptDownloadError("");
     setStatus("loading");
     try {
       const sanitizedTel = tel.replace(/[\s-]/g, "");
@@ -274,14 +259,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
         const errData = await res.json().catch(() => null);
         throw new Error(errData?.error || "Ralat menghantar permohonan");
       }
-      setSubmittedReceipt(receiptData);
       setStatus("success");
-      try {
-        generateReceiptPdf(receiptData);
-      } catch (error) {
-        console.error("Albarzah receipt auto-download error:", error);
-        setReceiptDownloadError("Surat pengesahan tidak dapat dimuat turun secara automatik. Cuba muat turun sekali lagi.");
-      }
     } catch (err: any) {
       setStatus("error");
       setErrMsg(err?.message || "Ralat sambungan. Sila cuba lagi atau hubungi kami melalui WhatsApp.");
@@ -370,7 +348,7 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                       PERMOHONAN BERJAYA!
                     </h4>
                     <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
-                      Permohonan bagi <strong>{packageName}</strong> telah berjaya disimpan. Surat pengesahan Albarzah tersedia untuk dimuat turun.
+                      Permohonan bagi <strong>{packageName}</strong> telah berjaya disimpan dan akan disemak oleh pihak Albarzah.
                     </p>
                   </div>
 
@@ -381,20 +359,6 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
                       Anda boleh mendapatkan Kad Keahlian selepas 3 hari bekerja melalui WhatsApp.
                     </p>
                   </div>
-
-                  {receiptDownloadError && (
-                    <p role="alert" className="text-sm text-red-700">{receiptDownloadError}</p>
-                  )}
-                  <button
-                    type="button"
-                    onClick={handleReceiptDownload}
-                    disabled={!submittedReceipt}
-                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-full text-sm font-bold border transition-colors disabled:opacity-50"
-                    style={{ borderColor: "var(--color-brand-border)", color: "var(--color-brand-green-dark)" }}
-                  >
-                    <Download className="h-4 w-4" />
-                    Muat Turun Surat Pengesahan
-                  </button>
 
                   <div className="pt-2 space-y-2.5">
                     <a

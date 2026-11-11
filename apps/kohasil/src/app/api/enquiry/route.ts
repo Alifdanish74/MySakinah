@@ -47,7 +47,29 @@ export async function POST(request: Request) {
     }
 
     const data = parsed.data as any;
-    const receiptData = parsed.data.receiptData;
+    const submittedReceiptData = parsed.data.receiptData;
+    if (submittedReceiptData && (!parsed.data.potonganGaji || !submittedReceiptData.salaryDeductionAuthorization)) {
+      return Response.json(
+        { success: false, error: "Maklumat pengesahan potongan gaji diperlukan." },
+        { status: 422 }
+      );
+    }
+
+    const potonganGaji = parsed.data.potonganGaji
+      ? {
+          ...parsed.data.potonganGaji,
+          namaBank: parsed.data.potonganGaji.namaBank === "Lain-lain"
+            ? parsed.data.potonganGaji.namaBankLain || "Lain-lain"
+            : parsed.data.potonganGaji.namaBank,
+        }
+      : undefined;
+    const receiptData = submittedReceiptData && potonganGaji
+      ? {
+          ...submittedReceiptData,
+          module: "kohasil" as const,
+          salaryDeductionAuthorization: potonganGaji,
+        }
+      : submittedReceiptData;
     const membersData = body.members || {};
     const memberKeys = Object.keys(membersData);
 
@@ -87,6 +109,7 @@ export async function POST(request: Request) {
             utama: mainName,
             namaWaris: data.namaWaris || "-",
             telefonWaris: data.telefonWaris || "-",
+            ...(potonganGaji ? { potonganGaji } : {}),
             jenisTanggungan: m.jenisTanggungan || "",
             lindungiIbuBapa: data.lindungiIbuBapa === "ya" ? "Ya (RM10/bln)" : "Tidak",
             kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
@@ -116,6 +139,7 @@ export async function POST(request: Request) {
         utama: data.nama,
         namaWaris: data.namaWaris || "-",
         telefonWaris: data.telefonWaris || "-",
+        ...(potonganGaji ? { potonganGaji } : {}),
         lindungiIbuBapa: data.lindungiIbuBapa === "ya" ? "Ya (RM10/bln)" : "Tidak",
         kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
         ...(receiptData ? { receiptData } : {}),

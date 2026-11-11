@@ -12,6 +12,23 @@ const receiptMemberSchema = z.object({
   jenisTanggungan: z.string().optional(),
 });
 
+const potonganGajiSchema = z.object({
+  noGaji: z.string().trim().min(1, "No. Gaji diperlukan"),
+  jabatanCawangan: z.string().trim().min(1, "Jabatan/Cawangan diperlukan"),
+  noAnggotaKohasil: z.string().trim().min(1, "No. Anggota Kohasil diperlukan"),
+  namaBank: z.string().trim().min(1, "Nama bank diperlukan"),
+  namaBankLain: z.string().trim().optional(),
+  noAkaunBank: z.string().trim().min(1, "No. akaun bank diperlukan"),
+}).superRefine((data, ctx) => {
+  if (data.namaBank === "Lain-lain" && !data.namaBankLain) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["namaBankLain"],
+      message: "Sila masukkan nama bank",
+    });
+  }
+});
+
 const receiptDataSchema = z.object({
   referenceNumber: z.string().min(1),
   packageName: z.string().min(1),
@@ -25,6 +42,8 @@ const receiptDataSchema = z.object({
   members: z.record(z.string(), receiptMemberSchema),
   submittedAt: z.iso.datetime(),
   category: z.string(),
+  module: z.enum(["kohasil", "albarzah"]).optional(),
+  salaryDeductionAuthorization: potonganGajiSchema.optional(),
 });
 
 export const enquirySchema = z.object({
@@ -56,6 +75,7 @@ export const enquirySchema = z.object({
   pakej: z.string().min(1, "Sila pilih pakej yang diminati"),
   lindungiIbuBapa: z.enum(["ya", "tidak"]).optional().default("tidak"),
   kaedahHubungi: z.enum(["telefon", "whatsapp", "email"]).optional().default("whatsapp"),
+  potonganGaji: potonganGajiSchema.optional(),
   persetujuan: z.preprocess(
     (val) => (val === true || val === "true" || val === 1 || val === "1" ? true : val),
     z

@@ -11,6 +11,15 @@ export interface MemberInfo {
   jenisTanggungan?: string;
 }
 
+export interface SalaryDeductionAuthorization {
+  noGaji: string;
+  jabatanCawangan: string;
+  noAnggotaKohasil: string;
+  namaBank: string;
+  namaBankLain?: string;
+  noAkaunBank: string;
+}
+
 export interface ReceiptData {
   module?: "kohasil" | "albarzah";
   referenceNumber?: string;
@@ -26,6 +35,7 @@ export interface ReceiptData {
   members: Record<string, MemberInfo>;
   submittedAt: Date;
   category: string;
+  salaryDeductionAuthorization?: SalaryDeductionAuthorization;
 }
 
 export function generateReceiptReferenceNumber(date: Date, module: ReceiptData["module"] = "kohasil"): string {
@@ -72,7 +82,321 @@ function formatTime(date: Date): string {
   });
 }
 
+function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
+  const authorization = data.salaryDeductionAuthorization;
+  if (!authorization) return;
+
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 16;
+  const contentWidth = pageWidth - margin * 2;
+  const green: [number, number, number] = [34, 85, 53];
+  const navy: [number, number, number] = [43, 48, 113];
+  const members = Object.entries(data.members).filter(([, member]) => member.nama.trim() || member.ic.trim());
+  const bankName = authorization.namaBank === "Lain-lain"
+    ? authorization.namaBankLain || "Lain-lain"
+    : authorization.namaBank;
+  const monthlyDeduction = data.monthlyFee + (data.statusKeahlian === "Bukan Ahli" ? 1 : 0);
+
+  const drawHeader = (title: string, pageNumber: number) => {
+    doc.setFillColor(...navy);
+    doc.rect(0, 0, pageWidth, 20, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(10);
+    doc.setTextColor(255, 255, 255);
+    doc.text("SKIM KHAIRAT KOHASIL RAUDHAH", pageWidth / 2, 8, { align: "center" });
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.text("Diuruskan oleh BJSB Sdn. Bhd. • www.mysakinahpro.com.my", pageWidth / 2, 14, { align: "center" });
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(15);
+    doc.setTextColor(...green);
+    doc.text(title, pageWidth / 2, 31, { align: "center" });
+    doc.setDrawColor(...green);
+    doc.setLineWidth(0.6);
+    doc.line(margin, 36, pageWidth - margin, 36);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+    doc.setTextColor(70, 70, 70);
+    doc.text(`No. Rujukan: ${refNo}`, margin, 43);
+    doc.text(
+      `Tarikh: ${formatDate(data.submittedAt)}   Masa: ${formatTime(data.submittedAt)}   Halaman ${pageNumber} daripada 2`,
+      pageWidth - margin,
+      43,
+      { align: "right" },
+    );
+  };
+
+  const drawSectionTitle = (title: string, y: number) => {
+    doc.setFillColor(...green);
+    doc.roundedRect(margin, y, contentWidth, 7, 1.5, 1.5, "F");
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(255, 255, 255);
+    doc.text(title.toUpperCase(), margin + 3, y + 4.8);
+    return y + 10;
+  };
+
+  const drawFooter = (pageNumber: number) => {
+    doc.setFillColor(...navy);
+    doc.rect(0, pageHeight - 13, pageWidth, 13, "F");
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(6.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text(
+      `Skim Khairat KOHASiL Raudhah • BJSB Sdn. Bhd. • No. Rujukan: ${refNo} • ${pageNumber}/2`,
+      pageWidth / 2,
+      pageHeight - 5,
+      { align: "center" },
+    );
+  };
+
+  const drawWrapped = (text: string, x: number, y: number, width: number, fontSize = 8): number => {
+    doc.setFontSize(fontSize);
+    const lines = doc.splitTextToSize(text, width);
+    doc.text(lines, x, y);
+    return lines.length * (fontSize * 0.48);
+  };
+
+  const drawMemberRole = (key: string, member: MemberInfo, extraIndex: number) => {
+    if (key.startsWith("tanggungan")) {
+      return `Tambahan ${extraIndex}${member.jenisTanggungan ? ` (${member.jenisTanggungan})` : ""}`;
+    }
+    return key.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  };
+
+  // Page 1: a compact application receipt, sized to keep the authorization letter on page 2.
+  drawHeader("SURAT PENGESAHAN PERMOHONAN", 1);
+  let y = 50;
+
+  doc.setFillColor(217, 119, 6);
+  doc.roundedRect(margin, y, contentWidth, 16, 2, 2, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(11);
+  doc.setTextColor(255, 255, 255);
+  doc.text(data.packageName.toUpperCase(), pageWidth / 2, y + 6, { align: "center" });
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text(`CARUMAN POTONGAN GAJI BULANAN • RM${monthlyDeduction.toFixed(2)}`, pageWidth / 2, y + 12, { align: "center" });
+  y += 22;
+
+  y = drawSectionTitle("Maklumat Ahli (Pemohon Utama)", y);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.setTextColor(30, 30, 30);
+  doc.text("Nama", margin, y);
+  doc.text("No. Kad Pengenalan", margin + 100, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(data.ahli.nama.toUpperCase(), margin, y + 4);
+  doc.text(formatIC(data.ahli.ic), margin + 100, y + 4);
+  y += 10;
+  doc.setFont("helvetica", "bold");
+  doc.text("No. Telefon", margin, y);
+  doc.text("Alamat", margin + 100, y);
+  doc.setFont("helvetica", "normal");
+  doc.text(formatPhone(data.ahli.telefon), margin, y + 4);
+  const applicantAddress = [
+    data.ahli.alamat1,
+    data.ahli.alamat2,
+    data.ahli.alamat3,
+    data.ahli.negeri,
+  ].filter(Boolean).join(", ");
+  const addressHeight = drawWrapped(applicantAddress || "-", margin + 100, y + 4, contentWidth - 103, 7);
+  y += Math.max(10, addressHeight + 5);
+
+  y = drawSectionTitle("Maklumat Waris", y);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.setTextColor(30, 30, 30);
+  doc.text(`Nama: ${data.namaWaris.toUpperCase() || "-"}`, margin, y);
+  doc.text(`No. Telefon: ${formatPhone(data.telefonWaris) || "-"}`, margin + 100, y);
+  y += 7;
+
+  y = drawSectionTitle("Maklumat Pendaftaran (lampiran)", y);
+  const allMembers = Object.entries(data.members);
+  let extraIndex = 0;
+  allMembers.forEach(([key, member], index) => {
+    if (!member.nama.trim() && !member.ic.trim()) return;
+    if (key.startsWith("tanggungan")) extraIndex += 1;
+    if (index % 2 === 0) {
+      doc.setFillColor(245, 248, 246);
+      doc.rect(margin, y - 3, contentWidth, 10, "F");
+    }
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.5);
+    doc.setTextColor(...green);
+    doc.text(drawMemberRole(key, member, extraIndex), margin + 2, y);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(30, 30, 30);
+    const display = `${member.nama || "-"}  •  KP ${formatIC(member.ic) || "-"}  •  Tel ${formatPhone(member.telefon) || "-"}`;
+    doc.text(doc.splitTextToSize(display, contentWidth - 45).slice(0, 1), margin + 45, y);
+    y += 8;
+  });
+
+  y += 2;
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7);
+  doc.setTextColor(70, 70, 70);
+  drawWrapped(
+    "Permohonan anda telah diterima untuk diproses. Maklumat lengkap ahli dan kebenaran potongan gaji disertakan pada halaman seterusnya.",
+    margin,
+    y,
+    contentWidth,
+    7,
+  );
+  drawFooter(1);
+
+  // Page 2 follows the plain black-and-white salary-deduction authorization form.
+  doc.addPage();
+  y = 19;
+  doc.setTextColor(0, 0, 0);
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.2);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8.5);
+  const drawLabeledValue = (label: string, value: string, labelWidth: number) => {
+    doc.setFont("helvetica", "bold");
+    doc.text(label === "Saya" ? "Saya" : `${label} :`, margin, y);
+    doc.setFont("helvetica", "normal");
+    const lines = doc.splitTextToSize(value || "........................................................", contentWidth - labelWidth);
+    doc.text(lines, margin + labelWidth, y);
+    y += Math.max(5, lines.length * 4.5);
+  };
+  const addressLines = [
+    data.ahli.alamat1,
+    data.ahli.alamat2,
+    data.ahli.alamat3,
+    data.ahli.negeri,
+  ].filter(Boolean);
+
+  drawLabeledValue("Nama", data.ahli.nama.toUpperCase(), 18);
+  drawLabeledValue("Alamat", addressLines[0] || "", 18);
+  addressLines.slice(1).forEach((line) => {
+    doc.text(line, margin + 18, y);
+    y += 5;
+  });
+  drawLabeledValue("Tarikh", formatDate(data.submittedAt), 18);
+  y += 5;
+
+  doc.text("Kepada", margin, y);
+  y += 5;
+  doc.setFont("helvetica", "bold");
+  doc.text("Setiausaha", margin, y);
+  y += 5;
+  doc.text("Koperasi Hasil Dalam Negeri Malaysia Berhad", margin, y);
+  y += 7;
+  doc.setFont("helvetica", "normal");
+  doc.text("Tuan/Puan,", margin, y);
+  y += 8;
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9);
+  const purposeHeight = drawWrapped(
+    "KEBENARAN POTONGAN GAJI UNTUK SKIM KESIHATAN DAN SIMPANAN PELBAGAI MANFAAT YANG AKAN DIBAYAR OLEH LEMBAGA HASIL DALAM NEGERI MALAYSIA",
+    margin,
+    y,
+    contentWidth,
+    9,
+  );
+  y += purposeHeight + 4;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  drawLabeledValue("Saya", `${data.ahli.nama.toUpperCase()} (Gunakan Huruf Besar)`, 18);
+  drawLabeledValue("No. Kad Pengenalan", `${formatIC(data.ahli.ic)} ( Baru/Lama )`, 39);
+  drawLabeledValue("No. Gaji", authorization.noGaji, 24);
+  drawLabeledValue("Jabatan/Cawangan", authorization.jabatanCawangan, 39);
+  drawLabeledValue("No. Anggota Kohasil", authorization.noAnggotaKohasil, 39);
+  drawLabeledValue("No. Akaun/Nama Bank", `${authorization.noAkaunBank} / ${bankName}`, 39);
+  y += 5;
+
+  const declarationText = `Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM ${monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim berkelompok pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.`;
+  y += drawWrapped(declarationText, margin, y, contentWidth, 8) + 5;
+
+  const nameColumnWidth = contentWidth * 0.62;
+  const icColumnWidth = contentWidth * 0.25;
+  const amountColumnWidth = contentWidth - nameColumnWidth - icColumnWidth;
+  const icColumnX = margin + nameColumnWidth;
+  const amountColumnX = icColumnX + icColumnWidth;
+  const drawMemberRow = (member?: MemberInfo, prefix = "") => {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    const name = `${prefix}${member?.nama || ""}`;
+    const ic = member?.ic ? formatIC(member.ic) : "";
+    doc.text(doc.splitTextToSize(name, nameColumnWidth - 2).slice(0, 1), margin, y);
+    if (ic) doc.text(doc.splitTextToSize(ic, icColumnWidth - 2).slice(0, 1), icColumnX, y);
+    doc.setLineDashPattern([0.2, 0.7], 0);
+    doc.line(margin, y + 1.2, margin + nameColumnWidth - 2, y + 1.2);
+    doc.line(icColumnX, y + 1.2, icColumnX + icColumnWidth - 2, y + 1.2);
+    doc.line(amountColumnX, y + 1.2, amountColumnX + amountColumnWidth - 2, y + 1.2);
+    doc.setLineDashPattern([], 0);
+    y += 6;
+  };
+  const mainMember = members.find(([key]) => key === "ahli")?.[1] || data.ahli;
+  const spouse = members.find(([key]) => key === "pasangan")?.[1];
+  const children = members.filter(([key]) => key !== "ahli" && key !== "pasangan");
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.text("Nama Sendiri/Ahli", margin, y);
+  doc.text("No KP", icColumnX, y);
+  doc.text("RM", amountColumnX, y);
+  y += 5;
+  drawMemberRow(mainMember);
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Nama Pasangan", margin, y);
+  y += 5;
+  drawMemberRow(spouse);
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Nama Anak-anak", margin, y);
+  y += 5;
+  const childCount = Math.max(5, children.length);
+  for (let index = 0; index < childCount; index += 1) {
+    drawMemberRow(children[index]?.[1], `${index + 1}. `);
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.text("Jumlah", margin, y);
+  doc.text(`RM ${monthlyDeduction.toFixed(2)}`, amountColumnX, y);
+  y += 9;
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  y += drawWrapped(
+    "Jika terdapat sebarang pertanyaan, sila hubungi saya di nombor telefon yang telah diberikan.",
+    margin,
+    y,
+    contentWidth,
+    8,
+  ) + 3;
+  doc.text("Sekian, terima kasih.", margin, y);
+  y += 8;
+  const signatureFields = [
+    "Tandatangan : ......................................",
+    "Tarikh : ......................................",
+    `No.Telefon : ${formatPhone(data.ahli.telefon)}`,
+  ];
+  signatureFields.forEach((field) => {
+    doc.text(field, margin, y);
+    y += 5;
+  });
+
+  const filename = `Pengesahan_Permohonan_${data.ahli.nama.replace(/\s+/g, "_")}_${refNo}.pdf`;
+  doc.save(filename);
+}
+
 export function generateReceiptPdf(data: ReceiptData): void {
+  if (data.module === "kohasil" && data.salaryDeductionAuthorization) {
+    const refNo = data.referenceNumber || generateReceiptReferenceNumber(data.submittedAt, "kohasil");
+    drawKohasilReceiptPages(data, refNo);
+    return;
+  }
+
   const isAlbarzah = data.module === "albarzah";
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const refNo = data.referenceNumber || generateReceiptReferenceNumber(data.submittedAt, data.module);
