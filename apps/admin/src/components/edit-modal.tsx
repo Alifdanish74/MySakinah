@@ -582,6 +582,12 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
                 <Field label="Nama Kawan">
                   {inp("form-input-namaKawan", "namaKawan")}
                 </Field>
+                <Field label="No. Tel Kawan">
+                  {phoneInp("form-input-telefonKawan", "telefonKawan")}
+                </Field>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "0.75rem" }}>
                 <Field label="Kategori Kawan">
                   {inp("form-input-jenisKawan", "jenisKawan", "e.g. ANAK, PASANGAN")}
                 </Field>

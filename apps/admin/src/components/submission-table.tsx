@@ -65,6 +65,7 @@ const ALBARZAH_COLS = [
   { label: "HUBUNGAN", center: false },
   { label: "TEL WARIS", center: false },
   { label: "NAMA KAWAN", center: false },
+  { label: "NO TEL KAWAN", center: false },
   { label: "KATEGORI KAWAN", center: false },
   { label: "DIPERKENALKAN OLEH", center: false },
   { label: "NO TEL", center: false },
@@ -636,6 +637,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       "HUBUNGAN",
       "TEL WARIS",
       "NAMA KAWAN",
+      "NO TEL KAWAN",
       "KATEGORI KAWAN",
       "DIPERKENALKAN OLEH",
       "NO TEL DIPERKENALKAN",
@@ -662,6 +664,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "";
       const telefon_waris = fd.telefonWaris || fd.telefon_waris || "";
       const nama_kawan = fd.namaKawan || fd.nama_kawan || "";
+      const tel_kawan = fd.telefonKawan || fd.telefon_kawan || "";
       const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "";
       const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "";
       const tel_perkenalkan = fd.telefonPerkenalkan || fd.telefon_perkenalkan || "";
@@ -683,6 +686,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         `"${hubungan_waris}"`,
         `"${telefon_waris}"`,
         `"${nama_kawan.replace(/"/g, '""')}"`,
+        `"${tel_kawan}"`,
         `"${jenis_kawan}"`,
         `"${nama_perkenalkan.replace(/"/g, '""')}"`,
         `"${tel_perkenalkan}"`,
@@ -1021,10 +1025,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                   const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "N/A";
                   const telefon_waris = formatPhone(fd.telefonWaris || fd.telefon_waris);
                   const nama_kawan = fd.namaKawan || fd.nama_kawan || "N/A";
+                  const tel_kawan = formatPhone(fd.telefonKawan || fd.telefon_kawan);
                   const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "N/A";
                   const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "N/A";
                   const tel_perkenalkan = formatPhone(fd.telefonPerkenalkan || fd.telefon_perkenalkan);
-                  const tel_kawan = formatPhone(fd.telefonKawan || fd.telefon_kawan);
                   const daerah = fd.alamat3 || fd.daerah || "N/A";
                   const tarikh_mohon = fd.tarikh_mohon || "";
 
@@ -1074,11 +1078,15 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
                         {nama_kawan}
                       </td>
-                      {/* 11. Kategori Kawan */}
+                      {/* 11. No Tel Kawan */}
+                      <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
+                        {tel_kawan}
+                      </td>
+                      {/* 12. Kategori Kawan */}
                       <td style={{ color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
                         {jenis_kawan}
                       </td>
-                      {/* 12. Diperkenalkan */}
+                      {/* 13. Diperkenalkan */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
                         {nama_perkenalkan}
                       </td>
