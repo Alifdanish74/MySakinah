@@ -313,7 +313,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   drawLabeledValue("No. Akaun/Nama Bank", `${authorization.noAkaunBank} / ${bankName}`, 39);
   y += 5;
 
-  const declarationText = `Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM ${monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim berkelompok pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.`;
+  const declarationText = `Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM ${monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim kohasil raudhah pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.`;
   y += drawWrapped(declarationText, margin, y, contentWidth, 8) + 5;
 
   const nameColumnWidth = contentWidth * 0.62;
@@ -321,6 +321,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   const amountColumnWidth = contentWidth - nameColumnWidth - icColumnWidth;
   const icColumnX = margin + nameColumnWidth;
   const amountColumnX = icColumnX + icColumnWidth;
+  const isFamilyPackage = data.packageCategory.toLowerCase() === "keluarga";
   const drawMemberRow = (member?: MemberInfo, prefix = "") => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
@@ -336,8 +337,9 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
     y += 6;
   };
   const mainMember = members.find(([key]) => key === "ahli")?.[1] || data.ahli;
-  const spouse = members.find(([key]) => key === "pasangan")?.[1];
-  const children = members.filter(([key]) => key !== "ahli" && key !== "pasangan");
+  const spouse = isFamilyPackage ? members.find(([key]) => key === "pasangan")?.[1] : undefined;
+  const children = isFamilyPackage ? members.filter(([key]) => key.startsWith("anak_")) : [];
+  const additionalMembers = members.filter(([key]) => key.startsWith("tanggungan"));
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
@@ -347,17 +349,28 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   y += 5;
   drawMemberRow(mainMember);
 
-  doc.setFont("helvetica", "bold");
-  doc.text("Nama Pasangan", margin, y);
-  y += 5;
-  drawMemberRow(spouse);
+  if (isFamilyPackage) {
+    doc.setFont("helvetica", "bold");
+    doc.text("Nama Pasangan", margin, y);
+    y += 5;
+    drawMemberRow(spouse);
 
-  doc.setFont("helvetica", "bold");
-  doc.text("Nama Anak-anak", margin, y);
-  y += 5;
-  const childCount = Math.max(5, children.length);
-  for (let index = 0; index < childCount; index += 1) {
-    drawMemberRow(children[index]?.[1], `${index + 1}. `);
+    doc.setFont("helvetica", "bold");
+    doc.text("Nama Anak-anak", margin, y);
+    y += 5;
+    const childCount = Math.max(5, children.length);
+    for (let index = 0; index < childCount; index += 1) {
+      drawMemberRow(children[index]?.[1], `${index + 1}. `);
+    }
+  }
+
+  if (additionalMembers.length > 0) {
+    doc.setFont("helvetica", "bold");
+    doc.text("Nama Ahli Tambahan", margin, y);
+    y += 5;
+    additionalMembers.forEach(([, member], index) => {
+      drawMemberRow(member, `${index + 1}. `);
+    });
   }
 
   doc.setFont("helvetica", "bold");

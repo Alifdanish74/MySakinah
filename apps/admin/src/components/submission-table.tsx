@@ -9,9 +9,10 @@ import { getUmurDisplay, getAlamatDisplay, getPoskodDisplay, getNegeriDisplay, f
 import { EditModal } from "./edit-modal";
 import { DeleteDialog } from "./delete-dialog";
 import { FilterModal, type FilterState, EMPTY_FILTER, countActiveFilters } from "./filter-modal";
-import { Pencil, Trash2, ChevronLeft, ChevronRight, Download, FileSpreadsheet, SlidersHorizontal, X as XIcon } from "lucide-react";
+import { Pencil, Trash2, ChevronLeft, ChevronRight, Download, FileSpreadsheet, SlidersHorizontal, X as XIcon, Phone, MessageCircle } from "lucide-react";
 import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
+import { useDialogAccessibility } from "@/lib/use-dialog-accessibility";
 import {
   generateReceiptPdf,
   type MemberInfo,
@@ -77,6 +78,92 @@ const ALBARZAH_COLS = [
   { label: "TEMPOH MANFAAT", center: true },
   { label: "STATUS", center: false },
 ] as const;
+
+function PhoneActionDialog({ phone, onClose }: { phone: string; onClose: () => void }) {
+  const dialogRef = useDialogAccessibility(true, onClose);
+  const digits = phone.replace(/\D/g, "");
+  const internationalNumber = digits.startsWith("0") ? `60${digits.slice(1)}` : digits;
+
+  return (
+    <div
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 50,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "1rem",
+        backgroundColor: "rgba(8, 24, 16, 0.48)",
+        backdropFilter: "blur(2px)",
+      }}
+    >
+      <motion.div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="phone-action-title"
+        tabIndex={-1}
+        className="glass-card"
+        style={{
+          width: "100%",
+          maxWidth: 400,
+          padding: "1.5rem",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1rem",
+          borderRadius: "var(--radius-xl)",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "1rem" }}>
+          <div>
+            <h3 id="phone-action-title" style={{ fontSize: "1.125rem", fontWeight: 700, color: "var(--color-admin-text)" }}>
+              Contact {formatPhone(phone)}
+            </h3>
+            <p style={{ marginTop: 4, fontSize: "0.875rem", color: "var(--color-admin-text-muted)" }}>
+              Choose how you would like to contact this person.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="btn-ghost"
+            aria-label="Close contact options"
+            style={{ width: 44, minWidth: 44, height: 44, justifyContent: "center", padding: 0 }}
+          >
+            <XIcon size={18} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+          <a
+            href={`tel:+${internationalNumber}`}
+            onClick={onClose}
+            className="btn-primary"
+            style={{ minHeight: 44, justifyContent: "center", gap: "0.5rem", textDecoration: "none" }}
+          >
+            <Phone size={16} aria-hidden="true" />
+            Call
+          </a>
+          <a
+            href={`https://wa.me/${internationalNumber}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            className="btn-ghost"
+            style={{ minHeight: 44, justifyContent: "center", gap: "0.5rem" }}
+          >
+            <MessageCircle size={16} aria-hidden="true" />
+            WhatsApp
+          </a>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -252,6 +339,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const [editingItem, setEditingItem] = useState<Submission | null>(null);
   const [deletingItem, setDeletingItem] = useState<Submission | null>(null);
   const [receiptError, setReceiptError] = useState("");
+  const [contactPhone, setContactPhone] = useState<string | null>(null);
 
   function handleReceiptDownload(submission: Submission) {
     const receiptData = isAlbarzah
@@ -1007,7 +1095,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const nama = fd.nama || s.submitted_by || "N/A";
                 const no_kp = formatIC(fd.no_kp || fd.ic || fd.no_ic);
                 const umur = getUmurDisplay(fd);
-                const no_telefon = formatPhone(fd.no_telefon || fd.telefon || fd.phone);
+                const rawNoTelefon = String(fd.no_telefon || fd.telefon || fd.phone || "");
+                const no_telefon = formatPhone(rawNoTelefon);
+                const noTelefonDigits = rawNoTelefon.replace(/\D/g, "");
                 const alamatStr = fd.alamat1 || fd.alamat || "";
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
@@ -1057,7 +1147,31 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
 
                       {/* 6. No Telefon */}
-                      <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>{no_telefon}</td>
+                      <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>
+                        {noTelefonDigits ? (
+                          <a
+                            href={`tel:${rawNoTelefon}`}
+                            onClick={(event) => {
+                              event.preventDefault();
+                              setContactPhone(rawNoTelefon);
+                            }}
+                            aria-haspopup="dialog"
+                            aria-label={`Contact ${nama} at ${no_telefon}; choose call or WhatsApp`}
+                            title="Choose call or WhatsApp"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              minHeight: 44,
+                              color: "var(--color-admin-primary)",
+                              textDecoration: "underline",
+                              textUnderlineOffset: 3,
+                              cursor: "pointer",
+                            }}
+                          >
+                            {no_telefon}
+                          </a>
+                        ) : no_telefon}
+                      </td>
                       {/* 5. Pakej */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-accent)" }}>
                         {pakej}
@@ -1422,6 +1536,12 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
 
       {/* Modals */}
       <AnimatePresence>
+        {contactPhone && (
+          <PhoneActionDialog
+            phone={contactPhone}
+            onClose={() => setContactPhone(null)}
+          />
+        )}
         {editingItem && (
           <EditModal
             submission={editingItem}

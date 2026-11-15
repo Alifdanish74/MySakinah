@@ -1683,8 +1683,12 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                       const monthlyDeduction = getCalculatedMonthlyFee() + (
                         warisData.statusKeahlian === "bukan_ahli" ? 1 : 0
                       );
+                      const isFamilyPackage = selectedFormPackage?.category === "keluarga";
                       const spouseTab = memberTabs.find((tab) => tab.role === "pasangan");
-                      const childTabs = memberTabs.filter((tab) => tab.role === "anak");
+                      const childTabs = isFamilyPackage
+                        ? memberTabs.filter((tab) => tab.id.startsWith("anak_"))
+                        : [];
+                      const additionalTabs = memberTabs.filter((tab) => tab.id.startsWith("tanggungan_"));
                       const addressLines = [
                         ahli?.alamat1,
                         ahli?.alamat2,
@@ -1869,7 +1873,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               </div>
 
                               <p className="mt-5 text-justify">
-                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim berkelompok pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
+                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim kohasil raudhah pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
                               </p>
 
                               <div className="mt-5 space-y-1">
@@ -1879,17 +1883,29 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                   <span>RM</span>
                                 </div>
                                 {renderMemberRow(ahli, "ahli")}
-                                <p className="pt-1 font-bold">Nama Pasangan</p>
-                                {renderMemberRow(
-                                  spouseTab ? membersData[spouseTab.id] : undefined,
-                                  "pasangan",
+                                {isFamilyPackage && (
+                                  <>
+                                    <p className="pt-1 font-bold">Nama Pasangan</p>
+                                    {renderMemberRow(
+                                      spouseTab ? membersData[spouseTab.id] : undefined,
+                                      "pasangan",
+                                    )}
+                                    <p className="pt-1 font-bold">Nama Anak-anak</p>
+                                    {childRows.map((tab, index) =>
+                                      renderMemberRow(
+                                        tab ? membersData[tab.id] : undefined,
+                                        tab?.id || `anak-kosong-${index}`,
+                                      )
+                                    )}
+                                  </>
                                 )}
-                                <p className="pt-1 font-bold">Nama Anak-anak</p>
-                                {childRows.map((tab, index) =>
-                                  renderMemberRow(
-                                    tab ? membersData[tab.id] : undefined,
-                                    tab?.id || `anak-kosong-${index}`,
-                                  )
+                                {additionalTabs.length > 0 && (
+                                  <>
+                                    <p className="pt-1 font-bold">Nama Ahli Tambahan</p>
+                                    {additionalTabs.map((tab, index) =>
+                                      renderMemberRow(membersData[tab.id], `tambahan-${index}`)
+                                    )}
+                                  </>
                                 )}
                                 <div className="grid grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)_minmax(3rem,0.4fr)] gap-x-3 pt-1 font-bold">
                                   <span>Jumlah</span>
