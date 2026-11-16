@@ -939,7 +939,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
     if (
       !potonganGajiData.noGaji.trim() ||
       !potonganGajiData.jabatanCawangan.trim() ||
-      !potonganGajiData.noAnggotaKohasil.trim() ||
+      (warisData.statusKeahlian === "ahli" && !potonganGajiData.noAnggotaKohasil.trim()) ||
       !potonganGajiData.namaBank.trim() ||
       !potonganGajiData.noAkaunBank.trim() ||
       (potonganGajiData.namaBank === "Lain-lain" && !potonganGajiData.namaBankLain.trim())
@@ -1652,14 +1652,14 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               Muat Turun Surat Pengesahan (PDF)
                             </button>
                             <a
-                              href={`https://wa.me/601113001999?text=Salam%20Kohasil,%20saya%20telah%20menghantar%20permohonan%20pakej%20${encodeURIComponent(selectedFormPackage.name)}.%20Boleh%20bantu%20pengesahan?`}
+                              href={`https://wa.me/601114977733?text=Salam%20Kohasil,%20saya%20telah%20menghantar%20permohonan%20pakej%20${encodeURIComponent(selectedFormPackage.name)}.%20Boleh%20bantu%20pengesahan?`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-white shadow-md transition-all hover:opacity-95"
                               style={{ background: "#25D366" }}
                             >
                               <Phone className="h-4 w-4" />
-                              Hubungi WhatsApp Terus (011-1300 1999)
+                              Hubungi WhatsApp Terus (011-1497 7733)
                             </a>
 
                             <button
@@ -1699,12 +1699,18 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                         { length: Math.max(5, childTabs.length) },
                         (_, index) => childTabs[index],
                       );
-                      const renderMemberRow = (member?: MemberFormData, key?: string) => (
+                      const additionalMemberFee = 10;
+                      const mainMemberFee = getCalculatedMonthlyFee() - additionalTabs.length * additionalMemberFee;
+                      const renderMemberRow = (member?: MemberFormData, key?: string, amount?: number, category?: string) => (
                         <div
                           key={key}
                           className="grid grid-cols-[minmax(0,1.8fr)_minmax(0,0.9fr)_minmax(3rem,0.4fr)] gap-x-3"
                         >
-                          {[member?.nama, member?.ic, ""].map((value, index) => (
+                          {[
+                            category?.trim() ? `(${category.trim().toUpperCase()}) ${member?.nama || ""}` : member?.nama,
+                            member?.ic,
+                            amount === undefined ? "" : `RM ${amount.toFixed(2)}`,
+                          ].map((value, index) => (
                             <span
                               key={index}
                               className="min-h-6 overflow-hidden border-b border-dotted border-black px-1"
@@ -1758,20 +1764,22 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                 />
                               </div>
 
-                              <div>
-                                <label htmlFor="kohasil-no-anggota" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                                  No. Anggota Kohasil <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                  id="kohasil-no-anggota"
-                                  type="text"
-                                  required
-                                  value={potonganGajiData.noAnggotaKohasil}
-                                  onChange={(e) => setPotonganGajiData({ ...potonganGajiData, noAnggotaKohasil: e.target.value })}
-                                  className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
-                                  autoComplete="off"
-                                />
-                              </div>
+                              {warisData.statusKeahlian === "ahli" && (
+                                <div>
+                                  <label htmlFor="kohasil-no-anggota" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+                                    No. Anggota Kohasil <span className="text-red-500">*</span>
+                                  </label>
+                                  <input
+                                    id="kohasil-no-anggota"
+                                    type="text"
+                                    required
+                                    value={potonganGajiData.noAnggotaKohasil}
+                                    onChange={(e) => setPotonganGajiData({ ...potonganGajiData, noAnggotaKohasil: e.target.value })}
+                                    className="w-full rounded-xl border border-slate-300 px-4 py-3 text-base sm:text-sm outline-none focus:border-green-800 focus:ring-2 focus:ring-green-800/20 transition-all"
+                                    autoComplete="off"
+                                  />
+                                </div>
+                              )}
 
                               <div>
                                 <label htmlFor="kohasil-bank" className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
@@ -1864,11 +1872,13 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               </h5>
 
                               <div className="space-y-1">
-                                <p>Saya <strong>{ahli?.nama}</strong> (Gunakan Huruf Besar)</p>
+                                <p>Saya <strong>{ahli?.nama}</strong></p>
                                 <p>No. Kad Pengenalan : <strong>{ahli?.ic}</strong> ( Baru/Lama )</p>
                                 <p>No. Gaji : <strong>{potonganGajiData.noGaji}</strong></p>
                                 <p>Jabatan/Cawangan : <strong>{potonganGajiData.jabatanCawangan}</strong></p>
-                                <p>No. Anggota Kohasil : <strong>{potonganGajiData.noAnggotaKohasil}</strong></p>
+                                {warisData.statusKeahlian === "ahli" && (
+                                  <p>No. Anggota Kohasil : <strong>{potonganGajiData.noAnggotaKohasil}</strong></p>
+                                )}
                                 <p>No. Akaun/Nama Bank : <strong>{potonganGajiData.noAkaunBank} / {bankName}</strong></p>
                               </div>
 
@@ -1882,7 +1892,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                   <span>No KP</span>
                                   <span>RM</span>
                                 </div>
-                                {renderMemberRow(ahli, "ahli")}
+                                {renderMemberRow(ahli, "ahli", mainMemberFee)}
                                 {isFamilyPackage && (
                                   <>
                                     <p className="pt-1 font-bold">Nama Pasangan</p>
@@ -1903,7 +1913,12 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                   <>
                                     <p className="pt-1 font-bold">Nama Ahli Tambahan</p>
                                     {additionalTabs.map((tab, index) =>
-                                      renderMemberRow(membersData[tab.id], `tambahan-${index}`)
+                                      renderMemberRow(
+                                        membersData[tab.id],
+                                        `tambahan-${index}`,
+                                        additionalMemberFee,
+                                        membersData[tab.id]?.jenisTanggungan,
+                                      )
                                     )}
                                   </>
                                 )}
@@ -1918,11 +1933,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                 Jika terdapat sebarang pertanyaan, sila hubungi saya di nombor telefon yang telah diberikan.
                               </p>
                               <p className="mt-3">Sekian, terima kasih.</p>
-                              <div className="mt-4 space-y-1">
-                                <p>Tandatangan : ......................................</p>
-                                <p>Tarikh : ......................................</p>
-                                <p>No.Telefon : {ahli?.telefon}</p>
-                              </div>
+                              <p className="mt-4 font-semibold">
+                                Borang ini adalah cetakan komputer dan tidak memerlukan tandatangan.
+                              </p>
                             </section>
 
                             {errorMessage && (
@@ -2371,7 +2384,10 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                                     name="statusKeahlian"
                                     value="bukan_ahli"
                                     checked={warisData.statusKeahlian === "bukan_ahli"}
-                                    onChange={() => setWarisData({ ...warisData, statusKeahlian: "bukan_ahli" })}
+                                    onChange={() => {
+                                      setWarisData({ ...warisData, statusKeahlian: "bukan_ahli" });
+                                      setPotonganGajiData({ ...potonganGajiData, noAnggotaKohasil: "" });
+                                    }}
                                     className="accent-green-800"
                                   />
                                   Bukan Ahli

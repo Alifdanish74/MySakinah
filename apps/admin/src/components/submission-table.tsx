@@ -165,6 +165,45 @@ function PhoneActionDialog({ phone, onClose }: { phone: string; onClose: () => v
   );
 }
 
+function PhoneActionLink({
+  phone,
+  contactName,
+  onSelect,
+}: {
+  phone: string;
+  contactName: string;
+  onSelect: (phone: string) => void;
+}) {
+  const digits = phone.replace(/\D/g, "");
+  const displayPhone = formatPhone(phone);
+
+  if (!digits) return <>{displayPhone}</>;
+
+  return (
+    <a
+      href={`tel:${phone}`}
+      onClick={(event) => {
+        event.preventDefault();
+        onSelect(phone);
+      }}
+      aria-haspopup="dialog"
+      aria-label={`Contact ${contactName} at ${displayPhone}; choose call or WhatsApp`}
+      title="Choose call or WhatsApp"
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        minHeight: 44,
+        color: "var(--color-admin-primary)",
+        textDecoration: "underline",
+        textUnderlineOffset: 3,
+        cursor: "pointer",
+      }}
+    >
+      {displayPhone}
+    </a>
+  );
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -1097,7 +1136,6 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const umur = getUmurDisplay(fd);
                 const rawNoTelefon = String(fd.no_telefon || fd.telefon || fd.phone || "");
                 const no_telefon = formatPhone(rawNoTelefon);
-                const noTelefonDigits = rawNoTelefon.replace(/\D/g, "");
                 const alamatStr = fd.alamat1 || fd.alamat || "";
                 const poskodStr = getPoskodDisplay(fd);
                 const negeriStr = getNegeriDisplay(fd);
@@ -1113,12 +1151,12 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 if (isAlbarzah) {
                   const nama_waris = fd.namaWaris || fd.nama_waris || "N/A";
                   const hubungan_waris = fd.hubunganWaris || fd.hubungan_waris || "N/A";
-                  const telefon_waris = formatPhone(fd.telefonWaris || fd.telefon_waris);
+                  const rawTelefonWaris = String(fd.telefonWaris || fd.telefon_waris || "");
                   const nama_kawan = fd.namaKawan || fd.nama_kawan || "N/A";
-                  const tel_kawan = formatPhone(fd.telefonKawan || fd.telefon_kawan);
+                  const rawTelefonKawan = String(fd.telefonKawan || fd.telefon_kawan || "");
                   const jenis_kawan = fd.jenisKawan || fd.jenis_kawan || "N/A";
                   const nama_perkenalkan = fd.namaPerkenalkan || fd.nama_perkenalkan || "N/A";
-                  const tel_perkenalkan = formatPhone(fd.telefonPerkenalkan || fd.telefon_perkenalkan);
+                  const rawTelefonPerkenalkan = String(fd.telefonPerkenalkan || fd.telefon_perkenalkan || "");
                   const daerah = fd.alamat3 || fd.daerah || "N/A";
                   const tarikh_mohon = fd.tarikh_mohon || "";
 
@@ -1148,29 +1186,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
 
                       {/* 6. No Telefon */}
                       <td style={{ fontFamily: "monospace", fontSize: "0.75rem" }}>
-                        {noTelefonDigits ? (
-                          <a
-                            href={`tel:${rawNoTelefon}`}
-                            onClick={(event) => {
-                              event.preventDefault();
-                              setContactPhone(rawNoTelefon);
-                            }}
-                            aria-haspopup="dialog"
-                            aria-label={`Contact ${nama} at ${no_telefon}; choose call or WhatsApp`}
-                            title="Choose call or WhatsApp"
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              minHeight: 44,
-                              color: "var(--color-admin-primary)",
-                              textDecoration: "underline",
-                              textUnderlineOffset: 3,
-                              cursor: "pointer",
-                            }}
-                          >
-                            {no_telefon}
-                          </a>
-                        ) : no_telefon}
+                        <PhoneActionLink
+                          phone={rawNoTelefon}
+                          contactName={nama}
+                          onSelect={setContactPhone}
+                        />
                       </td>
                       {/* 5. Pakej */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-accent)" }}>
@@ -1186,7 +1206,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
                       {/* 9. Tel Waris */}
                       <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
-                        {telefon_waris}
+                        <PhoneActionLink
+                          phone={rawTelefonWaris}
+                          contactName={nama_waris}
+                          onSelect={setContactPhone}
+                        />
                       </td>
                       {/* 10. Nama Kawan */}
                       <td style={{ fontWeight: 500, color: "var(--color-admin-text)" }}>
@@ -1194,7 +1218,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
                       {/* 11. No Tel Kawan */}
                       <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
-                        {tel_kawan}
+                        <PhoneActionLink
+                          phone={rawTelefonKawan}
+                          contactName={nama_kawan}
+                          onSelect={setContactPhone}
+                        />
                       </td>
                       {/* 12. Kategori Kawan */}
                       <td style={{ color: "var(--color-admin-text-muted)", whiteSpace: "nowrap" }}>
@@ -1206,7 +1234,11 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
                       {/* 13. Tel Diperkenalkan */}
                       <td style={{ fontFamily: "monospace", color: "var(--color-admin-text-muted)", fontSize: "0.75rem"}}>
-                        {tel_perkenalkan}
+                        <PhoneActionLink
+                          phone={rawTelefonPerkenalkan}
+                          contactName={nama_perkenalkan}
+                          onSelect={setContactPhone}
+                        />
                       </td>
                       {/* 14. Alamat */}
                       <td style={{ overflow: "hidden", textOverflow: "ellipsis", color: "var(--color-admin-text-muted)" }}>

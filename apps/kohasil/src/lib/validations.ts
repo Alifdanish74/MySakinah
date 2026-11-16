@@ -15,7 +15,7 @@ const receiptMemberSchema = z.object({
 const potonganGajiSchema = z.object({
   noGaji: z.string().trim().min(1, "No. Gaji diperlukan"),
   jabatanCawangan: z.string().trim().min(1, "Jabatan/Cawangan diperlukan"),
-  noAnggotaKohasil: z.string().trim().min(1, "No. Anggota Kohasil diperlukan"),
+  noAnggotaKohasil: z.string().trim().optional(),
   namaBank: z.string().trim().min(1, "Nama bank diperlukan"),
   namaBankLain: z.string().trim().optional(),
   noAkaunBank: z.string().trim().min(1, "No. akaun bank diperlukan"),
@@ -28,6 +28,9 @@ const potonganGajiSchema = z.object({
     });
   }
 });
+
+const isNonMember = (statusKeahlian: string) =>
+  ["bukan ahli", "bukan_ahli", "bukan anggota"].includes(statusKeahlian.trim().toLowerCase());
 
 const receiptDataSchema = z.object({
   referenceNumber: z.string().min(1),
@@ -44,6 +47,14 @@ const receiptDataSchema = z.object({
   category: z.string(),
   module: z.enum(["kohasil", "albarzah"]).optional(),
   salaryDeductionAuthorization: potonganGajiSchema.optional(),
+}).superRefine((data, ctx) => {
+  if (!isNonMember(data.statusKeahlian) && !data.salaryDeductionAuthorization?.noAnggotaKohasil) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["salaryDeductionAuthorization", "noAnggotaKohasil"],
+      message: "No. Anggota Kohasil diperlukan",
+    });
+  }
 });
 
 export const enquirySchema = z.object({
@@ -86,6 +97,18 @@ export const enquirySchema = z.object({
       .default(true)
   ),
   receiptData: receiptDataSchema.optional(),
+}).superRefine((data, ctx) => {
+  if (
+    data.potonganGaji &&
+    !isNonMember(data.statusKeahlian || "") &&
+    !data.potonganGaji.noAnggotaKohasil
+  ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["potonganGaji", "noAnggotaKohasil"],
+      message: "No. Anggota Kohasil diperlukan",
+    });
+  }
 });
 
 export type EnquiryFormData = z.infer<typeof enquirySchema>;

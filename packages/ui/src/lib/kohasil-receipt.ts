@@ -216,6 +216,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   y += 7;
 
   y = drawSectionTitle("Maklumat Pendaftaran (lampiran)", y);
+  const memberDetailsOffset = 55;
   const allMembers = Object.entries(data.members);
   let extraIndex = 0;
   allMembers.forEach(([key, member], index) => {
@@ -232,7 +233,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(30, 30, 30);
     const display = `${member.nama || "-"}  •  KP ${formatIC(member.ic) || "-"}  •  Tel ${formatPhone(member.telefon) || "-"}`;
-    doc.text(doc.splitTextToSize(display, contentWidth - 45).slice(0, 1), margin + 45, y);
+    doc.text(doc.splitTextToSize(display, contentWidth - memberDetailsOffset).slice(0, 1), margin + memberDetailsOffset, y);
     y += 8;
   });
 
@@ -305,11 +306,13 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  drawLabeledValue("Saya", `${data.ahli.nama.toUpperCase()} (Gunakan Huruf Besar)`, 18);
+  drawLabeledValue("Saya", `${data.ahli.nama.toUpperCase()}`, 18);
   drawLabeledValue("No. Kad Pengenalan", `${formatIC(data.ahli.ic)} ( Baru/Lama )`, 39);
   drawLabeledValue("No. Gaji", authorization.noGaji, 24);
   drawLabeledValue("Jabatan/Cawangan", authorization.jabatanCawangan, 39);
-  drawLabeledValue("No. Anggota Kohasil", authorization.noAnggotaKohasil, 39);
+  if (data.statusKeahlian !== "Bukan Ahli") {
+    drawLabeledValue("No. Anggota Kohasil", authorization.noAnggotaKohasil, 39);
+  }
   drawLabeledValue("No. Akaun/Nama Bank", `${authorization.noAkaunBank} / ${bankName}`, 39);
   y += 5;
 
@@ -322,13 +325,18 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   const icColumnX = margin + nameColumnWidth;
   const amountColumnX = icColumnX + icColumnWidth;
   const isFamilyPackage = data.packageCategory.toLowerCase() === "keluarga";
-  const drawMemberRow = (member?: MemberInfo, prefix = "") => {
+  const additionalMemberFee = 10;
+  const additionalMemberCount = Object.keys(data.members).filter((key) => key.startsWith("tanggungan")).length;
+  const mainMemberFee = data.monthlyFee - additionalMemberCount * additionalMemberFee;
+  const drawMemberRow = (member?: MemberInfo, prefix = "", amount?: number, category?: string) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    const name = `${prefix}${member?.nama || ""}`;
+    const categoryPrefix = category?.trim() ? `(${category.trim().toUpperCase()}) ` : "";
+    const name = `${prefix}${categoryPrefix}${member?.nama || ""}`;
     const ic = member?.ic ? formatIC(member.ic) : "";
     doc.text(doc.splitTextToSize(name, nameColumnWidth - 2).slice(0, 1), margin, y);
     if (ic) doc.text(doc.splitTextToSize(ic, icColumnWidth - 2).slice(0, 1), icColumnX, y);
+    if (amount !== undefined) doc.text(`RM ${amount.toFixed(2)}`, amountColumnX, y);
     doc.setLineDashPattern([0.2, 0.7], 0);
     doc.line(margin, y + 1.2, margin + nameColumnWidth - 2, y + 1.2);
     doc.line(icColumnX, y + 1.2, icColumnX + icColumnWidth - 2, y + 1.2);
@@ -347,7 +355,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   doc.text("No KP", icColumnX, y);
   doc.text("RM", amountColumnX, y);
   y += 5;
-  drawMemberRow(mainMember);
+  drawMemberRow(mainMember, "", mainMemberFee);
 
   if (isFamilyPackage) {
     doc.setFont("helvetica", "bold");
@@ -369,7 +377,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
     doc.text("Nama Ahli Tambahan", margin, y);
     y += 5;
     additionalMembers.forEach(([, member], index) => {
-      drawMemberRow(member, `${index + 1}. `);
+      drawMemberRow(member, `${index + 1}. `, additionalMemberFee, member.jenisTanggungan);
     });
   }
 
@@ -389,15 +397,8 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   ) + 3;
   doc.text("Sekian, terima kasih.", margin, y);
   y += 8;
-  const signatureFields = [
-    "Tandatangan : ......................................",
-    "Tarikh : ......................................",
-    `No.Telefon : ${formatPhone(data.ahli.telefon)}`,
-  ];
-  signatureFields.forEach((field) => {
-    doc.text(field, margin, y);
-    y += 5;
-  });
+  doc.setFont("helvetica", "bold");
+  doc.text("Borang ini adalah cetakan komputer dan tidak memerlukan tandatangan.", margin, y);
 
   const filename = `Pengesahan_Permohonan_${data.ahli.nama.replace(/\s+/g, "_")}_${refNo}.pdf`;
   doc.save(filename);
