@@ -296,7 +296,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   doc.setFont("helvetica", "bold");
   doc.setFontSize(9);
   const purposeHeight = drawWrapped(
-    "KEBENARAN POTONGAN GAJI UNTUK SKIM KESIHATAN DAN SIMPANAN PELBAGAI MANFAAT YANG AKAN DIBAYAR OLEH LEMBAGA HASIL DALAM NEGERI MALAYSIA",
+    "KEBENARAN POTONGAN GAJI UNTUK SKIM KHAIRAT KOHASIL RAUDHAH YANG AKAN DIBAYAR OLEH LEMBAGA HASIL DALAM NEGERI MALAYSIA",
     margin,
     y,
     contentWidth,
@@ -306,9 +306,9 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
-  drawLabeledValue("Saya", `${data.ahli.nama.toUpperCase()}`, 18);
-  drawLabeledValue("No. Kad Pengenalan", `${formatIC(data.ahli.ic)} ( Baru/Lama )`, 39);
-  drawLabeledValue("No. Gaji", authorization.noGaji, 24);
+  drawLabeledValue("Saya", `${data.ahli.nama.toUpperCase()}`, 39);
+  drawLabeledValue("No. Kad Pengenalan", `${formatIC(data.ahli.ic)}`, 39);
+  drawLabeledValue("No. Gaji", authorization.noGaji, 39);
   drawLabeledValue("Jabatan/Cawangan", authorization.jabatanCawangan, 39);
   if (data.statusKeahlian !== "Bukan Ahli") {
     drawLabeledValue("No. Anggota Kohasil", authorization.noAnggotaKohasil, 39);
@@ -316,7 +316,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   drawLabeledValue("No. Akaun/Nama Bank", `${authorization.noAkaunBank} / ${bankName}`, 39);
   y += 5;
 
-  const declarationText = `Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM ${monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim kohasil raudhah pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.`;
+  const declarationText = `Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM ${monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya / tambahan ahli keluarga (jika ada) sebagai sumbangan untuk skim Kohasil Raudhah. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.`;
   y += drawWrapped(declarationText, margin, y, contentWidth, 8) + 5;
 
   const nameColumnWidth = contentWidth * 0.62;
@@ -399,6 +399,8 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   y += 8;
   doc.setFont("helvetica", "bold");
   doc.text("Borang ini adalah cetakan komputer dan tidak memerlukan tandatangan.", margin, y);
+  y += 5;
+  doc.text("Borang ini dianggap sah sebaik sahaja dijana oleh sistem bagi pihak peserta.", margin, y);
 
   const filename = `Pengesahan_Permohonan_${data.ahli.nama.replace(/\s+/g, "_")}_${refNo}.pdf`;
   doc.save(filename);

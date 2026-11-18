@@ -391,22 +391,22 @@ interface PackageSectionProps {
 }
 
 const MALAYSIAN_STATES = [
-  "Johor",
-  "Kedah",
-  "Kelantan",
-  "Melaka",
-  "Negeri Sembilan",
-  "Pahang",
-  "Perak",
-  "Perlis",
-  "Pulau Pinang",
-  "Sabah",
-  "Sarawak",
-  "Selangor",
-  "Terengganu",
-  "Wilayah Persekutuan Kuala Lumpur",
-  "Wilayah Persekutuan Labuan",
-  "Wilayah Persekutuan Putrajaya",
+  "JOHOR",
+  "KEDAH",
+  "KELANTAN",
+  "MELAKA",
+  "NEGERI SEMBILAN",
+  "PAHANG",
+  "PERAK",
+  "PERLIS",
+  "PULAU PINANG",
+  "SABAH",
+  "SARAWAK",
+  "SELANGOR",
+  "TERENGGANU",
+  "WILAYAH PERSEKUTUAN KUALA LUMPUR",
+  "WILAYAH PERSEKUTUAN LABUAN",
+  "WILAYAH PERSEKUTUAN PUTRAJAYA",
 ];
 
 function getAgeFromIC(icString: string): number | null {
@@ -1868,7 +1868,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                               <p className="mt-4">Tuan/Puan,</p>
                               <h5 id="salary-authorization-letter" className="my-4 font-bold uppercase">
-                                Kebenaran Potongan Gaji Untuk Skim Kesihatan Dan Simpanan Pelbagai Manfaat Yang Akan Dibayar Oleh Lembaga Hasil Dalam Negeri Malaysia
+                                Kebenaran Potongan Gaji Untuk Skim Kohasil Raudhah Yang Akan Dibayar Oleh Lembaga Hasil Dalam Negeri Malaysia
                               </h5>
 
                               <div className="space-y-1">
@@ -1883,7 +1883,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               </div>
 
                               <p className="mt-5 text-justify">
-                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim kohasil raudhah pelbagai manfaat GS. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
+                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim Kohasil Raudhah. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
                               </p>
 
                               <div className="mt-5 space-y-1">
@@ -1935,6 +1935,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               <p className="mt-3">Sekian, terima kasih.</p>
                               <p className="mt-4 font-semibold">
                                 Borang ini adalah cetakan komputer dan tidak memerlukan tandatangan.
+                              </p>
+                              <p className="mt-4 font-semibold">
+                                Borang ini dianggap sah sebaik sahaja dijana oleh sistem bagi pihak peserta.
                               </p>
                             </section>
 
@@ -2289,7 +2292,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           <div>
                             <label htmlFor={`modal-alamat3-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                              Alamat 3 (bandar) {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
+                              Alamat 3 (Bandar) {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
                             </label>
                             <input
                               id={`modal-alamat3-${activeMemberTab}`}
@@ -2305,7 +2308,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                           <div className="sm:col-span-2">
                             <label htmlFor={`modal-negeri-${activeMemberTab}`} className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                              Alamat 3 (Negeri) {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
+                              Negeri {activeMemberTab === "ahli" && <span className="text-red-500">*</span>}
                             </label>
                             <select
                               id={`modal-negeri-${activeMemberTab}`}
