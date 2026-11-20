@@ -1,7 +1,12 @@
 // File: src/app/api/enquiry/route.ts — Albarzah
 import { enquirySchema } from "@/lib/validations";
 import { toAlbarzahStoragePakej } from "@/lib/pakej";
-import { saveSubmissionToDatabase, getMalaysiaDateString } from "@sakinah/ui";
+import { generateReceiptReferenceNumber } from "@sakinah/ui/lib/kohasil-receipt";
+import {
+  getNextReceiptSequence,
+  getMalaysiaDateString,
+  saveSubmissionToDatabase,
+} from "@sakinah/ui";
 
 const MODULE_SLUG = "albarzah";
 
@@ -50,6 +55,31 @@ export async function POST(request: Request) {
 
     const data = parsed.data as any;
     const pakej = toAlbarzahStoragePakej(data.pakej);
+    let receiptData: typeof data.receiptData;
+    if (data.receiptData) {
+      let receiptSequence: number;
+      try {
+        receiptSequence = await getNextReceiptSequence(MODULE_SLUG);
+      } catch (error) {
+        console.error("[Albarzah Enquiry API] Receipt sequence allocation failed:", error);
+        return Response.json(
+          {
+            success: false,
+            error: "Nombor rujukan resit gagal dijana. Sila pastikan konfigurasi Supabase betul dan schema nombor resit telah dipasang.",
+          },
+          { status: 503 },
+        );
+      }
+      receiptData = {
+          ...data.receiptData,
+          referenceNumber: generateReceiptReferenceNumber(
+            new Date(data.receiptData.submittedAt),
+            receiptSequence,
+            MODULE_SLUG,
+          ),
+        };
+    }
+
     const membersData = body.members || {};
     const memberKeys = Object.keys(membersData);
 
@@ -97,7 +127,7 @@ export async function POST(request: Request) {
             telefonPerkenalkan: data.telefonPerkenalkan || "-",
             jenisTanggungan: m.jenisTanggungan || "",
             kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
-            ...(data.receiptData ? { receiptData: data.receiptData } : {}),
+            ...(receiptData ? { receiptData } : {}),
           },
         });
       });
@@ -130,7 +160,7 @@ export async function POST(request: Request) {
         namaPerkenalkan: data.namaPerkenalkan || "-",
         telefonPerkenalkan: data.telefonPerkenalkan || "-",
         kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
-        ...(data.receiptData ? { receiptData: data.receiptData } : {}),
+        ...(receiptData ? { receiptData } : {}),
       };
 
       submissionsToPost.push({
@@ -171,6 +201,7 @@ export async function POST(request: Request) {
         success: true,
         message: `Permohonan pakej ${pakej} telah berjaya diterima dan direkodkan.`,
         count: submissionsToPost.length,
+        ...(receiptData ? { referenceNumber: receiptData.referenceNumber } : {}),
       },
       { status: 200 }
     );

@@ -1,6 +1,11 @@
 // File: src/app/api/enquiry/route.ts — KOHASiL
 import { enquirySchema } from "@/lib/validations";
-import { saveSubmissionToDatabase, getMalaysiaDateString } from "@sakinah/ui";
+import { generateReceiptReferenceNumber } from "@sakinah/ui/lib/kohasil-receipt";
+import {
+  getNextReceiptSequence,
+  getMalaysiaDateString,
+  saveSubmissionToDatabase,
+} from "@sakinah/ui";
 
 const MODULE_SLUG = "kohasil";
 
@@ -70,6 +75,31 @@ export async function POST(request: Request) {
           salaryDeductionAuthorization: potonganGaji,
         }
       : submittedReceiptData;
+    let finalReceiptData: typeof receiptData;
+    if (receiptData) {
+      let receiptSequence: number;
+      try {
+        receiptSequence = await getNextReceiptSequence(MODULE_SLUG);
+      } catch (error) {
+        console.error("[KOHASiL Enquiry API] Receipt sequence allocation failed:", error);
+        return Response.json(
+          {
+            success: false,
+            error: "Nombor rujukan resit gagal dijana. Sila pastikan konfigurasi Supabase betul dan schema nombor resit telah dipasang.",
+          },
+          { status: 503 },
+        );
+      }
+      finalReceiptData = {
+          ...receiptData,
+          referenceNumber: generateReceiptReferenceNumber(
+            new Date(receiptData.submittedAt),
+            receiptSequence,
+            MODULE_SLUG,
+          ),
+        };
+    }
+
     const membersData = body.members || {};
     const memberKeys = Object.keys(membersData);
 
@@ -113,7 +143,7 @@ export async function POST(request: Request) {
             jenisTanggungan: m.jenisTanggungan || "",
             lindungiIbuBapa: data.lindungiIbuBapa === "ya" ? "Ya (RM10/bln)" : "Tidak",
             kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
-            ...(receiptData ? { receiptData } : {}),
+            ...(finalReceiptData ? { receiptData: finalReceiptData } : {}),
           },
         });
       });
@@ -142,7 +172,7 @@ export async function POST(request: Request) {
         ...(potonganGaji ? { potonganGaji } : {}),
         lindungiIbuBapa: data.lindungiIbuBapa === "ya" ? "Ya (RM10/bln)" : "Tidak",
         kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
-        ...(receiptData ? { receiptData } : {}),
+        ...(finalReceiptData ? { receiptData: finalReceiptData } : {}),
       };
 
       submissionsToPost.push({
@@ -183,6 +213,7 @@ export async function POST(request: Request) {
         success: true,
         message: `Permohonan pakej ${data.pakej} telah berjaya diterima dan direkodkan.`,
         count: submissionsToPost.length,
+        ...(finalReceiptData ? { referenceNumber: finalReceiptData.referenceNumber } : {}),
       },
       { status: 200 }
     );

@@ -24,6 +24,43 @@ create table if not exists public.modules (
 );
 
 -- ============================================================
+-- RECEIPT SEQUENCES
+--    Atomically assigns an increasing sequence per receipt module.
+-- ============================================================
+create table if not exists public.receipt_sequences (
+  module_slug text primary key references public.modules(slug) on delete cascade,
+  last_value  bigint not null default 0 check (last_value >= 0)
+);
+
+alter table public.receipt_sequences enable row level security;
+
+create or replace function public.next_receipt_sequence(p_module_slug text)
+returns bigint
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  next_value bigint;
+begin
+  if p_module_slug is null or p_module_slug not in ('kohasil', 'albarzah') then
+    raise exception 'Unsupported receipt module: %', p_module_slug using errcode = '22023';
+  end if;
+
+  insert into public.receipt_sequences (module_slug, last_value)
+  values (p_module_slug, 1)
+  on conflict (module_slug) do update
+    set last_value = public.receipt_sequences.last_value + 1
+  returning last_value into next_value;
+
+  return next_value;
+end;
+$$;
+
+revoke all on function public.next_receipt_sequence(text) from public;
+grant execute on function public.next_receipt_sequence(text) to anon, authenticated, service_role;
+
+-- ============================================================
 -- 2. SUBMISSIONS TABLE
 --    Single table for all modules. form_data holds the payload.
 -- ============================================================

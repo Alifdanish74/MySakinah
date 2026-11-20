@@ -6,10 +6,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download, Copy, Check } from "lucide-react";
 import { toAlbarzahStoragePakej } from "@/lib/pakej";
-import {
-  generateReceiptReferenceNumber,
-  type ReceiptData,
-} from "@sakinah/ui/lib/kohasil-receipt";
+import type { ReceiptData } from "@sakinah/ui/lib/kohasil-receipt";
 
 // ── Dropdown options ──────────────────────────────────────────────────────
 const HUBUNGAN_OPTIONS = [
@@ -203,7 +200,6 @@ export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormMo
       const yearlyFee = Number(details.yearly.replace(/[^\d.]/g, ""));
       const receiptData: ReceiptData = {
         module: "albarzah",
-        referenceNumber: generateReceiptReferenceNumber(submittedAt, "albarzah"),
         packageName,
         packageCategory: "Individu",
         monthlyFee: Number.isFinite(yearlyFee) ? yearlyFee : 0,

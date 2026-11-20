@@ -33,7 +33,7 @@ const isNonMember = (statusKeahlian: string) =>
   ["bukan ahli", "bukan_ahli", "bukan anggota"].includes(statusKeahlian.trim().toLowerCase());
 
 const receiptDataSchema = z.object({
-  referenceNumber: z.string().min(1),
+  referenceNumber: z.string().min(1).optional(),
   packageName: z.string().min(1),
   packageCategory: z.string(),
   monthlyFee: z.number().finite().nonnegative(),

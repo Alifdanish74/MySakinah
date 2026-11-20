@@ -52,7 +52,7 @@ const receiptMemberSchema = z.object({
 
 const receiptDataSchema = z.object({
   module: z.literal("albarzah"),
-  referenceNumber: z.string(),
+  referenceNumber: z.string().optional(),
   packageName: z.string(),
   packageCategory: z.string(),
   monthlyFee: z.number().finite().nonnegative(),

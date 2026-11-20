@@ -1,5 +1,6 @@
 import {
   generateReceiptPdf,
+  generateReceiptReferenceNumber,
   type MemberInfo,
   type ReceiptData,
 } from "../packages/ui/src/lib/kohasil-receipt.ts";
@@ -17,8 +18,11 @@ const dummyMember: MemberInfo = {
   jenisTanggungan: undefined,
 };
 
+const submittedAt = new Date();
+
 // Dummy receipt data
 const dummyData: ReceiptData = {
+  referenceNumber: generateReceiptReferenceNumber(submittedAt, 1),
   packageName: 'Premium Plan',
   packageCategory: 'Family',
   monthlyFee: 30,
@@ -28,7 +32,7 @@ const dummyData: ReceiptData = {
   telefonWaris: '0198765432',
   statusKeahlian: 'Active',
   members: {},
-  submittedAt: new Date(),
+  submittedAt,
   category: "Individu"
 };
 

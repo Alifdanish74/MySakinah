@@ -38,16 +38,25 @@ export interface ReceiptData {
   salaryDeductionAuthorization?: SalaryDeductionAuthorization;
 }
 
-export function generateReceiptReferenceNumber(date: Date, module: ReceiptData["module"] = "kohasil"): string {
+export function generateReceiptReferenceNumber(
+  date: Date,
+  sequence: number,
+  module: ReceiptData["module"] = "kohasil",
+): string {
+  if (!Number.isSafeInteger(sequence) || sequence < 1) {
+    throw new RangeError("Receipt sequence must be a positive safe integer.");
+  }
+
+  const malaysiaDate = new Date(date.getTime() + 8 * 60 * 60 * 1000);
   const pad = (n: number) => String(n).padStart(2, "0");
-  const yyyy = date.getFullYear();
-  const mm = pad(date.getMonth() + 1);
-  const dd = pad(date.getDate());
-  const hh = pad(date.getHours());
-  const min = pad(date.getMinutes());
-  const rand = Math.floor(1000 + Math.random() * 9000);
+  const yyyy = malaysiaDate.getUTCFullYear();
+  const mm = pad(malaysiaDate.getUTCMonth() + 1);
+  const dd = pad(malaysiaDate.getUTCDate());
+  const hh = pad(malaysiaDate.getUTCHours());
+  const min = pad(malaysiaDate.getUTCMinutes());
+  const paddedSequence = String(sequence).padStart(4, "0");
   const prefix = module === "albarzah" ? "ALBARZAH" : "KOHASIL";
-  return `${prefix}-${yyyy}${mm}${dd}-${hh}${min}-${rand}`;
+  return `${prefix}-${yyyy}${mm}${dd}-${hh}${min}-${paddedSequence}`;
 }
 
 function formatIC(ic: string): string {
@@ -108,7 +117,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
     doc.text("SKIM KHAIRAT KOHASIL RAUDHAH", pageWidth / 2, 8, { align: "center" });
     doc.setFont("helvetica", "normal");
     doc.setFontSize(7.5);
-    doc.text("Diuruskan oleh BJSB Sdn. Bhd. • www.mysakinahpro.com.my", pageWidth / 2, 14, { align: "center" });
+    doc.text("www.mysakinahpro.com.my", pageWidth / 2, 14, { align: "center" });
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(15);
@@ -147,17 +156,24 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
     doc.setFontSize(6.5);
     doc.setTextColor(255, 255, 255);
     doc.text(
-      `Skim Khairat KOHASiL Raudhah • BJSB Sdn. Bhd. • No. Rujukan: ${refNo} • ${pageNumber}/2`,
+      `Skim Khairat KOHASiL Raudhah • No. Rujukan: ${refNo} • ${pageNumber}/2`,
       pageWidth / 2,
       pageHeight - 5,
       { align: "center" },
     );
   };
 
-  const drawWrapped = (text: string, x: number, y: number, width: number, fontSize = 8): number => {
+  const drawWrapped = (
+    text: string,
+    x: number,
+    y: number,
+    width: number,
+    fontSize = 8,
+    align: "left" | "justify" = "left",
+  ): number => {
     doc.setFontSize(fontSize);
     const lines = doc.splitTextToSize(text, width);
-    doc.text(lines, x, y);
+    doc.text(lines, x, y, { align, maxWidth: width });
     return lines.length * (fontSize * 0.48);
   };
 
@@ -252,6 +268,13 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
 
   // Page 2 follows the plain black-and-white salary-deduction authorization form.
   doc.addPage();
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(70, 70, 70);
+  doc.text(`No. Rujukan: ${refNo}`, margin, 12);
+  doc.text(`Tarikh: ${formatDate(data.submittedAt)}   Halaman 2 daripada 2`, pageWidth - margin, 12, {
+    align: "right",
+  });
   y = 19;
   doc.setTextColor(0, 0, 0);
   doc.setDrawColor(0, 0, 0);
@@ -317,7 +340,7 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
   y += 5;
 
   const declarationText = `Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM ${monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya / tambahan ahli keluarga (jika ada) sebagai sumbangan untuk skim Kohasil Raudhah. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.`;
-  y += drawWrapped(declarationText, margin, y, contentWidth, 8) + 5;
+  y += drawWrapped(declarationText, margin, y, contentWidth, 8, "justify") + 5;
 
   const nameColumnWidth = contentWidth * 0.62;
   const icColumnWidth = contentWidth * 0.25;
@@ -407,15 +430,19 @@ function drawKohasilReceiptPages(data: ReceiptData, refNo: string): void {
 }
 
 export function generateReceiptPdf(data: ReceiptData): void {
+  if (!data.referenceNumber) {
+    throw new Error("Receipt reference number must be assigned before generating the PDF.");
+  }
+
+  const refNo = data.referenceNumber;
+
   if (data.module === "kohasil" && data.salaryDeductionAuthorization) {
-    const refNo = data.referenceNumber || generateReceiptReferenceNumber(data.submittedAt, "kohasil");
     drawKohasilReceiptPages(data, refNo);
     return;
   }
 
   const isAlbarzah = data.module === "albarzah";
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-  const refNo = data.referenceNumber || generateReceiptReferenceNumber(data.submittedAt, data.module);
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   const margin = 20;
@@ -542,7 +569,7 @@ export function generateReceiptPdf(data: ReceiptData): void {
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
-  doc.text("Diuruskan oleh BJSB Sdn. Bhd. • www.mysakinahpro.com.my", pageWidth / 2, 10.5, { align: "center" });
+  doc.text("www.mysakinahpro.com.my", pageWidth / 2, 10.5, { align: "center" });
 
   // Title block
   // Add a small top margin before the title to avoid header overlap
@@ -739,7 +766,7 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.text(
     isAlbarzah
       ? "Albarzah • Skim Pengurusan Jenazah 24 Jam dan Manfaat Khairat Kematian"
-      : "Skim Khairat KOHASiL Raudhah • Diuruskan oleh BJSB Sdn. Bhd. • Daftar Syarikat: 201801031648 (1295100-A)",
+      : "Skim Khairat KOHASiL Raudhah • Daftar Syarikat: 201801031648 (1295100-A)",
     pageWidth / 2,
     pageHeight - 8,
     { align: "center" }

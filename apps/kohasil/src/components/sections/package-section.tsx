@@ -11,7 +11,6 @@ import { ResponsiveContainer } from "@sakinah/ui";
 import { SectionHeading } from "@sakinah/ui";
 import {
   generateReceiptPdf,
-  generateReceiptReferenceNumber,
   type ReceiptData,
 } from "@sakinah/ui/lib/kohasil-receipt";
 
@@ -993,7 +992,6 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
       const submittedAt = new Date();
       const receiptData: ReceiptData = {
         module: "kohasil",
-        referenceNumber: generateReceiptReferenceNumber(submittedAt),
         packageName: selectedFormPackage?.name || "INDIVIDU 10",
         packageCategory: selectedFormPackage?.category || "",
         category: selectedFormPackage?.category || "",
@@ -1051,8 +1049,17 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
         throw new Error(errData?.error || "Ralat menghantar permohonan");
       }
 
-      setSubmittedReceipt(receiptData);
-      generateReceiptPdf(receiptData);
+      const responseData = await response.json();
+      if (typeof responseData.referenceNumber !== "string") {
+        throw new Error("Nombor rujukan resit tidak diterima.");
+      }
+
+      const finalReceiptData = {
+        ...receiptData,
+        referenceNumber: responseData.referenceNumber,
+      };
+      setSubmittedReceipt(finalReceiptData);
+      generateReceiptPdf(finalReceiptData);
       setFormStatus("success");
     } catch (err: any) {
       console.error("Form submit error:", err);
@@ -1883,7 +1890,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                               </div>
 
                               <p className="mt-5 text-justify">
-                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya sebagai sumbangan untuk skim Kohasil Raudhah. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
+                                Dengan ini membenarkan pihak tuan memotong gaji bulanan saya sebanyak RM {monthlyDeduction.toFixed(2)} untuk diri saya / pasangan / anak saya / tambahan ahli keluarga (jika ada) sebagai sumbangan untuk skim Kohasil Raudhah. Saya mengambil maklum, Kos Pengurusan RM 1.00 secara bulanan akan dikenakan sekiranya saya belum menjadi anggota KOHASIL. Ianya akan berterusan sehingga dimaklumkan secara bertulis kepada KOHASIL.
                               </p>
 
                               <div className="mt-5 space-y-1">
@@ -2151,6 +2158,12 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             </span>
                           )}
                         </div>
+
+                        {currentTabObj.id === "anak_1" && (
+                          <p className="text-[10px] italic text-slate-500">
+                            kosongkan jika tiada anak/belum berumur 1 tahun
+                          </p>
+                        )}
 
                         {errorMessage && (
                           <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-medium text-red-700">

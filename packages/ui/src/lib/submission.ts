@@ -22,6 +22,50 @@ export function getMalaysiaDateString(): string {
   return new Date().toLocaleDateString("en-GB", { timeZone: "Asia/Kuala_Lumpur" });
 }
 
+export async function getNextReceiptSequence(moduleSlug: "kohasil" | "albarzah"): Promise<number> {
+  const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)?.trim();
+  const supabaseKey = (
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+    process.env.SUPABASE_KEY
+  )?.trim();
+
+  if (
+    !supabaseUrl ||
+    !supabaseKey ||
+    supabaseUrl.includes("placeholder") ||
+    supabaseKey.includes("placeholder")
+  ) {
+    throw new Error("Supabase configuration is required to allocate a receipt number.");
+  }
+
+  const response = await fetch(
+    `${supabaseUrl.replace(/\/$/, "")}/rest/v1/rpc/next_receipt_sequence`,
+    {
+      method: "POST",
+      headers: {
+        apikey: supabaseKey,
+        Authorization: `Bearer ${supabaseKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ p_module_slug: moduleSlug }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorDetails = await response.text();
+    throw new Error(`Failed to allocate a receipt number (${response.status}): ${errorDetails}`);
+  }
+
+  const sequence: unknown = await response.json();
+  if (typeof sequence !== "number" || !Number.isSafeInteger(sequence) || sequence < 1) {
+    throw new Error("Supabase returned an invalid receipt sequence.");
+  }
+
+  return sequence;
+}
+
 export interface SubmissionPayload {
   module_slug: string;
   submitted_by: string;
