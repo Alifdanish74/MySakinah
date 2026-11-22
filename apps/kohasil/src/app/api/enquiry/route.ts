@@ -137,7 +137,7 @@ export async function POST(request: Request) {
             pakej: key === "ahli" ? data.pakej : "INDIVIDU 10",
             tarikh_daftar: getMalaysiaDateString(),
             utama: mainName,
-            namaWaris: data.namaWaris || "-",
+            namaWaris: key.startsWith("tanggungan") ? mainName : data.namaWaris || "-",
             telefonWaris: data.telefonWaris || "-",
             ...(potonganGaji ? { potonganGaji } : {}),
             jenisTanggungan: m.jenisTanggungan || "",

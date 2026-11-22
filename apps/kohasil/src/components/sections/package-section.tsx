@@ -2340,6 +2340,9 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             </select>
                           </div>
                         </div>
+                        <p className="mt-2 text-xs">
+                                      * Waris untuk peserta tambahan adalah ahli utama yang membuat potongan gaji
+                                    </p>
 
                         {/* Waris & Status Keahlian (only on Ahli tab) */}
                         {activeMemberTab === "ahli" && (

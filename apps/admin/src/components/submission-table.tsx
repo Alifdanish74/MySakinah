@@ -675,7 +675,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       "TARIKH DAFTAR",
       "STATUS",
       "NO AHLI",
-      "BUKAN ANGGOTA",
+      "IDENTITI",
       "NO TELEFON",
       "NAMA WARIS",
       "TELEFON WARIS",
@@ -1115,7 +1115,21 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                   )}
                 </th>
               ))}
-              {showActions && <th style={{ textAlign: "right" }}>ACTIONS</th>}
+              {showActions && (
+                <th
+                  style={{
+                    position: "sticky",
+                    right: 0,
+                    zIndex: 3,
+                    textAlign: "right",
+                    background: "var(--color-admin-surface-2)",
+                    borderLeft: "1px solid var(--color-admin-border)",
+                    boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
+                  }}
+                >
+                  ACTIONS
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -1288,7 +1302,17 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       </td>
                       {/* 19. Actions */}
                       {showActions && (
-                        <td style={{ textAlign: "center" }}>
+                        <td
+                          style={{
+                            position: "sticky",
+                            right: 0,
+                            zIndex: 1,
+                            textAlign: "center",
+                            background: "var(--color-admin-surface)",
+                            borderLeft: "1px solid var(--color-admin-border)",
+                            boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
+                          }}
+                        >
                           <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
                             {["terima", "proses", "aktif"].includes(s.status) && (
                               <button
@@ -1319,7 +1343,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                                 }
                               >
                                 <Download size={16} aria-hidden="true" />
-                                <span>{receiptData ? "Download" : "Unavailable"}</span>
+                                {/* <span>{!receiptData ? "Unavailable" : ""}</span> */}
                               </button>
                             )}
                             {canEdit && (
@@ -1459,7 +1483,17 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       })()}
                     </td>
                     {showActions && (
-                      <td style={{ textAlign: "center" }}>
+                      <td
+                        style={{
+                          position: "sticky",
+                          right: 0,
+                          zIndex: 1,
+                          textAlign: "center",
+                          background: "var(--color-admin-surface)",
+                          borderLeft: "1px solid var(--color-admin-border)",
+                          boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
+                        }}
+                      >
                         <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
                           {(isKohasil || (isAlbarzah && ["terima", "proses", "aktif"].includes(s.status))) && (
                             <button
