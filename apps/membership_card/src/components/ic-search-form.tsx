@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, Loader2, CreditCard, Sparkles, X, CheckCircle2 } from "lucide-react";
+import { Search, Loader2, CreditCard, Sparkles, X } from "lucide-react";
 
 interface ICSearchFormProps {
   onSearch: (ic: string) => Promise<void>;
@@ -28,11 +28,6 @@ export function ICSearchForm({ onSearch, isLoading, error }: ICSearchFormProps) 
     e.preventDefault();
     if (!icInput.trim()) return;
     onSearch(icInput);
-  };
-
-  const handleDemoClick = (demoIC: string) => {
-    setIcInput(demoIC);
-    onSearch(demoIC);
   };
 
   return (
@@ -64,6 +59,7 @@ export function ICSearchForm({ onSearch, isLoading, error }: ICSearchFormProps) 
               type="text"
               value={icInput}
               onChange={handleInputChange}
+              aria-label="Nombor kad pengenalan"
               placeholder="Contoh: 900101-14-5678"
               maxLength={14}
               disabled={isLoading}
@@ -110,36 +106,6 @@ export function ICSearchForm({ onSearch, isLoading, error }: ICSearchFormProps) 
           </div>
         )}
 
-        {/* Quick Demo Test Section */}
-        {/* <div className="mt-6 pt-5 border-t border-slate-800/80">
-          <p className="text-xs font-semibold text-slate-400 mb-2 flex items-center justify-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-amber-400" />
-            <span>Cuba Contoh Rekod IC Ujian (Klik Untuk Uji):</span>
-          </p>
-          <div className="flex flex-wrap justify-center gap-2">
-            <button
-              type="button"
-              onClick={() => handleDemoClick("920315-10-5432")}
-              className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 hover:border-amber-500/50 border border-slate-700 text-xs font-mono text-amber-300 hover:text-amber-200 transition-colors"
-            >
-              920315-10-5432 (KOHASiL)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDemoClick("880520-14-6789")}
-              className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 hover:border-amber-500/50 border border-slate-700 text-xs font-mono text-amber-300 hover:text-amber-200 transition-colors"
-            >
-              880520-14-6789 (KOPETRO)
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDemoClick("951104-08-5521")}
-              className="px-3 py-1.5 rounded-lg bg-slate-800/80 hover:bg-amber-500/20 hover:border-amber-500/50 border border-slate-700 text-xs font-mono text-amber-300 hover:text-amber-200 transition-colors"
-            >
-              951104-08-5521 (Al-Barzah)
-            </button>
-          </div>
-        </div> */}
       </div>
     </div>
   );

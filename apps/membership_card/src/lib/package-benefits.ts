@@ -29,7 +29,7 @@ export const packageBenefitMap: PackageBenefitData[] = [
   // ──────────────────────────────────────────────────────────────────────────
   {
     id: "ind-10",
-    names: ["INDIVIDU 10", "IND 10", "PKJ 10", "PAKEJ 10"],
+    names: ["INDIVIDU 10", "IND 10", "PAKEJ INDIVIDU 10"],
     isKeluarga: false,
     isMuslim: true,
     totalNormalDeath: "RM 5,000",
@@ -48,7 +48,7 @@ export const packageBenefitMap: PackageBenefitData[] = [
   // ──────────────────────────────────────────────────────────────────────────
   {
     id: "ind-15",
-    names: ["INDIVIDU 15", "IND 15", "PKJ 15", "PAKEJ 15"],
+    names: ["INDIVIDU 15", "IND 15", "PAKEJ INDIVIDU 15"],
     isKeluarga: false,
     isMuslim: true,
     totalNormalDeath: "RM 7,000",
@@ -67,7 +67,7 @@ export const packageBenefitMap: PackageBenefitData[] = [
   // ──────────────────────────────────────────────────────────────────────────
   {
     id: "ind-20",
-    names: ["INDIVIDU 20", "IND 20", "PKJ 20", "PAKEJ 20"],
+    names: ["INDIVIDU 20", "IND 20", "PAKEJ INDIVIDU 20"],
     isKeluarga: false,
     isMuslim: true,
     totalNormalDeath: "RM 9,000",
@@ -86,7 +86,7 @@ export const packageBenefitMap: PackageBenefitData[] = [
   // ──────────────────────────────────────────────────────────────────────────
   {
     id: "kel-20",
-    names: ["KELUARGA 20", "KEL 20", "FAMILY 20"],
+    names: ["KELUARGA 20", "KEL 20", "FAMILY 20", "PAKEJ KELUARGA 20"],
     isKeluarga: true,
     isMuslim: true,
     totalNormalDeath: "RM 5,000 (Ahli) + RM 5,000 (Pasangan)",
@@ -106,7 +106,7 @@ export const packageBenefitMap: PackageBenefitData[] = [
   // ──────────────────────────────────────────────────────────────────────────
   {
     id: "kel-30",
-    names: ["KELUARGA 30", "KEL 30", "FAMILY 30"],
+    names: ["KELUARGA 30", "KEL 30", "FAMILY 30", "PAKEJ KELUARGA 30"],
     isKeluarga: true,
     isMuslim: true,
     totalNormalDeath: "RM 7,000 (Ahli) + RM 7,000 (Pasangan)",
@@ -126,7 +126,7 @@ export const packageBenefitMap: PackageBenefitData[] = [
   // ──────────────────────────────────────────────────────────────────────────
   {
     id: "kel-40",
-    names: ["KELUARGA 40", "KEL 40", "FAMILY 40"],
+    names: ["KELUARGA 40", "KEL 40", "FAMILY 40", "PAKEJ KELUARGA 40"],
     isKeluarga: true,
     isMuslim: true,
     totalNormalDeath: "RM 9,000 (Ahli) + RM 9,000 (Pasangan)",
@@ -144,16 +144,16 @@ export const packageBenefitMap: PackageBenefitData[] = [
 
 /**
  * Look up benefit data for a given pakej name.
- * Matches by checking if the pakej string contains any of the known names (case-insensitive).
+ * Matches a normalized canonical package name or an explicit alias.
  * Returns null if no match found (unknown/generic pakej).
  */
 export function getBenefitsByPakej(pakej: string): PackageBenefitData | null {
   if (!pakej) return null;
-  const upper = pakej.toUpperCase().trim();
+  const normalized = pakej.toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim();
 
   for (const pkg of packageBenefitMap) {
     for (const name of pkg.names) {
-      if (upper.includes(name) || name.includes(upper)) {
+      if (normalized === name.toUpperCase().replace(/[^A-Z0-9]+/g, " ").trim()) {
         return pkg;
       }
     }

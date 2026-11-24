@@ -1,0 +1,860 @@
+"use client";
+// File: src/components/sections/package-form-modal.tsx
+// Bumijez — Dedicated Popup Form Modal for individual package registrations
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, CheckCircle2, Loader2, AlertCircle, Phone, ShieldCheck, Download, Copy, Check } from "lucide-react";
+import { toBumijezStoragePakej } from "@/lib/pakej";
+import type { ReceiptData } from "@sakinah/ui/lib/kohasil-receipt";
+
+// ── Dropdown options ──────────────────────────────────────────────────────
+const HUBUNGAN_OPTIONS = [
+  "SUAMI", "ISTERI", "AYAH", "IBU",
+  "AYAH MENTUA", "IBU MENTUA", "MENANTU", "ANAK",
+  "ABANG", "KAKAK", "ADIK",
+  "ABANG IPAR", "KAKAK IPAR", "ADIK IPAR",
+];
+
+const KAWAN_OPTIONS = [
+  "KAWAN BAIK", "KAWAN RAPAT", "KAWAN SEKERJA",
+  "KAWAN SEKOLAH", "KAWAN SERUMAH", "KAWAN SEKAMPUNG",
+];
+
+const MALAYSIAN_STATES = [
+  "Johor",
+  "Kedah",
+  "Kelantan",
+  "Melaka",
+  "Negeri Sembilan",
+  "Pahang",
+  "Perak",
+  "Perlis",
+  "Pulau Pinang",
+  "Sabah",
+  "Sarawak",
+  "Selangor",
+  "Terengganu",
+  "Wilayah Persekutuan Kuala Lumpur",
+  "Wilayah Persekutuan Labuan",
+  "Wilayah Persekutuan Putrajaya",
+] as const;
+
+// ── IC helper ─────────────────────────────────────────────────────────────
+function getAgeFromIC(ic: string): string {
+  const d = ic.replace(/\D/g, "");
+  if (d.length < 6) return "";
+  const yy = parseInt(d.slice(0, 2), 10);
+  const mm = parseInt(d.slice(2, 4), 10);
+  const dd2 = parseInt(d.slice(4, 6), 10);
+  const now = new Date();
+  const fy = yy <= now.getFullYear() % 100 ? 2000 + yy : 1900 + yy;
+  let age = now.getFullYear() - fy;
+  if (now.getMonth() + 1 < mm || (now.getMonth() + 1 === mm && now.getDate() < dd2)) age--;
+  return age >= 0 && age <= 120 ? `${age}` : "";
+}
+
+function formatIC(raw: string): string {
+  const d = raw.replace(/\D/g, "").slice(0, 12);
+  if (d.length <= 6) return d;
+  if (d.length <= 8) return `${d.slice(0, 6)}-${d.slice(6)}`;
+  return `${d.slice(0, 6)}-${d.slice(6, 8)}-${d.slice(8)}`;
+}
+
+// ── Package Metadata for Modal Header ─────────────────────────────────────
+const PACKAGE_DETAILS_MAP: Record<string, { yearly: string; monthly: string; daily: string; age: string; total: string }> = {
+  "PAKEJ RM 80.00 SETAHUN": {
+    yearly: "RM 80.00 SETAHUN",
+    monthly: "RM 2.66 / sebulan",
+    daily: "22 sen / sehari",
+    age: "17 – 65 tahun",
+    total: "RM 8,000",
+  },
+  "PAKEJ RM 120.00 SETAHUN": {
+    yearly: "RM 120.00 SETAHUN",
+    monthly: "RM 10.00 / sebulan",
+    daily: "33 sen / sehari",
+    age: "17 – 65 tahun",
+    total: "RM 10,000",
+  },
+  "PAKEJ RM 180.00 SETAHUN": {
+    yearly: "RM 180.00 SETAHUN",
+    monthly: "RM 15.00 / sebulan",
+    daily: "50 sen / sehari",
+    age: "17 – 65 tahun",
+    total: "RM 17,000",
+  },
+  "PAKEJ RM 240.00 SETAHUN": {
+    yearly: "RM 240.00 SETAHUN",
+    monthly: "RM 20.00 / sebulan",
+    daily: "66 sen / sehari",
+    age: "17 – 55 tahun",
+    total: "RM 24,000",
+  },
+  "PAKEJ PERMATA INDIVIDU": {
+    yearly: "RM 1,500.00 SEUMUR HIDUP",
+    monthly: "Bayaran Sekali Sahaja",
+    daily: "Seumur Hidup",
+    age: "Selepas Umur 70 Tahun",
+    total: "RM 1,730.00",
+  },
+  "PAKEJ RM 1,500 SEUMUR HIDUP": {
+    yearly: "RM 1,500.00 SEUMUR HIDUP",
+    monthly: "Bayaran Sekali Sahaja",
+    daily: "Seumur Hidup",
+    age: "Selepas Umur 70 Tahun",
+    total: "RM 1,730.00",
+  },
+};
+
+interface PackageFormModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  packageName: string;
+}
+
+export function PackageFormModal({ isOpen, onClose, packageName }: PackageFormModalProps) {
+  const [ic, setIc] = useState("");
+  const [umur, setUmur] = useState("");
+  const [nama, setNama] = useState("");
+  const [alamat1, setAlamat1] = useState("");
+  const [poskod, setPoskod] = useState("");
+  const [daerah, setDaerah] = useState("");
+  const [negeri, setNegeri] = useState("");
+  const [tel, setTel] = useState("");
+  const [namaWaris, setNamaWaris] = useState("");
+  const [telWaris, setTelWaris] = useState("");
+  const [hubungan, setHubungan] = useState("");
+  const [namaKawan, setNamaKawan] = useState("");
+  const [telKawan, setTelKawan] = useState("");
+  const [jenisKawan, setJenisKawan] = useState("");
+  const [namaPerkenalkan, setNamaPerkenalkan] = useState("");
+  const [telPerkenalkan, setTelPerkenalkan] = useState("");
+
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errMsg, setErrMsg] = useState("");
+  const [accCopied, setAccCopied] = useState(false);
+
+  const details = PACKAGE_DETAILS_MAP[packageName] || {
+    yearly: packageName,
+    monthly: "Manfaat Perlindungan Lengkap",
+    daily: "Bumijez Khairat Kematian",
+    age: "Semua Umur",
+    total: "Mengikut Pakej",
+  };
+
+  const handleCopyAcc = async () => {
+    try {
+      await navigator.clipboard.writeText("562777204081");
+      setAccCopied(true);
+      setTimeout(() => setAccCopied(false), 2000);
+    } catch {
+      // fallback silent fail
+    }
+  };
+
+  // Auto close timer on success
+  useEffect(() => {
+    if (status === "success") {
+      const timer = setTimeout(() => {
+        onClose();
+        setStatus("idle");
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [status, onClose]);
+
+  // Reset form state when opened; hide/show audio player button
+  useEffect(() => {
+    if (isOpen) {
+      setStatus("idle");
+      setErrMsg("");
+      window.dispatchEvent(new Event("hide_audio_player"));
+    } else {
+      window.dispatchEvent(new Event("show_audio_player"));
+    }
+  }, [isOpen, packageName]);
+
+  const handleIcChange = (raw: string) => {
+    const formatted = formatIC(raw);
+    setIc(formatted);
+    setUmur(getAgeFromIC(formatted));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nama.trim() || !tel.trim()) {
+      setErrMsg("Sila lengkapkan semua ruangan bertanda *.");
+      return;
+    }
+    setErrMsg("");
+    setStatus("loading");
+    try {
+      const sanitizedTel = tel.replace(/[\s-]/g, "");
+      const sanitizedTelWaris = telWaris ? telWaris.replace(/[\s-]/g, "") : undefined;
+      const sanitizedTelKawan = telKawan ? telKawan.replace(/[\s-]/g, "") : undefined;
+      const sanitizedIc = ic ? ic.replace(/\D/g, "") : undefined;
+
+      const fullAlamat = [alamat1, poskod, daerah, negeri].filter(Boolean).join(", ");
+      const submittedAt = new Date();
+      const yearlyFee = Number(details.yearly.replace(/[^\d.]/g, ""));
+      const receiptData: ReceiptData = {
+        module: "bumijez",
+        packageName,
+        packageCategory: "Individu",
+        monthlyFee: Number.isFinite(yearlyFee) ? yearlyFee : 0,
+        contributionDescription: `Yuran pakej: ${details.yearly}`,
+        coverage: details.total,
+        ahli: {
+          nama,
+          telefon: sanitizedTel,
+          ic: sanitizedIc || "",
+          alamat1,
+          alamat2: poskod,
+          alamat3: daerah,
+          negeri,
+        },
+        namaWaris: namaWaris || "",
+        telefonWaris: sanitizedTelWaris || "",
+        statusKeahlian: "Permohonan diterima",
+        members: {},
+        submittedAt,
+        category: "Individu",
+      };
+
+      const res = await fetch("/bumijez/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nama,
+          telefon: sanitizedTel,
+          ic: sanitizedIc,
+          alamat: fullAlamat || undefined,
+          alamat1: alamat1 || undefined,
+          alamat2: poskod || undefined,
+          poskod: poskod || undefined,
+          alamat3: daerah || undefined,
+          negeri: negeri || undefined,
+          umur: umur || undefined,
+          namaWaris: namaWaris || undefined,
+          telefonWaris: sanitizedTelWaris,
+          hubunganWaris: hubungan || undefined,
+          namaKawan: namaKawan || undefined,
+          telefonKawan: sanitizedTelKawan,
+          jenisKawan: jenisKawan || undefined,
+          namaPerkenalkan: namaPerkenalkan || undefined,
+          telefonPerkenalkan: telPerkenalkan ? telPerkenalkan.replace(/[\s-]/g, "") : undefined,
+          pakej: toBumijezStoragePakej(packageName),
+          receiptData,
+          kaedahHubungi: "whatsapp",
+          persetujuan: true,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || "Ralat menghantar permohonan");
+      }
+      setStatus("success");
+    } catch (err: any) {
+      setStatus("error");
+      setErrMsg(err?.message || "Ralat sambungan. Sila cuba lagi atau hubungi kami melalui WhatsApp.");
+    }
+  };
+
+  const labelClass = "block text-xs font-bold mb-1.5 uppercase tracking-wide text-slate-700";
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 sm:p-6 overflow-y-auto">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm cursor-pointer"
+          />
+
+          {/* Modal Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            transition={{ type: "spring", duration: 0.35, bounce: 0.1 }}
+            className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col my-auto border border-amber-500/20 max-h-[90vh] z-10"
+          >
+            {/* Modal Header */}
+            <div
+              className="p-5 sm:p-6 text-white relative flex-shrink-0"
+              style={{ background: "var(--color-brand-green)" }}
+            >
+              <button
+                type="button"
+                onClick={onClose}
+                className="absolute top-4 right-4 h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors text-white cursor-pointer"
+                aria-label="Tutup borang"
+              >
+                <X className="h-5 w-5" />
+              </button>
+
+              <div className="flex items-center gap-2 mb-2">
+                <ShieldCheck className="h-4 w-4 text-amber-300" />
+                <span className="text-[11px] font-black uppercase tracking-widest text-amber-300">
+                  Borang Permohonan Pakej
+                </span>
+              </div>
+
+              <h3
+                className="text-xl sm:text-2xl font-black text-white leading-tight uppercase mb-2"
+                style={{ fontFamily: "var(--font-heading)" }}
+              >
+                {packageName}
+              </h3>
+
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm font-semibold text-amber-200 border border-white/20">
+                  {details.monthly}
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm font-semibold text-white/90 border border-white/20">
+                  {details.daily}
+                </span>
+                <span className="px-2.5 py-1 rounded-full bg-white/15 backdrop-blur-sm font-semibold text-amber-200 border border-white/20">
+                  Jumlah Manfaat: {details.total}
+                </span>
+              </div>
+            </div>
+
+            {/* Modal Body - Scrollable */}
+            <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6 bg-slate-50/50">
+              {status === "success" ? (
+                <div className="text-center py-8 space-y-5">
+                  <div
+                    className="flex h-16 w-16 items-center justify-center rounded-full mx-auto shadow-md"
+                    style={{ background: "var(--color-brand-sage-soft)", color: "var(--color-brand-green)" }}
+                  >
+                    <CheckCircle2 className="h-10 w-10" />
+                  </div>
+                  <div>
+                    <h4
+                      className="text-2xl font-black mb-2"
+                      style={{ color: "var(--color-brand-green-dark)", fontFamily: "var(--font-heading)" }}
+                    >
+                      PERMOHONAN BERJAYA!
+                    </h4>
+                    <p className="text-sm text-slate-600 max-w-sm mx-auto leading-relaxed">
+                      Permohonan bagi <strong>{packageName}</strong> telah berjaya disimpan dan akan disemak oleh pihak Bumijez.
+                    </p>
+                  </div>
+
+                  <div className="p-4 rounded-2xl border text-left bg-white" style={{ borderColor: "var(--color-brand-border)" }}>
+                    <p className="text-xs font-semibold text-slate-700 leading-relaxed">
+                      Resit pembayaran rasmi akan dihantar setelah bayaran disahkan.
+                      <br />
+                      Anda boleh mendapatkan Kad Keahlian selepas 3 hari bekerja melalui WhatsApp.
+                    </p>
+                  </div>
+
+                  <div className="pt-2 space-y-2.5">
+                    <a
+                      href={`https://wa.me/601113001999?text=Salam%20Bumijez,%20saya%20telah%20menghantar%20permohonan%20untuk%20${encodeURIComponent(packageName)}.%20Sila%20bantu%20pengesahan.`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 py-3.5 px-4 rounded-full text-sm font-black text-white shadow-md transition-all hover:opacity-95"
+                      style={{ background: "#25D366" }}
+                    >
+                      <Phone className="h-4 w-4" />
+                      HUBUNGI WHATSAPP TERUS (017-3383884)
+                    </a>
+
+                    <button
+                      onClick={onClose}
+                      type="button"
+                      className="w-full py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+                    >
+                      Tutup Borang
+                    </button>
+                    <p className="text-[11px] text-slate-400 italic text-center">
+                      (Borang ini akan ditutup secara automatik dalam masa 6 saat)
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+                  {/* MAKLUMAT PEMOHON */}
+                  <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                    <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green)" }}>
+                      MAKLUMAT PEMOHON
+                    </p>
+
+                    <div>
+                      <label htmlFor="modalNama" className={labelClass}>
+                        NAMA DALAM KAD PENGENALAN <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        id="modalNama"
+                        type="text"
+                        value={nama}
+                        onChange={(e) => setNama(e.target.value.toUpperCase())}
+                        placeholder="NAMA PENUH"
+                        className="form-input w-full"
+                        style={{ textTransform: "uppercase" }}
+                        required
+                        autoComplete="name"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalIc" className={labelClass}>
+                          NO. KAD PENGENALAN
+                        </label>
+                        <input
+                          id="modalIc"
+                          type="text"
+                          value={ic}
+                          onChange={(e) => handleIcChange(e.target.value)}
+                          placeholder="000000-00-0000"
+                          maxLength={14}
+                          className="form-input w-full"
+                          autoComplete="off"
+                          inputMode="numeric"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalUmur" className={labelClass}>
+                          UMUR
+                        </label>
+                        <input
+                          id="modalUmur"
+                          type="text"
+                          readOnly
+                          value={umur ? `${umur} tahun` : "—"}
+                          className="form-input w-full bg-slate-100 font-bold"
+                          style={{ cursor: "default", color: umur ? "var(--color-brand-green)" : "#94a3b8" }}
+                          aria-label="Umur dikira secara automatik"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="modalAlamat1" className={labelClass}>
+                        ALAMAT TEMPAT TINGGAL SEKARANG
+                      </label>
+                      <input
+                        id="modalAlamat1"
+                        type="text"
+                        value={alamat1}
+                        onChange={(e) => setAlamat1(e.target.value.toUpperCase())}
+                        placeholder="No. Rumah, Jalan, Taman"
+                        className="form-input w-full"
+                        style={{ textTransform: "uppercase" }}
+                        autoComplete="address-line1"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalPoskod" className={labelClass}>
+                          POSKOD
+                        </label>
+                        <input
+                          id="modalPoskod"
+                          type="text"
+                          inputMode="numeric"
+                          value={poskod}
+                          onChange={(e) => {
+                            const digits = e.target.value.replace(/\D/g, "").slice(0, 5);
+                            setPoskod(digits);
+                          }}
+                          maxLength={5}
+                          placeholder="50600"
+                          className="form-input w-full"
+                          autoComplete="postal-code"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalDaerah" className={labelClass}>
+                          BANDAR / DAERAH
+                        </label>
+                        <input
+                          id="modalDaerah"
+                          type="text"
+                          value={daerah}
+                          onChange={(e) => setDaerah(e.target.value.toUpperCase())}
+                          placeholder="Kuala Lumpur"
+                          className="form-input w-full"
+                          style={{ textTransform: "uppercase" }}
+                          autoComplete="address-level2"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="modalNegeri" className={labelClass}>
+                        NEGERI
+                      </label>
+                      <select
+                        id="modalNegeri"
+                        value={negeri}
+                        onChange={(e) => setNegeri(e.target.value)}
+                        className="form-input w-full bg-white font-medium"
+                        aria-label="Pilih Negeri"
+                      >
+                        <option value="">-- PILIH NEGERI --</option>
+                        {MALAYSIAN_STATES.map((st) => (
+                          <option key={st} value={st.toUpperCase()}>
+                            {st.toUpperCase()}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label htmlFor="modalTel" className={labelClass}>
+                        NO. TELEFON <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        id="modalTel"
+                        type="tel"
+                        value={tel}
+                        onChange={(e) => setTel(e.target.value.toUpperCase())}
+                        placeholder="01X-XXX XXXX"
+                        className="form-input w-full"
+                        required
+                        autoComplete="tel"
+                        inputMode="tel"
+                      />
+                    </div>
+                  </div>
+
+                  {/* WARIS KELUARGA */}
+                  <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: "var(--color-brand-sage-soft)", borderColor: "var(--color-brand-border)" }}>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green-dark)" }}>
+                        WARIS DI KALANGAN KELUARGA
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Akan dihubungi sekiranya berlaku kematian.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalNamaWaris" className={labelClass}>
+                          NAMA WARIS
+                        </label>
+                        <input
+                          id="modalNamaWaris"
+                          type="text"
+                          value={namaWaris}
+                          onChange={(e) => setNamaWaris(e.target.value.toUpperCase())}
+                          placeholder="NAMA PENUH WARIS"
+                          className="form-input w-full"
+                          style={{ textTransform: "uppercase" }}
+                          autoComplete="off"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalTelWaris" className={labelClass}>
+                          NO. TEL. WARIS
+                        </label>
+                        <input
+                          id="modalTelWaris"
+                          type="tel"
+                          value={telWaris}
+                          onChange={(e) => setTelWaris(e.target.value.toUpperCase())}
+                          placeholder="01X-XXX XXXX"
+                          className="form-input w-full"
+                          autoComplete="off"
+                          inputMode="tel"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="modalHubungan" className={labelClass}>
+                        HUBUNGAN WARIS
+                      </label>
+                      <select
+                        id="modalHubungan"
+                        value={hubungan}
+                        onChange={(e) => setHubungan(e.target.value)}
+                        className="form-input w-full"
+                        aria-label="Hubungan waris"
+                      >
+                        <option value="">Pilih Hubungan</option>
+                        {HUBUNGAN_OPTIONS.map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* KAWAN SELAIN WARIS */}
+                  <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: "rgba(243,182,1,0.06)", borderColor: "rgba(243,182,1,0.25)" }}>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider text-amber-700">
+                        KAWAN SELAIN WARIS
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Kawan hendaklah diberitahu jika berlaku kecemasan.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalNamaKawan" className={labelClass}>
+                          NAMA KAWAN
+                        </label>
+                        <input
+                          id="modalNamaKawan"
+                          type="text"
+                          value={namaKawan}
+                          onChange={(e) => setNamaKawan(e.target.value.toUpperCase())}
+                          placeholder="NAMA PENUH KAWAN"
+                          className="form-input w-full"
+                          style={{ textTransform: "uppercase" }}
+                          autoComplete="off"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalTelKawan" className={labelClass}>
+                          NO. TEL. KAWAN
+                        </label>
+                        <input
+                          id="modalTelKawan"
+                          type="tel"
+                          value={telKawan}
+                          onChange={(e) => setTelKawan(e.target.value.toUpperCase())}
+                          placeholder="01X-XXX XXXX"
+                          className="form-input w-full"
+                          autoComplete="off"
+                          inputMode="tel"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="modalJenisKawan" className={labelClass}>
+                        KATEGORI KAWAN
+                      </label>
+                      <select
+                        id="modalJenisKawan"
+                        value={jenisKawan}
+                        onChange={(e) => setJenisKawan(e.target.value)}
+                        className="form-input w-full"
+                        aria-label="Kategori kawan"
+                      >
+                        <option value="">Pilih Kategori Kawan</option>
+                        {KAWAN_OPTIONS.map((o) => (
+                          <option key={o} value={o}>{o}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* DI PERKENALKAN OLEH */}
+                  <div className="p-5 rounded-2xl border space-y-4 shadow-sm" style={{ background: "rgba(99,102,241,0.05)", borderColor: "rgba(99,102,241,0.2)" }}>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "#4f46e5" }}>
+                        Di perkenalkan oleh (jika ada)
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Orang yang memberitahu untuk membeli pakej ini.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label htmlFor="modalNamaPerkenalkan" className={labelClass}>
+                          NAMA
+                        </label>
+                        <input
+                          id="modalNamaPerkenalkan"
+                          type="text"
+                          value={namaPerkenalkan}
+                          onChange={(e) => setNamaPerkenalkan(e.target.value.toUpperCase())}
+                          placeholder="NAMA PENUH"
+                          className="form-input w-full"
+                          style={{ textTransform: "uppercase" }}
+                          autoComplete="off"
+                        />
+                      </div>
+
+                      <div>
+                        <label htmlFor="modalTelPerkenalkan" className={labelClass}>
+                          NO TEL
+                        </label>
+                        <input
+                          id="modalTelPerkenalkan"
+                          type="tel"
+                          value={telPerkenalkan}
+                          onChange={(e) => setTelPerkenalkan(e.target.value)}
+                          placeholder="01X-XXX XXXX"
+                          className="form-input w-full"
+                          autoComplete="off"
+                          inputMode="tel"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* MAKLUMAT PEMBAYARAN */}
+                  <div
+                    className="rounded-2xl border-2 shadow-sm overflow-hidden"
+                    style={{ borderColor: "var(--color-brand-border)", background: "linear-gradient(135deg, #f0fdf4 0%, #fefce8 100%)" }}
+                  >
+                    <div className="px-5 pt-4 pb-3 border-b" style={{ borderColor: "var(--color-brand-border)" }}>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green)" }}>
+                        MAKLUMAT PEMBAYARAN
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Sila buat bayaran ke akaun berikut sebelum menghantar slip.
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-4 px-5 py-5">
+                      {/* QR Code + Download */}
+                      <div className="flex flex-col items-center gap-2">
+                        <div
+                          className="rounded-2xl overflow-hidden shadow-md border-4 p-1 bg-white"
+                          style={{ borderColor: "var(--color-brand-green)" }}
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src="/bumijez/images/bumijez-qr.jpeg"
+                            alt="QR Code Pembayaran Bumijez"
+                            className="w-50 h-50 object-cover rounded-xl"
+                          />
+                        </div>
+                        <a
+                          href="/bumijez/images/bumijez-qr.jpeg"
+                          download="bumijez-qr.jpeg"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all hover:shadow-sm"
+                          style={{ borderColor: "var(--color-brand-green)", color: "var(--color-brand-green)", background: "var(--color-brand-sage-soft)" }}
+                        >
+                          <Download className="h-3 w-3" />
+                          Muat Turun QR
+                        </a>
+                      </div>
+                      {/* Bank Account Info */}
+                      <div className="text-center space-y-1">
+                        <div
+                          className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-white shadow-sm"
+                          style={{ background: "var(--color-brand-green)" }}
+                        >
+                          Maybank
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleCopyAcc}
+                          className="flex items-center justify-center gap-2 mt-1 group cursor-pointer"
+                          title="Klik untuk salin nombor akaun"
+                        >
+                          <span className="text-2xl font-black tracking-widest text-slate-800 group-hover:text-emerald-700 transition-colors">
+                            562777204081
+                          </span>
+                          {accCopied ? (
+                            <Check className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                          ) : (
+                            <Copy className="h-4 w-4 text-slate-400 group-hover:text-emerald-600 transition-colors flex-shrink-0" />
+                          )}
+                        </button>
+                        {accCopied && (
+                          <p className="text-[10px] font-bold text-emerald-600 -mt-0.5">Disalin!</p>
+                        )}
+                        <p className="text-sm font-bold text-slate-600 uppercase tracking-wide">
+                          Bumijez Enterprise
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* HANTAR SLIP BAYARAN */}
+                  <div className="p-5 rounded-2xl bg-white border-2 shadow-sm space-y-4" style={{ borderColor: "var(--color-brand-border)" }}>
+                    <div>
+                      <p className="text-xs font-black uppercase tracking-wider" style={{ color: "var(--color-brand-green)" }}>
+                        HANTAR SLIP BAYARAN
+                      </p>
+                      <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+                        Sila hantar bukti pembayaran ke nombor berikut:
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      {[
+                        { label: "Talian 1", number: "017-338 3884" },
+                        { label: "Talian 2", number: "012-600 3884" },
+                        { label: "Talian 3", number: "011-5550 3884" },
+                      ].map(({ label, number }) => (
+                        <a
+                          key={label}
+                          href={`https://wa.me/60${number.replace(/[^0-9]/g, "").slice(1)}?text=Salam%20Bumijez,%20saya%20ingin%20menghantar%20slip%20bayaran.`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between gap-2 w-full px-3 py-2 rounded-lg border transition-all hover:shadow-sm"
+                          style={{ borderColor: "var(--color-brand-border)", background: "var(--color-brand-sage-soft)" }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div
+                              className="flex h-6 w-6 items-center justify-center rounded-full flex-shrink-0"
+                              style={{ background: "var(--color-brand-green)", color: "white" }}
+                            >
+                              <Phone className="h-3 w-3" />
+                            </div>
+                            <div>
+                              <p className="text-[9px] font-bold uppercase tracking-wide text-slate-400 leading-none">{label}</p>
+                              <p className="text-xs font-black text-slate-800">{number}</p>
+                            </div>
+                          </div>
+                          <span
+                            className="flex h-6 w-6 items-center justify-center rounded-full flex-shrink-0"
+                            style={{ background: "#25D366" }}
+                          >
+                            <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-white" xmlns="http://www.w3.org/2000/svg">
+                              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.116 1.523 5.845L.057 23.617a.75.75 0 0 0 .92.92l5.824-1.473A11.954 11.954 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 0 1-4.943-1.334l-.354-.21-3.668.928.957-3.595-.23-.368A9.818 9.818 0 1 1 12 21.818z" />
+                            </svg>
+                          </span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Error Alert */}
+                  {errMsg && (
+                    <div className="flex items-center gap-2 p-3.5 rounded-xl bg-red-50 text-red-700 text-xs font-semibold border border-red-200" role="alert">
+                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                      <span>{errMsg}</span>
+                    </div>
+                  )}
+
+                  {/* Submit Button */}
+                  <button
+                    type="submit"
+                    disabled={status === "loading"}
+                    className="w-full min-h-[50px] flex items-center justify-center gap-2 rounded-full py-3 px-6 text-sm font-black uppercase tracking-wider transition-all disabled:opacity-60 cursor-pointer shadow-md text-white"
+                    style={{ background: "var(--color-brand-green)" }}
+                  >
+                    {status === "loading" ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        MENGHANTAR PERMOHONAN…
+                      </>
+                    ) : (
+                      `HANTAR PERMOHONAN (${packageName})`
+                    )}
+                  </button>
+                </form>
+              )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}

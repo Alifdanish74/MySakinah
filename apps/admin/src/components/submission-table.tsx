@@ -79,6 +79,10 @@ const ALBARZAH_COLS = [
   { label: "STATUS", center: false },
 ] as const;
 
+const BUMIJEZ_COLS = ALBARZAH_COLS.filter((_, index) => index !== 1).map((column, index) =>
+  index === 0 ? { ...column, label: "TARIKH DAFTAR" } : column
+);
+
 function PhoneActionDialog({ phone, onClose }: { phone: string; onClose: () => void }) {
   const dialogRef = useDialogAccessibility(true, onClose);
   const digits = phone.replace(/\D/g, "");
@@ -244,7 +248,7 @@ function parseReceiptData(value: unknown): ReceiptData | null {
     typeof value.packageCategory !== "string" ||
     typeof value.monthlyFee !== "number" ||
     !Number.isFinite(value.monthlyFee) ||
-    (value.module !== undefined && value.module !== "kohasil" && value.module !== "albarzah") ||
+    (value.module !== undefined && value.module !== "kohasil" && value.module !== "albarzah" && value.module !== "bumijez") ||
     (value.contributionDescription !== undefined && typeof value.contributionDescription !== "string") ||
     typeof value.coverage !== "string" ||
     !isReceiptMember(value.ahli) ||
@@ -288,7 +292,10 @@ function parseReceiptData(value: unknown): ReceiptData | null {
   };
 }
 
-function getAlbarzahReceiptData(submission: Submission): ReceiptData | null {
+function getAlbarzahReceiptData(
+  submission: Submission,
+  module: "albarzah" | "bumijez" = "albarzah",
+): ReceiptData | null {
   const formData = submission.form_data || {};
   const savedReceipt = parseReceiptData(formData.receiptData);
   if (savedReceipt) return savedReceipt;
@@ -340,8 +347,8 @@ function getAlbarzahReceiptData(submission: Submission): ReceiptData | null {
   };
 
   return {
-    module: "albarzah",
-    referenceNumber: `ALBARZAH-${submittedAt.toISOString().slice(0, 10).replace(/-/g, "")}-${submission.id.slice(0, 8).toUpperCase()}`,
+    module,
+    referenceNumber: `${module.toUpperCase()}-${submittedAt.toISOString().slice(0, 10).replace(/-/g, "")}-${submission.id.slice(0, 8).toUpperCase()}`,
     packageName: displayPackageName,
     packageCategory: "Individu",
     monthlyFee: Number.isFinite(packageAmount) ? packageAmount : 0,
@@ -367,10 +374,11 @@ function getAlbarzahReceiptData(submission: Submission): ReceiptData | null {
 
 export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, moduleSlug, loadError }: SubmissionTableProps) {
   const router = useRouter();
-  const isAlbarzah = moduleSlug === "albarzah";
+  const isBumijez = moduleSlug === "bumijez";
+  const isAlbarzah = moduleSlug === "albarzah" || isBumijez;
   const isKohasil = moduleSlug === "kohasil";
   const showActions = canEdit || isKohasil || isAlbarzah;
-  const activeCols = isAlbarzah ? ALBARZAH_COLS : COLS;
+  const activeCols = isBumijez ? BUMIJEZ_COLS : isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTER);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -382,14 +390,14 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
 
   function handleReceiptDownload(submission: Submission) {
     const receiptData = isAlbarzah
-      ? getAlbarzahReceiptData(submission)
+      ? getAlbarzahReceiptData(submission, isBumijez ? "bumijez" : "albarzah")
       : parseReceiptData(submission.form_data?.receiptData);
     if (!receiptData) return;
 
     try {
       generateReceiptPdf({
         ...receiptData,
-        module: isAlbarzah ? "albarzah" : "kohasil",
+        module: moduleSlug === "bumijez" ? "bumijez" : isAlbarzah ? "albarzah" : "kohasil",
       });
       setReceiptError("");
     } catch (error) {
@@ -418,6 +426,54 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     () => Array.from(new Set(submissions.map((submission) => submission.status))).sort(),
     [submissions],
   );
+
+  const familyStyles = useMemo(() => {
+    const styles = new Map<string, { groupIndex: number; isGroupStart: boolean }>();
+    let groupIndex = 0;
+    let isGroupStart = true;
+
+    submissions.forEach((submission) => {
+      const no = String(submission.form_data?.no ?? "").trim();
+      styles.set(submission.id, { groupIndex, isGroupStart });
+      isGroupStart = false;
+
+      if (no === "1" || !no) {
+        groupIndex += 1;
+        isGroupStart = true;
+      }
+    });
+
+    return styles;
+  }, [submissions]);
+
+  function addCSVFamilySeparators(
+    rows: Array<{ submissionId: string; memberNo: string; csv: string }>,
+  ) {
+    const separatedRows: string[] = [];
+
+    rows.forEach((row, index) => {
+      const previousRow = rows[index - 1];
+      const currentGroup = familyStyles.get(row.submissionId)?.groupIndex;
+      const previousGroup = previousRow
+        ? familyStyles.get(previousRow.submissionId)?.groupIndex
+        : undefined;
+
+      if (
+        index > 0 &&
+        row.memberNo &&
+        previousRow?.memberNo &&
+        currentGroup !== undefined &&
+        previousGroup !== undefined &&
+        currentGroup !== previousGroup
+      ) {
+        separatedRows.push("");
+      }
+
+      separatedRows.push(row.csv);
+    });
+
+    return separatedRows;
+  }
 
   function handleApplyFilter(f: FilterState) {
     setFilters({ ...f, search });
@@ -715,31 +771,36 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
         : "";
       const tempoh_manfaat = s.tempoh_manfaat || "";
 
-      return [
-        no,
-        `"${nama.replace(/"/g, '""')}"`,
-        `="${no_kp}"`,   // ="..." forces Excel to treat as text, prevents 9.00E+11 notation
-        `"${umur === "N/A" ? "" : umur}"`,
-        `"${kategori}"`,
-        `"${pakej}"`,
-        `"${utama.replace(/"/g, '""')}"`,
-        `"${tarikh_daftar}"`,
-        `"${status}"`,
-        `"${no_ahli}"`,
-        `"${bukan_anggota}"`,
-        `"${no_telefon}"`,
-        `"${nama_waris.replace(/"/g, '""')}"`,
-        `"${telefon_waris}"`,
-        `"${alamat1.replace(/"/g, '""')}"`,
-        `"${poskod}"`,
-        `"${negeri}"`,
-        `"${tarikh_keahlian}"`,
-        `"${tempoh_keahlian}"`,
-        `"${tempoh_manfaat}"`,
-      ].join(",");
+      return {
+        submissionId: s.id,
+        memberNo: String(fd.no ?? "").trim(),
+        csv: [
+          no,
+          `"${nama.replace(/"/g, '""')}"`,
+          `="${no_kp}"`,   // ="..." forces Excel to treat as text, prevents 9.00E+11 notation
+          `"${umur === "N/A" ? "" : umur}"`,
+          `"${kategori}"`,
+          `"${pakej}"`,
+          `"${utama.replace(/"/g, '""')}"`,
+          `"${tarikh_daftar}"`,
+          `"${status}"`,
+          `"${no_ahli}"`,
+          `"${bukan_anggota}"`,
+          `"${no_telefon}"`,
+          `"${nama_waris.replace(/"/g, '""')}"`,
+          `"${telefon_waris}"`,
+          `"${alamat1.replace(/"/g, '""')}"`,
+          `"${poskod}"`,
+          `"${negeri}"`,
+          `"${tarikh_keahlian}"`,
+          `"${tempoh_keahlian}"`,
+          `"${tempoh_manfaat}"`,
+        ].join(","),
+      };
     });
 
-    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows].join("\n");
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" +
+      [headers.join(","), ...addCSVFamilySeparators(rows)].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -751,10 +812,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
     document.body.removeChild(link);
   }
 
-  function exportAlbarzahCSV() {
+  function exportFuneralModuleCSV(isBumijez = false) {
     const headers = [
       "TARIKH DAFTAR",
-      "TARIKH MOHON",
+      ...(!isBumijez ? ["TARIKH MOHON"] : []),
       "NAMA PEMOHON",
       "NO KP",
       "UMUR",
@@ -801,38 +862,43 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
       const negeri = getNegeriDisplay(fd) === "N/A" ? "" : getNegeriDisplay(fd);
       const tarikh_keahlian = tarikhKeahlianOf(s.tempoh_keahlian);
 
-      return [
-        `"${tarikh_daftar}"`,
-        `"${tarikh_mohon}"`,
-        `"${nama.replace(/"/g, '""')}"`,
-        `="${no_kp}"`,
-        `"${umur === "N/A" ? "" : umur}"`,
-        `"${no_telefon}"`,
-        `"${pakej}"`,
-        `"${nama_waris.replace(/"/g, '""')}"`,
-        `"${hubungan_waris}"`,
-        `"${telefon_waris}"`,
-        `"${nama_kawan.replace(/"/g, '""')}"`,
-        `"${tel_kawan}"`,
-        `"${jenis_kawan}"`,
-        `"${nama_perkenalkan.replace(/"/g, '""')}"`,
-        `"${tel_perkenalkan}"`,
-        `"${alamat.replace(/"/g, '""')}"`,
-        `"${poskod}"`,
-        `"${daerah}"`,
-        `"${negeri}"`,
-        `"${tarikh_keahlian}"`,
-        `"${s.tempoh_keahlian || ""}"`,
-        `"${s.tempoh_manfaat || ""}"`,
-        `"${s.status}"`,
-      ].join(",");
+      return {
+        submissionId: s.id,
+        memberNo: String(fd.no ?? "").trim(),
+        csv: [
+          `"${tarikh_daftar}"`,
+          ...(!isBumijez ? [`"${tarikh_mohon}"`] : []),
+          `"${nama.replace(/"/g, '""')}"`,
+          `="${no_kp}"`,
+          `"${umur === "N/A" ? "" : umur}"`,
+          `"${no_telefon}"`,
+          `"${pakej}"`,
+          `"${nama_waris.replace(/"/g, '""')}"`,
+          `"${hubungan_waris}"`,
+          `"${telefon_waris}"`,
+          `"${nama_kawan.replace(/"/g, '""')}"`,
+          `"${tel_kawan}"`,
+          `"${jenis_kawan}"`,
+          `"${nama_perkenalkan.replace(/"/g, '""')}"`,
+          `"${tel_perkenalkan}"`,
+          `"${alamat.replace(/"/g, '""')}"`,
+          `"${poskod}"`,
+          `"${daerah}"`,
+          `"${negeri}"`,
+          `"${tarikh_keahlian}"`,
+          `"${s.tempoh_keahlian || ""}"`,
+          `"${s.tempoh_manfaat || ""}"`,
+          `"${s.status}"`,
+        ].join(","),
+      };
     });
 
-    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows].join("\n");
+    const csvContent = "data:text/csv;charset=utf-8,\uFEFF" +
+      [headers.join(","), ...addCSVFamilySeparators(rows)].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    const module_name = moduleName || "AlBarzah";
+    const module_name = moduleName || (isBumijez ? "Bumijez" : "AlBarzah");
     const date = new Date().toISOString().slice(0, 10);
     link.setAttribute("download", `Export_${module_name}_${date}.csv`);
     document.body.appendChild(link);
@@ -895,7 +961,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
           {/* Export */}
           <button
             id="export-csv-btn"
-            onClick={isAlbarzah ? exportAlbarzahCSV : exportToCSV}
+            onClick={
+              isBumijez
+                ? () => exportFuneralModuleCSV(true)
+                : isAlbarzah
+                  ? () => exportFuneralModuleCSV()
+                  : exportToCSV
+            }
             className="btn-ghost"
             style={{
               display: "flex", alignItems: "center", gap: "0.5rem",
@@ -1035,7 +1107,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               {showActions && (
                 <col
                   style={{
-                    width: isKohasil || isAlbarzah ? (canEdit ? 240 : 136) : 128,
+                    width: isKohasil || isAlbarzah ? (canEdit ? 200 : 136) : 128,
                   }}
                 />
               )}
@@ -1145,6 +1217,17 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               )}
               {paginated.map((s, i) => {
                 const fd = s.form_data || {};
+                const familyStyle = familyStyles.get(s.id);
+                const rowBackground = (familyStyle?.groupIndex ?? 0) % 2 === 0
+                  ? "var(--color-admin-surface)"
+                  : "color-mix(in srgb, var(--color-admin-primary) 6%, var(--color-admin-surface))";
+                const rowStyle = {
+                  borderBottom: "1px solid var(--color-admin-border)",
+                  backgroundColor: rowBackground,
+                  ...(familyStyle?.isGroupStart
+                    ? { borderTop: "2px solid color-mix(in srgb, var(--color-admin-primary) 40%, var(--color-admin-border))" }
+                    : {}),
+                };
                 const nama = fd.nama || s.submitted_by || "N/A";
                 const no_kp = formatIC(fd.no_kp || fd.ic || fd.no_ic);
                 const umur = getUmurDisplay(fd);
@@ -1156,7 +1239,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 const pakej = fd.pakej || "N/A";
                 const tarikh_daftar = fd.tarikh_daftar || formatDate(s.created_at);
                 const receiptData = isAlbarzah
-                  ? getAlbarzahReceiptData(s)
+                  ? getAlbarzahReceiptData(s, isBumijez ? "bumijez" : "albarzah")
                   : isKohasil
                     ? parseReceiptData(fd.receiptData)
                     : null;
@@ -1177,16 +1260,17 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                   return (
                     <tr
                       key={s.id}
-                      style={{ borderBottom: "1px solid var(--color-admin-border)" }}
+                      style={rowStyle}
                     >
                       {/* 1. Tarikh Daftar */}
                       <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
                         {tarikh_daftar}
                       </td>
-                      {/* 2. Tarikh Mohon */}
-                      <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
-                        {tarikh_mohon || "N/A"}
-                      </td>
+                      {!isBumijez && (
+                        <td style={{ whiteSpace: "nowrap", color: "var(--color-admin-text-muted)", fontSize: "0.75rem" }}>
+                          {tarikh_mohon || "N/A"}
+                        </td>
+                      )}
                       {/* 3. Nama */}
                       <td style={{ fontWeight: 600, color: "var(--color-admin-text)" }}>{nama}</td>
                       {/* 4. No KP */}
@@ -1308,7 +1392,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                             right: 0,
                             zIndex: 1,
                             textAlign: "center",
-                            background: "var(--color-admin-surface)",
+                            background: rowBackground,
                             borderLeft: "1px solid var(--color-admin-border)",
                             boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
                           }}
@@ -1321,12 +1405,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                                 disabled={!receiptData}
                                 className="btn-ghost"
                                 style={{
+                                  width: 44,
                                   minWidth: 44,
                                   height: 44,
                                   minHeight: 44,
-                                  padding: "0 0.625rem",
+                                  padding: 0,
                                   justifyContent: "center",
-                                  gap: "0.375rem",
+                                  gap: receiptData ? 0 : "0.375rem",
                                   cursor: receiptData ? "pointer" : "not-allowed",
                                   opacity: receiptData ? 1 : 0.55,
                                   whiteSpace: "nowrap",
@@ -1386,7 +1471,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                 return (
                   <tr
                     key={s.id}
-                    style={{ borderBottom: "1px solid var(--color-admin-border)" }}
+                    style={rowStyle}
                   >
                     <td style={{ textAlign: "center", color: "var(--color-admin-text-muted)", fontWeight: 600 }}>
                       {rowNo}
@@ -1489,7 +1574,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                           right: 0,
                           zIndex: 1,
                           textAlign: "center",
-                          background: "var(--color-admin-surface)",
+                          background: rowBackground,
                           borderLeft: "1px solid var(--color-admin-border)",
                           boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
                         }}
@@ -1502,12 +1587,13 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                               disabled={!receiptData}
                               className="btn-ghost"
                               style={{
+                                width: 44,
                                 minWidth: 44,
                                 height: 44,
                                 minHeight: 44,
-                                padding: "0 0.625rem",
+                                padding: 0,
                                 justifyContent: "center",
-                                gap: "0.375rem",
+                                gap: receiptData ? 0 : "0.375rem",
                                 cursor: receiptData ? "pointer" : "not-allowed",
                                 opacity: receiptData ? 1 : 0.55,
                                 whiteSpace: "nowrap",
@@ -1524,7 +1610,7 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                               }
                             >
                               <Download size={16} aria-hidden="true" />
-                              <span>{receiptData ? "Download" : "Unavailable"}</span>
+                              {!receiptData && <span>Unavailable</span>}
                             </button>
                           )}
                           {canEdit && (

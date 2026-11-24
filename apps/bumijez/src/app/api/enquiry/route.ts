@@ -1,0 +1,218 @@
+// File: src/app/api/enquiry/route.ts — Bumijez
+import { enquirySchema } from "@/lib/validations";
+import { toBumijezStoragePakej } from "@/lib/pakej";
+import { generateReceiptReferenceNumber } from "@sakinah/ui/lib/kohasil-receipt";
+import {
+  getNextReceiptSequence,
+  getMalaysiaDateString,
+  saveSubmissionToDatabase,
+} from "@sakinah/ui";
+
+const MODULE_SLUG = "bumijez";
+
+/**
+ * POST /api/enquiry
+ * Bumijez Form submission endpoint.
+ * Saves user submissions directly to the MySakinah Admin Dashboard system.
+ */
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+
+    // Sanitize mobile inputs (strip whitespace & dashes from phone and IC fields)
+    if (typeof body.telefon === "string") body.telefon = body.telefon.replace(/[\s-]/g, "");
+    if (typeof body.telefonWaris === "string") body.telefonWaris = body.telefonWaris.replace(/[\s-]/g, "");
+    if (typeof body.telefonKawan === "string") body.telefonKawan = body.telefonKawan.replace(/[\s-]/g, "");
+    if (typeof body.ic === "string") body.ic = body.ic.replace(/\D/g, "");
+
+    if (body.members && typeof body.members === "object") {
+      for (const k of Object.keys(body.members)) {
+        if (body.members[k]) {
+          if (typeof body.members[k].telefon === "string") {
+            body.members[k].telefon = body.members[k].telefon.replace(/[\s-]/g, "");
+          }
+          if (typeof body.members[k].ic === "string") {
+            body.members[k].ic = body.members[k].ic.replace(/\D/g, "");
+          }
+        }
+      }
+    }
+
+    const parsed = enquirySchema.safeParse(body);
+
+    if (!parsed.success) {
+      console.warn("[Bumijez Enquiry API] Validation failed:", parsed.error.issues);
+      const firstErrorMsg = parsed.error.issues[0]?.message || "Ralat Pengesahan Maklumat";
+      return Response.json(
+        {
+          success: false,
+          error: firstErrorMsg,
+          issues: parsed.error.issues,
+        },
+        { status: 422 }
+      );
+    }
+
+    const data = parsed.data as any;
+    const pakej = toBumijezStoragePakej(data.pakej);
+    let receiptData: typeof data.receiptData;
+    if (data.receiptData) {
+      let receiptSequence: number;
+      try {
+        receiptSequence = await getNextReceiptSequence(MODULE_SLUG);
+      } catch (error) {
+        console.error("[Bumijez Enquiry API] Receipt sequence allocation failed:", error);
+        return Response.json(
+          {
+            success: false,
+            error: "Nombor rujukan resit gagal dijana. Sila pastikan konfigurasi Supabase betul dan schema nombor resit telah dipasang.",
+          },
+          { status: 503 },
+        );
+      }
+      receiptData = {
+          ...data.receiptData,
+          referenceNumber: generateReceiptReferenceNumber(
+            new Date(data.receiptData.submittedAt),
+            receiptSequence,
+            MODULE_SLUG,
+          ),
+        };
+    }
+
+    const membersData = body.members || {};
+    const memberKeys = Object.keys(membersData);
+
+    const submissionsToPost: Array<{ submitted_by: string; form_data: any }> = [];
+
+    if (memberKeys.length > 0) {
+      const ahli = membersData["ahli"] || {};
+      const mainName = ahli.nama || data.nama;
+
+      memberKeys.forEach((key, index) => {
+        const m = membersData[key];
+        if (!m || (!m.nama?.trim() && !m.ic?.trim())) return;
+
+        let roleLabel = "AHLI";
+        if (key === "pasangan") roleLabel = "PASANGAN";
+        else if (key.startsWith("anak")) roleLabel = "ANAK";
+        else if (key.startsWith("tanggungan")) roleLabel = "tanggungan";
+
+        submissionsToPost.push({
+          submitted_by: mainName,
+          form_data: {
+            no: (index + 1).toString(),
+            nama: m.nama || mainName,
+            no_kp: m.ic || data.ic || "-",
+            umur: "-",
+            kategori: roleLabel,
+            no_ahli: data.noAhli || "-",
+            bukan_anggota: data.statusKeahlian === "Bukan Ahli" ? "BUKAN ANGGOTA" : "",
+            no_telefon: m.telefon || data.telefon || "-",
+            alamat1: m.alamat1 || data.alamat1 || "-",
+            alamat2: m.alamat2 || data.alamat2 || "-",
+            alamat3: m.alamat3 || data.alamat3 || "-",
+            poskod: data.poskod || "-",
+            negeri: m.negeri || data.negeri || "-",
+            pakej,
+            tarikh_daftar: getMalaysiaDateString(),
+            utama: mainName,
+            namaWaris: data.namaWaris || "-",
+            telefonWaris: data.telefonWaris || "-",
+            hubunganWaris: data.hubunganWaris || "-",
+            namaKawan: data.namaKawan || "-",
+            telefonKawan: data.telefonKawan || "-",
+            jenisKawan: data.jenisKawan || "-",
+            namaPerkenalkan: data.namaPerkenalkan || "-",
+            telefonPerkenalkan: data.telefonPerkenalkan || "-",
+            jenisTanggungan: m.jenisTanggungan || "",
+            kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+            ...(receiptData ? { receiptData } : {}),
+          },
+        });
+      });
+    }
+
+    if (submissionsToPost.length === 0) {
+      const formDataPayload = {
+        no: "1",
+        nama: data.nama,
+        no_kp: data.ic || "-",
+        umur: "-",
+        kategori: (data.statusKeahlian || "AHLI").toUpperCase(),
+        no_ahli: data.noAhli || "-",
+        bukan_anggota: data.statusKeahlian === "BUKAN ANGGOTA" ? "BUKAN ANGGOTA" : "",
+        no_telefon: data.telefon,
+        alamat1: data.alamat1 || "-",
+        alamat2: data.alamat2 || "-",
+        alamat3: data.alamat3 || "-",
+        poskod: data.poskod || "-",
+        negeri: data.negeri || "-",
+        pakej,
+        tarikh_daftar: getMalaysiaDateString(),
+        utama: data.nama,
+        namaWaris: data.namaWaris || "-",
+        telefonWaris: data.telefonWaris || "-",
+        hubunganWaris: data.hubunganWaris || "-",
+        namaKawan: data.namaKawan || "-",
+        telefonKawan: data.telefonKawan || "-",
+        jenisKawan: data.jenisKawan || "-",
+        namaPerkenalkan: data.namaPerkenalkan || "-",
+        telefonPerkenalkan: data.telefonPerkenalkan || "-",
+        kaedahHubungi: (data.kaedahHubungi || "WHATSAPP").toUpperCase(),
+        ...(receiptData ? { receiptData } : {}),
+      };
+
+      submissionsToPost.push({
+        submitted_by: data.nama,
+        form_data: formDataPayload,
+      });
+    }
+
+    // Store in Admin Dashboard System & Supabase
+    let saveFailed = false;
+    let saveErrorMessage = "";
+
+    for (const item of submissionsToPost) {
+      const saveRes = await saveSubmissionToDatabase({
+        module_slug: MODULE_SLUG,
+        submitted_by: item.submitted_by,
+        form_data: item.form_data,
+      });
+
+      if (!saveRes.success) {
+        saveFailed = true;
+        saveErrorMessage = saveRes.error || "Gagal menyimpan maklumat permohonan.";
+      }
+    }
+
+    if (saveFailed) {
+      return Response.json(
+        {
+          success: false,
+          error: saveErrorMessage,
+        },
+        { status: 500 }
+      );
+    }
+
+    return Response.json(
+      {
+        success: true,
+        message: `Permohonan pakej ${pakej} telah berjaya diterima dan direkodkan.`,
+        count: submissionsToPost.length,
+        ...(receiptData ? { referenceNumber: receiptData.referenceNumber } : {}),
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error("[Bumijez Enquiry API] Error:", error);
+    return Response.json(
+      {
+        success: false,
+        error: "Ralat Dalaman Pelayan",
+      },
+      { status: 500 }
+    );
+  }
+}

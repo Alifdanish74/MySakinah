@@ -78,7 +78,7 @@ WHERE slug = 'kopetro';
 
 | Role | Overview Stats | View Submissions | Edit & Update Status | Delete Records | Download KOHASiL Receipts | Module Scope |
 |---|:---:|:---:|:---:|:---:|:---:|---|
-| **Super Admin** | ✅ Yes | ✅ All Modules | ✅ All Modules | ✅ All Modules | ✅ Yes | All 5 Modules |
+| **Super Admin** | ✅ Yes | ✅ All Modules | ✅ All Modules | ✅ All Modules | ✅ Yes | All Modules |
 | **Module Editor** | ✅ Yes | ✅ Assigned Only | ✅ Assigned Only | ✅ Assigned Only | ✅ If assigned to KOHASiL | Assigned Module(s) |
 | **Module Viewer** | ✅ Yes | ✅ Assigned Only | ❌ Read-Only | ❌ Read-Only | ✅ If assigned to KOHASiL | Assigned Module(s) |
 
@@ -88,7 +88,7 @@ WHERE slug = 'kopetro';
 
 ### Overview Dashboard (`/`)
 - Displays system activity status and total submission metrics.
-- Shows animated cards for each active module (**KOHASiL Raudhah**, **KOPETRO**, **KRTB**, **KOTAMAS**, **Al-Barzah**) with real-time submission counts.
+- Shows animated cards for each active module (**KOHASiL Raudhah**, **KOPETRO**, **KRTB**, **KOTAMAS**, **Al-Barzah**, **Bumijez**) with real-time submission counts.
 
 ### Submissions Data Table (`/[module]`)
 When you click on any module card (e.g. `/kohasil`), you enter the data management view:
@@ -115,6 +115,9 @@ When you click on any module card (e.g. `/kohasil`), you enter the data manageme
    - On the Al-Barzah submissions page, first edit the application and change its status to **Terima**, **Proses**, or **Aktif**.
    - The row's **Download** button appears only for applications in one of these statuses.
    - Older applications are generated from their saved application details; **Unavailable** appears only if required details are missing.
+7. **Downloading a Bumijez receipt**:
+   - On the Bumijez submissions page, the row's **Download** button appears for applications in **Terima**, **Proses**, or **Aktif** status.
+   - Receipts include the saved Bumijez application snapshot and its Bumijez reference number.
 
 ---
 
@@ -142,7 +145,7 @@ await fetch("http://localhost:3005/api/submissions", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    module_slug: "kohasil", // kohasil | kopetro | krtb | kotamas | albarzah
+    module_slug: "kohasil", // kohasil | kopetro | krtb | kotamas | albarzah | bumijez
     submitted_by: "HAMZAH BIN ALI",
     form_data: {
       no: "1",

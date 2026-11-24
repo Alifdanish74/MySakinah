@@ -35,6 +35,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 // ─── component ───────────────────────────────────────────────────────────────
 export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModalProps) {
   const isAlbarzah = moduleSlug === "albarzah";
+  const isBumijez = moduleSlug === "bumijez";
   const reduceMotion = useReducedMotion();
   const dialogRef = useDialogAccessibility(true, onClose);
 
@@ -567,14 +568,14 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
           </div>
 
           {/* Al-Barzah: Hubungan Waris */}
-          {isAlbarzah && (
+          {(isAlbarzah || isBumijez) && (
             <Field label="Hubungan Waris">
               {inp("form-input-hubunganWaris", "hubunganWaris", "e.g. ANAK, PASANGAN")}
             </Field>
           )}
 
           {/* ── Section: Kawan (Al-Barzah only) ─────────────────────────── */}
-          {isAlbarzah && (
+          {(isAlbarzah || isBumijez) && (
             <>
               <SectionTitle>Maklumat Kawan Selain Waris</SectionTitle>
 
@@ -638,7 +639,7 @@ export function EditModal({ submission, onClose, onSaved, moduleSlug }: EditModa
               />
             </Field>
 
-            {isAlbarzah && (
+            {(isAlbarzah || isBumijez) && (
               <Field label="Daerah / Bandar">
                 {inp("form-input-daerah", "alamat3", "e.g. Kuala Lumpur")}
               </Field>

@@ -134,7 +134,7 @@ export async function POST(request: Request) {
             alamat3: m.alamat3 || data.alamat3 || "-",
             poskod: data.poskod || "-",
             negeri: m.negeri || data.negeri || "-",
-            pakej: key === "ahli" ? data.pakej : "INDIVIDU 10",
+            pakej: key.startsWith("tanggungan") ? "INDIVIDU 10" : data.pakej,
             tarikh_daftar: getMalaysiaDateString(),
             utama: mainName,
             namaWaris: key.startsWith("tanggungan") ? mainName : data.namaWaris || "-",

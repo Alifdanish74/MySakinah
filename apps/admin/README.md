@@ -1,6 +1,6 @@
 # MySakinah Admin System (`@sakinah/admin`)
 
-A modern, high-performance, dark-themed admin dashboard for tracking and managing user enquiry form submissions across all MySakinah portal modules (**kohasil**, **kopetro**, **krtb**, **kotamas**, **albarzah**).
+A modern, high-performance, dark-themed admin dashboard for tracking and managing user enquiry form submissions across all MySakinah portal modules (**kohasil**, **kopetro**, **krtb**, **kotamas**, **albarzah**, **bumijez**).
 
 ---
 
@@ -34,10 +34,14 @@ A modern, high-performance, dark-themed admin dashboard for tracking and managin
 2. Run the script located in `apps/admin/supabase/schema.sql`.
 
 This creates:
-- `modules` table (seeded with `kohasil`, `kopetro`, `krtb`, `kotamas`, `albarzah`)
+- `modules` table (seeded with `kohasil`, `kopetro`, `krtb`, `kotamas`, `albarzah`, `bumijez`)
 - `submissions` table (with GIN index on `form_data` JSONB)
 - `admin_roles` table (mapping `user_id` -> `role` & `module_id`)
 - Row Level Security (RLS) policies protecting data access based on authenticated user ID and assigned role.
+
+For an existing Supabase project, apply `apps/admin/supabase/migrations/20261122203900_add_bumijez_module.sql` to register Bumijez and enable its receipt sequence, then apply `apps/admin/supabase/migrations/20261125021000_add_membership_card_lookup_rpc.sql` for indexed membership-card lookups.
+
+The membership-card app calls the lookup RPC with `SUPABASE_SERVICE_ROLE_KEY`. Configure this as a server-only environment variable for that app; do not expose it with a `NEXT_PUBLIC_` prefix.
 
 ### Granting Super Admin Privileges
 
@@ -94,7 +98,7 @@ await fetch("http://localhost:3005/api/submissions", {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({
-    module_slug: "kohasil", // or "kopetro", "krtb", "kotamas", "albarzah"
+    module_slug: "kohasil", // or "kopetro", "krtb", "kotamas", "albarzah", "bumijez"
     submitted_by: "Ahmad Danish",
     form_data: {
       email: "ahmad@example.com",

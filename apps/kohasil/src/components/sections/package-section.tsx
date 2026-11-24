@@ -2161,7 +2161,7 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
 
                         {currentTabObj.id === "anak_1" && (
                           <p className="text-[10px] italic text-slate-500">
-                            kosongkan jika tiada anak/belum berumur 1 tahun
+                            Kosongkan ruangan jika tidak berkaitan
                           </p>
                         )}
 
@@ -2340,9 +2340,11 @@ export function PackageSection({ onPackageSelect }: PackageSectionProps) {
                             </select>
                           </div>
                         </div>
-                        <p className="mt-2 text-xs">
-                                      * Waris untuk peserta tambahan adalah ahli utama yang membuat potongan gaji
-                                    </p>
+                        {activeMemberTab.startsWith("tanggungan_") && (
+                          <p className="mt-2 text-xs">
+                            * Waris untuk peserta tambahan adalah ahli utama yang membuat potongan gaji
+                          </p>
+                        )}
 
                         {/* Waris & Status Keahlian (only on Ahli tab) */}
                         {activeMemberTab === "ahli" && (

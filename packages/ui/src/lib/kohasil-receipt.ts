@@ -21,7 +21,7 @@ export interface SalaryDeductionAuthorization {
 }
 
 export interface ReceiptData {
-  module?: "kohasil" | "albarzah";
+  module?: "kohasil" | "albarzah" | "bumijez";
   referenceNumber?: string;
   packageName: string;
   packageCategory: string;
@@ -55,7 +55,10 @@ export function generateReceiptReferenceNumber(
   const hh = pad(malaysiaDate.getUTCHours());
   const min = pad(malaysiaDate.getUTCMinutes());
   const paddedSequence = String(sequence).padStart(4, "0");
-  const prefix = module === "albarzah" ? "ALBARZAH" : "KOHASIL";
+  const prefix =
+    module === "albarzah" ? "ALBARZAH" :
+    module === "bumijez" ? "BUMIJEZ" :
+    "KOHASIL";
   return `${prefix}-${yyyy}${mm}${dd}-${hh}${min}-${paddedSequence}`;
 }
 
@@ -441,7 +444,8 @@ export function generateReceiptPdf(data: ReceiptData): void {
     return;
   }
 
-  const isAlbarzah = data.module === "albarzah";
+  const isAlbarzah = data.module === "albarzah" || data.module === "bumijez";
+  const isBumijez = data.module === "bumijez";
   const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -561,7 +565,9 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setFontSize(9);
   doc.setTextColor(255, 255, 255);
   doc.text(
-    isAlbarzah ? "ALBARZAH • SKIM KHAIRAT KEMATIAN" : "SKIM KHAIRAT KOHASIL RAUDHAH",
+    isAlbarzah
+      ? isBumijez ? "BUMIJEZ • PENGURUSAN JENAZAH" : "ALBARZAH • SKIM KHAIRAT KEMATIAN"
+      : "SKIM KHAIRAT KOHASIL RAUDHAH",
     pageWidth / 2,
     6,
     { align: "center" },
@@ -585,7 +591,9 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setTextColor(100, 100, 100);
   doc.text(
     isAlbarzah
-      ? "Pengesahan Permohonan Keahlian Albarzah"
+      ? isBumijez
+        ? "Pengesahan Permohonan Bumijez"
+        : "Pengesahan Permohonan Keahlian Albarzah"
       : "Confirmation of Application – Skim Khairat Kematian & Pengurusan Jenazah",
     pageWidth / 2,
     curY,
@@ -726,15 +734,23 @@ export function generateReceiptPdf(data: ReceiptData): void {
   checkPageBreak(28);
   sectionTitle(isAlbarzah ? "D. Nota Penting" : "E. Nota Penting");
 
-  const notes = isAlbarzah
+  const notes = isBumijez
     ? [
+        "1. Surat ini mengesahkan permohonan pakej Bumijez telah diterima dan direkodkan.",
+        "2. Sila rujuk terma pakej yang dipilih bagi butiran manfaat dan kelayakan.",
+        "3. Pegawai Bumijez akan menghubungi anda untuk maklumat lanjut jika diperlukan.",
+        "4. Untuk pertanyaan, hubungi Bumijez di 011-1300 1999.",
+        "5. Dokumen ini dijana secara automatik. Sila simpan sebagai rekod permohonan.",
+      ]
+    : isAlbarzah
+      ? [
         "1. Surat ini mengesahkan permohonan keahlian Albarzah telah diterima untuk diproses.",
         "2. Tarikh keahlian bermula pada 01 atau 15 haribulan. Manfaat bermula 30 hari selepas tarikh keahlian.",
         "3. Pembaharuan sebelum tarikh tamat mengekalkan manfaat tanpa tempoh menunggu; pembaharuan selepas tamat tertakluk kepada tempoh menunggu 30 hari.",
         "4. Untuk pertanyaan, hubungi Albarzah melalui WhatsApp di 017-3383884.",
         "5. Dokumen ini dijana secara automatik. Sila simpan sebagai rekod permohonan.",
       ]
-    : [
+      : [
         "1. Surat ini adalah pengesahan bahawa permohonan anda telah berjaya diterima oleh sistem.",
         "2. Perlindungan bermula selepas 30 hari dari tarikh 01/15hb terdekat selepas pengesahan bayaran potongan gaji.",
         "3. Pegawai kami akan menghubungi anda dalam masa terdekat bagi tujuan pengesahan lanjut.",
@@ -764,9 +780,11 @@ export function generateReceiptPdf(data: ReceiptData): void {
   doc.setFontSize(7);
   doc.setTextColor(255, 255, 255);
   doc.text(
-    isAlbarzah
-      ? "Albarzah • Skim Pengurusan Jenazah 24 Jam dan Manfaat Khairat Kematian"
-      : "Skim Khairat KOHASiL Raudhah • Daftar Syarikat: 201801031648 (1295100-A)",
+    isBumijez
+      ? "Bumijez • Pengurusan Jenazah Lengkap di Seluruh Negara"
+      : isAlbarzah
+        ? "Albarzah • Skim Pengurusan Jenazah 24 Jam dan Manfaat Khairat Kematian"
+        : "Skim Khairat KOHASiL Raudhah • Daftar Syarikat: 201801031648 (1295100-A)",
     pageWidth / 2,
     pageHeight - 8,
     { align: "center" }

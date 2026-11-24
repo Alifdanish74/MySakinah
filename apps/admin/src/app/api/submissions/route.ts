@@ -104,6 +104,7 @@ export async function POST(req: NextRequest) {
         krtb:     { display_name: "KRTB",             icon: "building2", color_from: "#0284c7", color_to: "#075985" },
         kotamas:  { display_name: "KOTAMAS",          icon: "star",      color_from: "#7c3aed", color_to: "#4c1d95" },
         albarzah:        { display_name: "Al-Barzah",        icon: "moon",      color_from: "#047857", color_to: "#064e3b" },
+        bumijez:         { display_name: "Bumijez",           icon: "heart",     color_from: "#073b4c", color_to: "#118ab2" },
         membership_card: { display_name: "Kad Keahlian",    icon: "credit-card", color_from: "#eab308", color_to: "#854d0e" },
         "membership-card": { display_name: "Kad Keahlian",  icon: "credit-card", color_from: "#eab308", color_to: "#854d0e" },
       };
@@ -120,7 +121,9 @@ export async function POST(req: NextRequest) {
         .insert({
           slug: module_slug,
           display_name: meta.display_name,
-          description: `Skim perlindungan ${meta.display_name}`,
+          description: module_slug === "bumijez"
+            ? "Bantuan pengurusan jenazah lengkap di seluruh negara."
+            : `Skim perlindungan ${meta.display_name}`,
           icon: meta.icon,
           color_from: meta.color_from,
           color_to: meta.color_to,

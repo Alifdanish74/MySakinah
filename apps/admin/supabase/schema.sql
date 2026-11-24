@@ -43,7 +43,7 @@ as $$
 declare
   next_value bigint;
 begin
-  if p_module_slug is null or p_module_slug not in ('kohasil', 'albarzah') then
+  if p_module_slug is null or p_module_slug not in ('kohasil', 'albarzah', 'bumijez') then
     raise exception 'Unsupported receipt module: %', p_module_slug using errcode = '22023';
   end if;
 
@@ -131,6 +131,52 @@ create index if not exists idx_submissions_created_at  on public.submissions (cr
 create index if not exists idx_submissions_status      on public.submissions (status);
 create index if not exists idx_submissions_form_data   on public.submissions using gin (form_data);
 create index if not exists idx_admin_roles_user_module on public.admin_roles (user_id, module_id);
+
+-- Membership-card lookup uses the existing JSONB GIN index to find direct
+-- and nested family IC matches without returning every submission to the API.
+create or replace function public.membership_card_lookup_submissions(p_ic text)
+returns table (
+  id uuid,
+  module_id uuid,
+  form_data jsonb,
+  submitted_by text,
+  status text,
+  created_at timestamptz,
+  tempoh_keahlian text,
+  module_display_name text,
+  module_slug text
+)
+language sql
+stable
+security invoker
+set search_path = ''
+as $$
+  select
+    s.id,
+    s.module_id,
+    s.form_data,
+    s.submitted_by,
+    s.status,
+    s.created_at,
+    s.tempoh_keahlian,
+    m.display_name,
+    m.slug
+  from public.submissions as s
+  left join public.modules as m on m.id = s.module_id
+  where p_ic ~ '^[0-9]{12}$'
+    and s.form_data @? (
+      '$.** ? (@ == "' || p_ic || '" || @ == "' ||
+      substring(p_ic from 1 for 6) || '-' ||
+      substring(p_ic from 7 for 2) || '-' ||
+      substring(p_ic from 9 for 4) || '")'
+    )::jsonpath
+  order by s.created_at desc;
+$$;
+
+revoke all on function public.membership_card_lookup_submissions(text)
+  from public, anon, authenticated;
+grant execute on function public.membership_card_lookup_submissions(text)
+  to service_role;
 
 -- ============================================================
 -- 5. ROW LEVEL SECURITY
@@ -228,14 +274,15 @@ create policy "admin_roles_select" on public.admin_roles
   for select using ( user_id = auth.uid() or public.is_super_admin() );
 
 -- ============================================================
--- 6. SEED DATA — Five initial modules
+-- 6. SEED DATA — Initial modules
 -- ============================================================
 insert into public.modules (slug, display_name, description, icon, color_from, color_to) values
   ('kohasil',  'KOHASiL Raudhah',  'Skim Pengurusan Jenazah & Khairat Kematian untuk ahli KOHASiL',  'shield',    '#dc2626', '#991b1b'),
   ('kopetro',  'KOPETRO',          'Skim perlindungan untuk penjawat awam sektor petroleum',            'flame',     '#ea580c', '#9a3412'),
   ('krtb',     'KRTB',             'Skim perlindungan Kerajaan Tempatan dan Badan Berkanun',            'building2', '#0284c7', '#075985'),
   ('kotamas',  'KOTAMAS',          'Skim perlindungan anggota Tentera & Masyarakat',                   'star',      '#7c3aed', '#4c1d95'),
-  ('albarzah', 'Al-Barzah',        'Skim takaful jenazah berasaskan prinsip syariah Islam',            'moon',      '#047857', '#064e3b')
+  ('albarzah', 'Al-Barzah',        'Skim takaful jenazah berasaskan prinsip syariah Islam',            'moon',      '#047857', '#064e3b'),
+  ('bumijez',  'Bumijez',          'Bantuan pengurusan jenazah lengkap di seluruh negara.',              'heart',     '#073b4c', '#118ab2')
 on conflict (slug) do nothing;
 
 -- Sample Seed Submissions matching CONTOH EXCEL JEMPUTAN (1).xlsx structure

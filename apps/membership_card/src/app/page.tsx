@@ -183,7 +183,7 @@ export default function MembershipCardPage() {
         setMemberList(list);
         setActiveCardIndex(0);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error looking up IC:", err);
       setError("Berlaku ralat sambungan semasa menyemak maklumat. Sila cuba lagi.");
       setMemberList([]);
@@ -254,9 +254,9 @@ export default function MembershipCardPage() {
                 <Lock className="w-5 h-5 text-amber-400" />
               </div>
               <div>
-                <h3 className="font-bold text-white text-sm">Kod QR &amp; Keselamatan</h3>
+                <h3 className="font-bold text-white text-sm">Maklumat Keahlian Tersusun</h3>
                 <p className="text-xs text-slate-400 mt-1">
-                  Dilengkapi Kod QR verifikasi untuk mengesahkan kesahihan rekod keahlian anda.
+                  Semak butiran dan status keahlian anda melalui portal rasmi MySakinah Pro.
                 </p>
               </div>
             </div>
@@ -287,6 +287,9 @@ export default function MembershipCardPage() {
             <p className="text-sm text-slate-400">
               Berikut adalah kad keahlian digital bagi <span className="text-amber-300 font-semibold">{activeMember?.nama}</span>.
             </p>
+                        <p className="text-sm text-slate-400">
+              Tuntutan manfaat adalah mengikut kategori peserta.
+            </p>
           </div>
 
           {/* Module Selector Tabs (shown if 2+ modules) */}
@@ -296,7 +299,7 @@ export default function MembershipCardPage() {
                 const isTabActive = idx === activeCardIndex;
                 return (
                   <button
-                    key={m.id || idx}
+                    key={idx}
                     type="button"
                     onClick={() => setActiveCardIndex(idx)}
                     className={`flex-1 min-w-[140px] px-4 py-2.5 rounded-xl font-bold text-xs transition-all duration-200 flex items-center justify-center gap-2 ${isTabActive
@@ -366,13 +369,6 @@ export default function MembershipCardPage() {
                     <span className="text-xs text-slate-500 font-medium block">Tempoh Keahlian</span>
                     <p className="font-semibold text-amber-300 uppercase">
                       {activeMember.tempohKeahlian || activeMember.tarikhDaftar}
-                    </p>
-                  </div>
-                  <div className="space-y-1 sm:col-span-2 pt-2 border-t border-slate-800">
-                    <span className="text-xs text-slate-500 font-medium block">Penama Waris Berdaftar</span>
-                    <p className="font-semibold text-slate-200">
-                      {activeMember.namaWaris || "Tiada Maklumat Waris"}{" "}
-                      {activeMember.telefonWaris && <span className="text-amber-400 text-xs ml-2">({activeMember.telefonWaris})</span>}
                     </p>
                   </div>
                 </div>

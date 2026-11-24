@@ -13,13 +13,19 @@ interface CardDownloadActionsProps {
 export function CardDownloadActions({ memberName, icNumber, onReset }: CardDownloadActionsProps) {
   const [isExporting, setIsExporting] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const handleDownloadImage = async () => {
     const cardElem = document.getElementById("exportable-card-area") || document.getElementById("printable-card-area");
-    if (!cardElem) return;
+    if (!cardElem) {
+      setExportError("Kad tidak dapat ditemui. Sila muat semula halaman dan cuba lagi.");
+      return;
+    }
 
     try {
       setIsExporting(true);
+      setExportError(null);
+      setDownloadSuccess(false);
 
       // Use native browser rendering via html-to-image to capture stacked Front & Back cards
       const dataUrl = await toPng(cardElem, {
@@ -44,6 +50,7 @@ export function CardDownloadActions({ memberName, icNumber, onReset }: CardDownl
       setTimeout(() => setDownloadSuccess(false), 3000);
     } catch (err) {
       console.error("Failed to capture membership card image:", err);
+      setExportError("Kad gagal dimuat turun. Sila cuba lagi.");
     } finally {
       setIsExporting(false);
     }
@@ -99,6 +106,11 @@ export function CardDownloadActions({ memberName, icNumber, onReset }: CardDownl
         <RefreshCw className="w-4 h-4 text-slate-400" />
         <span>Semak IC Lain</span>
       </button>
+      {exportError && (
+        <p role="alert" className="w-full text-center text-sm text-rose-300">
+          {exportError}
+        </p>
+      )}
     </div>
   );
 }

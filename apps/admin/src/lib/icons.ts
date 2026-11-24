@@ -6,6 +6,7 @@ import {
   Building2,
   Star,
   Moon,
+  Heart,
   type LucideIcon,
 } from "lucide-react";
 
@@ -15,4 +16,5 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   building2: Building2,
   star:      Star,
   moon:      Moon,
+  heart:     Heart,
 };

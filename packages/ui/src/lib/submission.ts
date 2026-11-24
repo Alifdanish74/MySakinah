@@ -22,7 +22,7 @@ export function getMalaysiaDateString(): string {
   return new Date().toLocaleDateString("en-GB", { timeZone: "Asia/Kuala_Lumpur" });
 }
 
-export async function getNextReceiptSequence(moduleSlug: "kohasil" | "albarzah"): Promise<number> {
+export async function getNextReceiptSequence(moduleSlug: "kohasil" | "albarzah" | "bumijez"): Promise<number> {
   const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL)?.trim();
   const supabaseKey = (
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
@@ -160,6 +160,7 @@ export async function saveSubmissionToDatabase({
           krtb: { display_name: "KRTB", icon: "building2", color_from: "#0284c7", color_to: "#075985" },
           kotamas: { display_name: "KOTAMAS", icon: "star", color_from: "#7c3aed", color_to: "#4c1d95" },
           albarzah: { display_name: "Al-Barzah", icon: "moon", color_from: "#047857", color_to: "#064e3b" },
+          bumijez: { display_name: "Bumijez", icon: "heart", color_from: "#15803d", color_to: "#14532d" },
           membership_card: { display_name: "Kad Keahlian", icon: "credit-card", color_from: "#eab308", color_to: "#854d0e" },
           "membership-card": { display_name: "Kad Keahlian", icon: "credit-card", color_from: "#eab308", color_to: "#854d0e" },
         };
@@ -182,7 +183,9 @@ export async function saveSubmissionToDatabase({
           body: JSON.stringify({
             slug: module_slug,
             display_name: meta.display_name,
-            description: `Skim perlindungan ${meta.display_name}`,
+            description: module_slug === "bumijez"
+              ? "Bantuan pengurusan jenazah lengkap di seluruh negara."
+              : `Skim perlindungan ${meta.display_name}`,
             icon: meta.icon,
             color_from: meta.color_from,
             color_to: meta.color_to,
