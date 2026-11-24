@@ -53,6 +53,14 @@
       "destination": "https://albarzah.vercel.app/albarzah/$1"
     },
     {
+      "source": "/bumijez",
+      "destination": "https://my-sakinah-lime.vercel.app/bumijez"
+    },
+    {
+      "source": "/bumijez/(.*)",
+      "destination": "https://my-sakinah-lime.vercel.app/bumijez/$1"
+    },
+    {
       "source": "/membership-card",
       "destination": "https://membershipcard-dun.vercel.app/membership_card"
     },
