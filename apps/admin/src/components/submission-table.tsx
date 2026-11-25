@@ -378,6 +378,15 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
   const isAlbarzah = moduleSlug === "albarzah" || isBumijez;
   const isKohasil = moduleSlug === "kohasil";
   const showActions = canEdit || isKohasil || isAlbarzah;
+  const actionPinStyle = moduleSlug === "albarzah"
+    ? {}
+    : {
+        position: "sticky" as const,
+        right: 0,
+        zIndex: 1,
+        borderLeft: "1px solid var(--color-admin-border)",
+        boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
+      };
   const activeCols = isBumijez ? BUMIJEZ_COLS : isAlbarzah ? ALBARZAH_COLS : COLS;
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<FilterState>(EMPTY_FILTER);
@@ -1190,13 +1199,10 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
               {showActions && (
                 <th
                   style={{
-                    position: "sticky",
-                    right: 0,
+                    ...actionPinStyle,
                     zIndex: 3,
-                    textAlign: "right",
+                    textAlign: "center",
                     background: "var(--color-admin-surface-2)",
-                    borderLeft: "1px solid var(--color-admin-border)",
-                    boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
                   }}
                 >
                   ACTIONS
@@ -1388,13 +1394,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                       {showActions && (
                         <td
                           style={{
-                            position: "sticky",
-                            right: 0,
-                            zIndex: 1,
+                            ...actionPinStyle,
                             textAlign: "center",
                             background: rowBackground,
-                            borderLeft: "1px solid var(--color-admin-border)",
-                            boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
                           }}
                         >
                           <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
@@ -1570,13 +1572,9 @@ export function SubmissionTable({ submissions, canEdit, onRefresh, moduleName, m
                     {showActions && (
                       <td
                         style={{
-                          position: "sticky",
-                          right: 0,
-                          zIndex: 1,
+                          ...actionPinStyle,
                           textAlign: "center",
                           background: rowBackground,
-                          borderLeft: "1px solid var(--color-admin-border)",
-                          boxShadow: "-6px 0 12px rgba(8, 24, 16, 0.08)",
                         }}
                       >
                         <div style={{ display: "flex", gap: "0.375rem", justifyContent: "center" }}>
