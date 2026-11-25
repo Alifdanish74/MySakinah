@@ -65,16 +65,18 @@ export function OpeningCover() {
           aria-modal="true"
           aria-label="Selamat datang ke Bumijez"
         >
-          {/* Full-screen background — Bumijez green mosque image */}
-          <picture className="absolute inset-0 z-0 h-full w-full">
+          {/* Full-screen background image */}
+          <picture className="absolute inset-0 z-0 h-full w-full overflow-hidden">
             <source
               media="(min-width: 768px)"
-              srcSet="/bumijez/images/official/banner.webp"
+              srcSet="/bumijez/images/bumijez_hero_bg.jpg"
             />
             <img
-              src="/bumijez/images/official/banner.webp"
+              src="/bumijez/images/bumijez_hero_bg.jpg"
               alt=""
-              className="h-full w-full object-cover object-center"
+              width={4928}
+              height={3264}
+              className="h-full w-full scale-[1.02] object-cover object-center blur-[2px]"
               aria-hidden="true"
             />
           </picture>
@@ -144,7 +146,7 @@ export function OpeningCover() {
               className="mb-5 px-1"
             >
               <h1 className="text-base xs:text-lg sm:text-xl md:text-2xl font-black uppercase leading-snug tracking-wide text-white drop-shadow-lg">
-                SISTEMATIK • BERPANDUAN • BERSISTEM
+                KAMI MENYEDIAKAN <br /> PAKEJ KHAIRAT KEMATIAN <br /> DAN PENGURUSAN JENAZAH LENGKAP
               </h1>
             </motion.div>
 
